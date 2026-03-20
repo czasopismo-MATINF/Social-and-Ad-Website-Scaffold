@@ -30,7 +30,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserPage'
         '404':
-          description: User not found.
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -58,3 +68,22 @@ components:
         - attributeName
         - attributeValue
       additionalProperties: false
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - message
+        - timestamp
+      properties:
+        status:
+          type: integer
+          format: int32
+          example: 404
+        message:
+          type: string
+          example: User not found
+        timestamp:
+          type: string
+          format: date-time
+          example: 2026-03-20T14:48:00Z
+

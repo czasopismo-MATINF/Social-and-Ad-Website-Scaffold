@@ -3,6 +3,7 @@ package matinf.czasopismo.social.mainpagems.services;
 import lombok.RequiredArgsConstructor;
 import matinf.czasopismo.social.mainpagems.data.UserPageAttributeRepository;
 import matinf.czasopismo.social.mainpagems.data.UserRepository;
+import matinf.czasopismo.social.mainpagems.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
 import matinf.czasopismo.social.mainpagems.data.User;
@@ -16,12 +17,12 @@ public class UserPageService {
 
     public User getUserWithAttributes(UUID id) {
         return userRepository.findByIdWithAttributes(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
     public User getUserWithAttributes(String userName) {
         return userRepository.findByIdWithAttributes(userName)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
 }
