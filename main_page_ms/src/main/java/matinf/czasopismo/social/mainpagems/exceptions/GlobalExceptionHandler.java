@@ -1,11 +1,11 @@
 package matinf.czasopismo.social.mainpagems.exceptions;
 
+import jakarta.validation.ConstraintViolationException;
 import matinf.czasopismo.social.mainpagems.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.time.Instant;
 import java.time.ZoneOffset;
 
@@ -30,5 +30,21 @@ public class GlobalExceptionHandler {
                 Instant.now().atOffset(ZoneOffset.UTC)
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidParams(ConstraintViolationException ex) {
+        String message = ex.getConstraintViolations().stream()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .findFirst()
+                .orElse("Invalid request");
+
+        return ResponseEntity.badRequest().body(
+                new ErrorResponse(
+                        400,
+                        message,
+                        Instant.now().atOffset(ZoneOffset.UTC)
+                )
+        );
     }
 }
