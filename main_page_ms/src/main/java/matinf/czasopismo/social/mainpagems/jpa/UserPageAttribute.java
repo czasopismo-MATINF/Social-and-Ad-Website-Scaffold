@@ -1,22 +1,35 @@
 package matinf.czasopismo.social.mainpagems.jpa;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "user_page_attributes")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserPageAttribute {
 
     @Id
     @GeneratedValue
+    @ToString.Include
+    @EqualsAndHashCode.Include
     private UUID id;
 
-    @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
+    private User user;
 
     @Column(name = "attribute_name", nullable = false)
+    @ToString.Include
     private String attributeName;
 
     @Column(name = "attribute_value", nullable = false)
