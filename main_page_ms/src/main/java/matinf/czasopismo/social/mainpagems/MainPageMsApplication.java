@@ -1,4 +1,4 @@
-package matinf.czasopismo.social.main_page_ms;
+package matinf.czasopismo.social.mainpagems;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
