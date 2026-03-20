@@ -36,3 +36,20 @@ CREATE TABLE IF NOT EXISTS user_page_attributes (
     UNIQUE(user_id, attribute_name)
 );
 
+BEGIN;
+WITH new_user AS (
+    INSERT INTO users (user_name)
+    VALUES ('mikolaj')
+    RETURNING id
+)
+INSERT INTO user_page_attributes (user_id, attribute_name, attribute_value)
+SELECT id, attr_name, attr_value
+FROM new_user,
+     (VALUES 
+        ('theme', 'dark'),
+        ('language', 'pl'),
+        ('timezone', 'CET')
+     ) AS attrs(attr_name, attr_value);
+
+COMMIT;
+
