@@ -1,4 +1,4 @@
-package matinf.czasopismo.social.mainpagems.jpa;
+package matinf.czasopismo.social.mainpagems.data;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -35,10 +35,13 @@ paths:
 components:
   schemas:
     UserPage:
-      type: array
-      description: List of user page attributes.
-      items:
-        $ref: '#/components/schemas/UserPageAttribute'
+      type: object
+      description: User with attributes.
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserPageAttribute'
     UserPageAttribute:
       type: object
       description: Single attribute of the user page.
