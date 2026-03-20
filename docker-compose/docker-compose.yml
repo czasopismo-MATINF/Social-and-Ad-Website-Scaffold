@@ -1,0 +1,50 @@
+services:
+
+  pg:
+    image: postgres:17.9
+    container_name: social-pg
+    ports:
+      - 5432:5432
+    restart: always
+    # set shared memory limit when using docker compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pgpassword
+    volumes:
+      - social-pgdata:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 9101:8080
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: social-pgadmin
+    ports:
+      - 9102:80
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@example.com
+      PGADMIN_DEFAULT_PASSWORD: pgadminpassword
+      PGADMIN_LISTEN_PORT: 80
+    volumes:
+      - social-pgadmindata:/var/lib/pgadmin
+    depends_on:
+      - pg
+
+volumes:
+  social-pgdata:
+  social-pgadmindata:
+
+
+
