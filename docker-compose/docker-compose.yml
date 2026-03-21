@@ -94,6 +94,17 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_NUM_PARTITIONS: 3
 
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: social-kafka-ui
+    ports:
+      - 8090:8080
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: social-kafka-broker:9092
+    depends_on:
+      - broker
+
 volumes:
   social-pgdata:
   social-pgadmindata:
