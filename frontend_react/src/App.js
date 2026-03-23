@@ -4,6 +4,33 @@ import './App.css';
 import { useEffect, useState } from "react";
 import keycloak from "./keycloak";
 
+function testApi(keycloak) {
+
+    console.log("TESTING API");
+    console.log(keycloak.tokenParsed);
+/*
+    fetch("http://localhost:8080/users/mikolaj", {
+    method: "GET",
+    headers: {
+      "Authorization": "Bearer " + keycloak.token,
+      "Content-Type": "application/json"
+    }
+  })
+    .then(res => res.json())
+    .then(data => console.log(data));
+*/
+    fetch("http://localhost:3020/users/mikolaj", {
+    method: "GET",
+    headers: {
+      "Authorization": "Bearer " + keycloak.token,
+      "Content-Type": "application/json"
+    }
+  })
+    .then(res => res.json())
+    .then(data => console.log(data));
+
+}
+
 function App() {
 
   const [initialized, setInitialized] = useState(false);
@@ -40,6 +67,9 @@ function App() {
       ) : (
         <>
           <p>Witaj, {keycloak.tokenParsed?.preferred_username}</p>
+          {
+            testApi(keycloak)
+          }
           <button onClick={() => keycloak.logout()}>Wyloguj</button>
         </>
       )}
