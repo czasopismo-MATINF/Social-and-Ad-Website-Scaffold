@@ -43,6 +43,36 @@ services:
     depends_on:
       - pg
 
+  loki:
+    image: grafana/loki:latest
+    container_name: social-loki
+    volumes:
+      - ./loki-config.yaml:/etc/loki/local-config.yaml
+      - ./loki-var/:/var/loki
+      - ./loki-data:/loki
+      - ./loki-wal:/wal
+      - ./loki-tmp:/tmp
+    command: -config.file=/etc/loki/local-config.yaml
+
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: social-promtail
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/log:/var/log
+      - ./promtail-config.yaml:/etc/promtail/config.yml
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: social-grafana
+    ports:
+      - "9104:3000"
+    depends_on:
+      - loki
+
   pgkeycloack:
     image: postgres:16
     container_name: social-keycloak-pg
