@@ -120,7 +120,7 @@ components:
         - max
       properties:
         username:
-          type: String
+          type: string
         min:
           type: integer
         max:
