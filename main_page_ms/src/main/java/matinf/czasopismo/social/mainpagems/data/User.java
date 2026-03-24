@@ -35,8 +35,14 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<UserPageAttribute> attributes = new ArrayList<>();
+
+    public void addAttribute(UserPageAttribute attr) {
+        attributes.add(attr);
+        attr.setUser(this);
+    }
 
 }

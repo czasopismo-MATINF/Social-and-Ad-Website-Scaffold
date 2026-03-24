@@ -8,7 +8,6 @@ import matinf.czasopismo.social.mainpagems.mappers.UserMapper;
 import matinf.czasopismo.social.mainpagems.model.UserPage;
 import matinf.czasopismo.social.mainpagems.services.UserPageService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,8 +20,14 @@ public class UsersAPIController implements UsersApi {
 
     @Override
     public ResponseEntity<UserPage> usersUsernameGet(String username) {
-        String userHeader = request.getHeader("X-Username");
-        log.info(userHeader);
-        return ResponseEntity.ok(UserMapper.toDto((this.userPageService.getUserWithAttributes(username))));
+        String user = request.getHeader("X-Username");
+        if(user != null && user.equals(username)) {
+            log.info("Użytkownik {} z filtrowaniem pól szuka samego siebie.", user);
+            return ResponseEntity.ok(UserMapper.toDto((this.userPageService.getUserWithAttributesWithFieldsFilter(username))));
+        } else {
+            log.info("Zapytanie {} bez filtrowania pól szuka użytkownika {}.", user, username);
+            return ResponseEntity.ok(UserMapper.toDto((this.userPageService.getUserWithAttributes(username))));
+        }
     }
+
 }
