@@ -10,6 +10,16 @@ paths:
       responses:
         '200':
           description: OK
+  /page_fields_config:
+    get:
+      summary: Get page fields config
+      responses:
+        '200':
+          description: User page fields config.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageFieldsConfig'
   /users/{username}:
     get:
       summary: Get user page by username
@@ -94,4 +104,25 @@ components:
           type: string
           format: date-time
           example: 2026-03-20T14:48:00Z
+    PageFieldsConfig:
+      type: object
+      description: Page fields config.
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/PageField'
+    PageField:
+      type: object
+      required:
+        - username
+        - min
+        - max
+      properties:
+        username:
+          type: String
+        min:
+          type: integer
+        max:
+          type: integer
 
