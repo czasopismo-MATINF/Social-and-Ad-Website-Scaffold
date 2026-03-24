@@ -54,7 +54,6 @@ services:
       - ./loki-tmp:/tmp
     command: -config.file=/etc/loki/local-config.yaml
 
-
   promtail:
     image: grafana/promtail:latest
     container_name: social-promtail
@@ -62,6 +61,7 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/log:/var/log
       - ./promtail-config.yaml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       - loki
 
@@ -142,11 +142,15 @@ services:
     restart: always
     ports:
       - 3020:3020
-  
+    logging:
+      driver: json-file
+
   mainpagems:
     image: mainpage_ms:latest
     container_name: social-mainpage-ms
     restart: always
+    logging:
+      driver: json-file
 
 volumes:
   social-pgdata:
