@@ -45,4 +45,13 @@ public class User {
         attr.setUser(this);
     }
 
+    public boolean isAttributePresent(String attrName) {
+        for(var attr : this.getAttributes()) {
+            if(attr.getAttributeName().equals(attrName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

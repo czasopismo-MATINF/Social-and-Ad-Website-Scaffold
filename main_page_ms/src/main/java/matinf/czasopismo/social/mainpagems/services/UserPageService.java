@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import matinf.czasopismo.social.mainpagems.beans.PageFieldsConfigFilter;
 import matinf.czasopismo.social.mainpagems.data.UserPageAttribute;
-import matinf.czasopismo.social.mainpagems.data.UserPageAttributeRepository;
 import matinf.czasopismo.social.mainpagems.data.UserRepository;
 import matinf.czasopismo.social.mainpagems.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import matinf.czasopismo.social.mainpagems.data.User;
 public class UserPageService {
 
     private final UserRepository userRepository;
-    private final UserPageAttributeRepository attributeRepository;
     private final PageFieldsConfigFilter pageFieldsConfigFilter;
 
     /*
@@ -71,7 +69,31 @@ public class UserPageService {
                 this.userRepository.save(user);
 
                 log.info("Atrybuty użytkownika {} utworzono.", userName);
+
+            } else {
+
+                log.info("Naprawiam atrybuty użytkownika {}.", userName);
+
+                User finalUser = user;
+                this.pageFieldsConfigFilter.getPageFields().forEach( field -> {
+                   if(!finalUser.isAttributePresent(field.name())) {
+                       UserPageAttribute pageAttribute = UserPageAttribute.builder()
+                               .attributeName(field.name())
+                               .attributeValue("")
+                               .createdAt(LocalDateTime.now())
+                               .updatedAt((LocalDateTime.now()))
+                               .user(finalUser)
+                               .build();
+                       finalUser.addAttribute(pageAttribute);
+                   }
+                });
+
+                this.userRepository.save(user);
+
+                log.info("Atrybuty użytkownika {} naprawiono.", userName);
+
             }
+
         } catch(Exception e) {
             log.error(e.toString());
         }
