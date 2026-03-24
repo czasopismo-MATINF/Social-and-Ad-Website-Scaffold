@@ -2,6 +2,7 @@ spring:
 
   main:
     web-application-type: reactive
+
   application:
     name: gateway_ms
 
@@ -17,20 +18,21 @@ spring:
 
     oauth2:
       resourceserver:
-              jwt:
-                issuer-uri: http://localhost:8081/realms/test_realm
+        jwt:
+          issuer-uri: http://localhost:8081/realms/test_realm
+          jwk-set-uri: http://host.docker.internal:8081/realms/test_realm/protocol/openid-connect/certs
 
   cloud:
     gateway:
-          server:
-            webflux:
-              routes:
-                - id: users-service
-                  uri: http://localhost:8080
-                  predicates:
-                    - Path=/users/**
-                  filters:
-                    - RemoveRequestHeader=Cookie
+      server:
+        webflux:
+          routes:
+            - id: users-service
+              uri: http://social-mainpage-ms:8080
+              predicates:
+                - Path=/users/**
+              filters:
+                - RemoveRequestHeader=Cookie
 
 server:
   port: 3020

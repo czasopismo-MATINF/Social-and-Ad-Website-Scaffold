@@ -1,14 +1,19 @@
 package matinf.czasopismo.social.gateway_ms;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.util.Base64;
 
 @Component
 @Slf4j
@@ -17,11 +22,34 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
+        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+
+            try {
+                // Parsowanie nagłówka i payload bez weryfikacji podpisu
+                String[] parts = token.split("\\.");
+                String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
+
+                log.info("JWT payload: {}", payloadJson);
+
+                // Wyciągnięcie iss
+                JsonNode payload = new ObjectMapper().readTree(payloadJson);
+                String iss = payload.get("iss").asText();
+
+                log.info("JWT iss claim = {}", iss);
+
+            } catch (Exception e) {
+                log.error("Failed to decode JWT", e);
+            }
+        }
+
         String auth = exchange.getRequest().getHeaders().getFirst("Authorization");
 
         if (auth != null && auth.startsWith("Bearer ")) {
 
-            //log.info("Parsing JWT in JwtGlobalFilter {}", auth);
+            log.info("Parsing JWT in JwtGlobalFilter {}", auth);
 
             try {
 
@@ -41,7 +69,7 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
                 return chain.filter(exchange.mutate().request(mutated).build());
 
             } catch (Exception e) {
-                //log.error("Exception in JwtGlobalFilter {}", e.toString());
+                log.error("Exception in JwtGlobalFilter {}", e.toString());
                 return chain.filter(exchange);
             }
         }
