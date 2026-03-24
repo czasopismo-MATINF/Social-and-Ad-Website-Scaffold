@@ -15,13 +15,13 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                /*
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyExchange().authenticated()
                 )
-                */
                 .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt)
                 .build();
     }
 }
+
+
