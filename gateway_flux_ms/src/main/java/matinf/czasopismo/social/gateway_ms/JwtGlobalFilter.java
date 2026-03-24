@@ -21,7 +21,7 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
 
         if (auth != null && auth.startsWith("Bearer ")) {
 
-            log.info("Parsing JWT in JwtGlobalFilter");
+            //log.info("Parsing JWT in JwtGlobalFilter {}", auth);
 
             try {
 
@@ -41,7 +41,7 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
                 return chain.filter(exchange.mutate().request(mutated).build());
 
             } catch (Exception e) {
-                log.error("Exception in JwtGlobalFilter");
+                //log.error("Exception in JwtGlobalFilter {}", e.toString());
                 return chain.filter(exchange);
             }
         }
