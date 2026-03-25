@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 import { useEffect } from "react";
 import keycloak from "./keycloak";
@@ -24,7 +25,40 @@ function testApi(keycloak) {
 
 }
 
+function A() {
+
+}
+
+function B() {
+
+}
+
+function C() {
+
+}
+
+function D() {
+
+}
+
 function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<A />} />
+        <Route path="/about" element={<B />} />
+
+        <Route path="/dashboard">
+          <Route index element={<C />} />
+          <Route path="settings" element={<D />} />
+          <Route path="app" element={<App2 />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+function App2() {
 
   const [count, setCount] = useState(0)
 
@@ -37,7 +71,7 @@ function App() {
   }, []);
 
 
-  return (
+return (
     <>
       <section id="center">
         <div className="hero">
@@ -161,7 +195,7 @@ function App() {
         </>
       )}
     </div>
-    
+
     </>
   )
 }
