@@ -4,10 +4,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import matinf.czasopismo.social.mainpagems.beans.PageFieldsConfigFilter;
-import matinf.czasopismo.social.mainpagems.data.UserPageAttribute;
 import matinf.czasopismo.social.mainpagems.data.UserRepository;
 import matinf.czasopismo.social.mainpagems.exceptions.UserNotFoundException;
 import matinf.czasopismo.social.mainpagems.mappers.AttributeMapper;
+import matinf.czasopismo.social.mainpagems.mappers.UserMapper;
 import matinf.czasopismo.social.mainpagems.model.UserPage;
 import org.springframework.stereotype.Service;
 
@@ -23,14 +23,20 @@ public class UserPageService {
     private final PageFieldsConfigFilter pageFieldsConfigFilter;
 
     @Transactional
-    public User getUserWithAttributes(String userName) {
-        return userRepository.findByIdWithAttributes(userName)
+    public User getUserWithAttributes(String username) {
+        return userRepository.findByIdWithAttributes(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
     @Transactional
-    public User getUserWithAttributesWithFieldsFilter(String userName) {
+    public User getUserWithAttributesWithFieldsFilter(String username) {
 
+        User user = this.getOrCreateUser(username);
+        this.fixUserAttributes(user);
+        this.userRepository.save(user);
+        return user;
+
+        /*
         User user = userRepository.findByIdWithAttributes(userName).orElse(null);
 
         try {
@@ -95,7 +101,7 @@ public class UserPageService {
 
         return userRepository.findByIdWithAttributes(userName)
                 .orElseThrow(() -> new UserNotFoundException("User not found."));
-
+        */
     }
 
     @Transactional
@@ -108,29 +114,26 @@ public class UserPageService {
 
     @Transactional
     private User getOrCreateUser(String username) {
+
         User user = userRepository.findByIdWithAttributes(username).orElse(null);
         if (user != null) return user;
+
         log.info("Tworzenie użytkownika {}.", username);
-        user = User.builder()
-                .userName(username)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+
+        user = UserMapper.createEmptyModelUser(username);
         this.userRepository.save(user);
+
         log.info("Użytkownik {} utworzony. Tworznie jego atrybutów.", username);
+
         User finalUser = user;
         this.pageFieldsConfigFilter.getPageFields().forEach(field -> {
-            UserPageAttribute pageAttribute = UserPageAttribute.builder()
-                    .attributeName(field.name())
-                    .attributeValue("")
-                    .createdAt(LocalDateTime.now())
-                    .updatedAt((LocalDateTime.now()))
-                    .user(finalUser)
-                    .build();
+            var pageAttribute = AttributeMapper.createEmptyModelAttribute(field.name());
             finalUser.addAttribute(pageAttribute);
         });
         this.userRepository.save(user);
+
         log.info("Atrybuty użytkownika {} utworzono.", username);
+
         return user;
     }
 
