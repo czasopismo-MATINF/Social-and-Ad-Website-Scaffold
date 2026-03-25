@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import matinf.czasopismo.social.mainpagems.api.UsersApi;
+import matinf.czasopismo.social.mainpagems.exceptions.UserNotAuthorizedException;
 import matinf.czasopismo.social.mainpagems.mappers.UserMapper;
 import matinf.czasopismo.social.mainpagems.model.UserPage;
 import matinf.czasopismo.social.mainpagems.services.UserPageService;
@@ -30,4 +31,13 @@ public class UsersAPIController implements UsersApi {
         }
     }
 
+    @Override
+    public ResponseEntity<UserPage> usersUsernamePut(String username, UserPage userPage) {
+        String user = request.getHeader("X-Username");
+        if(user == null || !user.equals(username)) {
+            log.info("Użytkownik {} nie jest autoryzowany do zmieniania danych użytkownika {}.", user, username);
+            throw new UserNotAuthorizedException(String.format("User %s not authorized to change data for user %s.", user, username));
+        }
+        return ResponseEntity.ok(UserMapper.toDto(this.userPageService.updateUser(username, userPage)));
+    }
 }

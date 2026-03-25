@@ -54,4 +54,13 @@ public class User {
         return false;
     }
 
+    public UserPageAttribute getAttributeOrNull(String attrName) {
+        for(var attr : this.getAttributes()) {
+            if(attr.getAttributeName().equals(attrName)) {
+                return attr;
+            }
+        }
+        return null;
+    }
+
 }
