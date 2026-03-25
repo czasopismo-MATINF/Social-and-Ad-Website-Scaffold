@@ -30,7 +30,24 @@ function A() {
 }
 
 function B() {
-
+  return <>
+      <div>
+      {!keycloak.authenticated ? (
+        <>
+          <p>Nie jesteś zalogowany</p>
+          <button onClick={() => keycloak.login()}>Zaloguj</button>
+        </>
+      ) : (
+        <>
+          <p>Witaj, {keycloak.tokenParsed?.preferred_username}</p>
+          {
+            testApi(keycloak)
+          }
+          <button onClick={() => keycloak.logout()}>Wyloguj</button>
+        </>
+      )}
+    </div>
+  </>
 }
 
 function C() {
@@ -42,6 +59,15 @@ function D() {
 }
 
 function App() {
+
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+  keycloak.init({ onLoad: "check-sso" })
+    .then(() => setInitialized(true))
+    .catch(err => console.error("Keycloak init error:", err));
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -51,25 +77,15 @@ function App() {
         <Route path="/dashboard">
           <Route index element={<C />} />
           <Route path="settings" element={<D />} />
-          <Route path="app" element={<App2 />} />
         </Route>
       </Routes>
     </BrowserRouter>
   )
 }
 
-function App2() {
+function InitApp() {
 
   const [count, setCount] = useState(0)
-
-  const [initialized, setInitialized] = useState(false);
-
-    useEffect(() => {
-    keycloak.init({ onLoad: "check-sso" })
-      .then(() => setInitialized(true))
-      .catch(err => console.error("Keycloak init error:", err));
-  }, []);
-
 
 return (
     <>
@@ -178,23 +194,6 @@ return (
 
       <div className="ticks"></div>
       <section id="spacer"></section>
-
-      <div>
-      {!keycloak.authenticated ? (
-        <>
-          <p>Nie jesteś zalogowany</p>
-          <button onClick={() => keycloak.login()}>Zaloguj</button>
-        </>
-      ) : (
-        <>
-          <p>Witaj, {keycloak.tokenParsed?.preferred_username}</p>
-          {
-            testApi(keycloak)
-          }
-          <button onClick={() => keycloak.logout()}>Wyloguj</button>
-        </>
-      )}
-    </div>
 
     </>
   )
