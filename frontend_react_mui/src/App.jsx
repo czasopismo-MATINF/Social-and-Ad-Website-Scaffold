@@ -8,6 +8,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { useEffect } from "react";
 import keycloak from "./keycloak";
 
+import { useSelector, useDispatch } from 'react-redux'
+import { increment, decrement } from '../store/slice'
+
 function testApi(keycloak) {
 
     console.log("TESTING API");
@@ -26,7 +29,27 @@ function testApi(keycloak) {
 }
 
 function A() {
+  // Odczytaj wartość licznika ze stanu
+  const counter = useSelector(state => state.example.counter)
+  
+  // Pobierz funkcję dispatch
+  const dispatch = useDispatch()
 
+  return <>
+    <div>
+      <h1>Licznik: {counter}</h1>
+      
+      {/* Zwiększ licznik */}
+      <button onClick={() => dispatch(increment())}>
+        Zwiększ (+)
+      </button>
+      
+      {/* Zmniejsz licznik */}
+      <button onClick={() => dispatch(decrement())}>
+        Zmniejsz (-)
+      </button>
+    </div>
+  </>
 }
 
 function B() {
