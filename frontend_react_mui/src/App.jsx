@@ -11,6 +11,10 @@ import keycloak from "./keycloak";
 import { useSelector, useDispatch } from 'react-redux'
 import { increment, decrement } from '../store/slice'
 
+import { Link as MuiLink } from '@mui/material'
+import { Link } from 'react-router-dom'
+import { Button } from '@mui/material'
+
 function testApi(keycloak) {
 
     console.log("TESTING API");
@@ -48,6 +52,8 @@ function A() {
       <button onClick={() => dispatch(decrement())}>
         Zmniejsz (-)
       </button>
+
+      <Button component={Link} to="/about" variant="contained">About</Button>
     </div>
   </>
 }
@@ -69,6 +75,7 @@ function B() {
           <button onClick={() => keycloak.logout()}>Wyloguj</button>
         </>
       )}
+      <Button component={Link} to="/" variant="contained">Main</Button>
     </div>
   </>
 }
