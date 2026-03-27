@@ -6,10 +6,10 @@ import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 import { useEffect } from "react";
-import keycloak from "./keycloak";
+import keycloak from "./keycloak.js";
 
 import { useSelector, useDispatch } from 'react-redux'
-import { increment, decrement } from '../store/slice'
+import { increment, decrement } from '../store/slice.js'
 
 import { Link as MuiLink } from '@mui/material'
 import { Link } from 'react-router-dom'
@@ -31,6 +31,8 @@ function testApi(keycloak) {
     .then(data => console.log(data));
 
 }
+
+import Blog from '../blog/Blog.jsx'
 
 function A() {
   // Odczytaj wartość licznika ze stanu
@@ -81,7 +83,7 @@ function B() {
 }
 
 function C() {
-
+   return <Blog />
 }
 
 function D() {
