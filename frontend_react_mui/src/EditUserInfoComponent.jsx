@@ -84,8 +84,8 @@ export default function EditUserInfoComponent() {
       dispatch(userInfoCollected(updatedData));
       handleSuccessBlink();
     } catch (error) {
-      console.error('Błąd zapisu danych użytkownika:', error);
       handleErrorBlink();
+      console.error('Błąd zapisu danych użytkownika:', error);
     }
   };
 
