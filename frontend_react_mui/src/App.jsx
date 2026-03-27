@@ -40,19 +40,25 @@ function Main() {
 }
 
 function UserInfoComponent({ userInfo }) {
-  
-  if (!userInfo) {
-    return <p>Brak danych użytkownika.</p>;
-  }
-
-  return (
-    <>
-      {userInfo.attributes.map((e) => (
-        <p key={e.attributeName}>{e.attributeName}: {String(e.attributeValue)}</p>
-      ))}
-    </>
-  );
-
+    return <Stack spacing={2}>
+          {userInfo == null ||userInfo.attributes.length === 0 ? (
+            <Typography>Brak danych użytkownika do wyświetlenia.</Typography>
+          ) : (
+            userInfo.attributes.map((attr, index) => (
+              <Box
+                key={index}
+                sx={{ display: 'grid', gap: 2, gridTemplateColumns: '1fr 1fr' }}
+              >
+                <Typography variant="body1">
+                  {attr.attributeName}
+                </Typography>
+                <Typography variant="body1">
+                  {attr.attributeValue}
+                </Typography>
+              </Box>
+            ))
+          )}
+        </Stack>
 }
 
 function Info() {
@@ -133,7 +139,7 @@ function Edit() {
   if (!userInfo) {
     return (
       <UI>
-        <p>Brak danych użytkownika.</p>
+        <p>Brak danych użytkownika do edycji.</p>
       </UI>
     );
   }
@@ -144,10 +150,9 @@ function Edit() {
         <Typography variant="h5" mb={2}>
           Edycja danych użytkownika
         </Typography>
-
         <Stack spacing={2}>
           {formState.attributes.length === 0 ? (
-            <Typography>Brak atrybutów do edycji.</Typography>
+            <Typography>Brak danych użytkownika do edycji.</Typography>
           ) : (
             formState.attributes.map((attr, index) => (
               <Box
@@ -171,7 +176,6 @@ function Edit() {
               </Box>
             ))
           )}
-
           <Button type="submit" variant="outlined" size="large">
             Zapisz zmiany
           </Button>
