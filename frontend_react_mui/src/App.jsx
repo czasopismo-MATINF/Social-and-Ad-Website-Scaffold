@@ -8,9 +8,8 @@ import keycloak from "./keycloak.js";
 import { useSelector, useDispatch } from 'react-redux'
 import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected } from '../store/slice.js'
 
-import { Link as MuiLink } from '@mui/material'
+import { Button, TextField, Box, Stack, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
-import { Button } from '@mui/material'
 
 import Blog from '../blog/Blog.jsx'
 import UI from './UI.jsx'
@@ -141,29 +140,43 @@ function Edit() {
 
   return (
     <UI>
-      <form onSubmit={handleSubmit}>
-        {formState.attributes.map((attr, index) => (
-          <div key={index}>
-            <label>
-              Atrybut:
-              <input
-                type="text"
-                value={attr.attributeName}
-                onChange={handleAttributeChange(index, 'attributeName')}
-              />
-            </label>
-            <label>
-              Wartość:
-              <input
-                type="text"
-                value={attr.attributeValue}
-                onChange={handleAttributeChange(index, 'attributeValue')}
-              />
-            </label>
-          </div>
-        ))}
-        <button type="submit">Zapisz zmiany</button>
-      </form>
+      <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 700, mx: 'auto', p: 2 }}>
+        <Typography variant="h5" mb={2}>
+          Edycja danych użytkownika
+        </Typography>
+
+        <Stack spacing={2}>
+          {formState.attributes.length === 0 ? (
+            <Typography>Brak atrybutów do edycji.</Typography>
+          ) : (
+            formState.attributes.map((attr, index) => (
+              <Box
+                key={index}
+                sx={{ display: 'grid', gap: 2, gridTemplateColumns: '1fr 1fr' }}
+              >
+                <TextField
+                  label="Atrybut"
+                  value={attr.attributeName}
+                  onChange={handleAttributeChange(index, 'attributeName')}
+                  fullWidth
+                  size="small"
+                />
+                <TextField
+                  label="Wartość"
+                  value={attr.attributeValue}
+                  onChange={handleAttributeChange(index, 'attributeValue')}
+                  fullWidth
+                  size="small"
+                />
+              </Box>
+            ))
+          )}
+
+          <Button type="submit" variant="outlined" size="large">
+            Zapisz zmiany
+          </Button>
+        </Stack>
+      </Box>
     </UI>
   );
 }
