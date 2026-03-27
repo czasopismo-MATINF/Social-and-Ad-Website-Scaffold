@@ -15,6 +15,9 @@ import { Link as MuiLink } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { Button } from '@mui/material'
 
+import Blog from '../blog/Blog.jsx'
+import UI from './UI.jsx'
+
 function testApi(keycloak) {
 
     console.log("TESTING API");
@@ -32,14 +35,26 @@ function testApi(keycloak) {
 
 }
 
-import Blog from '../blog/Blog.jsx'
-import UI from './ui.jsx'
-
-function A() {
-  return <UI />
+function Main() {
+  return <UI>
+    Main
+  </UI>
 }
 
-function AStare() {
+function Info() {
+  return <UI>
+    Info
+  </UI>
+}
+
+function Edit() {
+  return <UI>
+    Edit
+  </UI>
+}
+
+
+function A() {
   // Odczytaj wartość licznika ze stanu
   const counter = useSelector(state => state.example.counter)
   
@@ -60,7 +75,7 @@ function AStare() {
         Zmniejsz (-)
       </button>
 
-      <Button component={Link} to="/about" variant="contained">About</Button>
+      <Button component={Link} to="/dashboard/keycloak" variant="contained">Keycloak</Button>
     </div>
   </>
 }
@@ -82,17 +97,9 @@ function B() {
           <button onClick={() => keycloak.logout()}>Wyloguj</button>
         </>
       )}
-      <Button component={Link} to="/" variant="contained">Main</Button>
+      <Button component={Link} to="/dashboard/counter" variant="contained">Counter</Button>
     </div>
   </>
-}
-
-function C() {
-   return <Blog />
-}
-
-function D() {
-  return <UI />
 }
 
 function App() {
@@ -108,12 +115,18 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<A />} />
-        <Route path="/about" element={<B />} />
+
+        <Route path="/" element={<Main />} />
+        <Route path="/info" element={<Info />} />
+        <Route path="/edit" element={<Edit />} />
+
         <Route path="/dashboard">
-          <Route index element={<C />} />
-          <Route path="settings" element={<D />} />
+          <Route index element={<Blog />} />
+          <Route path="ui" element={<UI />} />
+          <Route path="keycloak" element={ <B /> } />
+          <Route path="counter" element={ <A /> } />
         </Route>
+
       </Routes>
     </BrowserRouter>
   )

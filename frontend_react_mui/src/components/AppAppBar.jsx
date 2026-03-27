@@ -19,6 +19,8 @@ import keycloak from "../keycloak.js";
 import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 
+import { Link } from 'react-router-dom'
+
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -58,24 +60,18 @@ export default function AppAppBar() {
           <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
             <Sitemark />
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-              <Button variant="text" color="info" size="small">
-                Features
+
+              <Button component={Link} to="/" variant="text" color="info" size="small">Główna</Button>
+              <Button component={Link} to="/info" variant="text" color="info" size="small">Info</Button>
+              <Button component={Link} to="/edit" variant="text" color="info" size="small">Edytuj</Button>
+
+              <Button component={Link} to="/about" variant="text" color="info" size="small">
+                About
               </Button>
-              <Button variant="text" color="info" size="small">
-                Testimonials
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Highlights
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Pricing
-              </Button>
-              <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
+              <Button component={Link} to="/faq" variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
                 FAQ
               </Button>
-              <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
-                Blog
-              </Button>
+
             </Box>
           </Box>
           <Box
@@ -89,8 +85,8 @@ export default function AppAppBar() {
                 (() => {
                   if (!keycloak.authenticated) {
                     return <>
-                    <Button color="primary" variant="contained" size="small" onClick={() => keycloak.login()}>Zaloguj</Button>
-                    <Button color="primary" variant="contained" size="small" onClick={() => keycloak.login()}>Załóż konto</Button>
+                    <Button color="primary" variant="outlined" size="small" onClick={() => keycloak.login()}>Zaloguj</Button>
+                    <Button color="primary" variant="outlined" size="small" onClick={() => keycloak.login()}>Załóż konto</Button>
                     </>
                   } else {
                     return <>
@@ -98,7 +94,7 @@ export default function AppAppBar() {
                       avatar={<Avatar>{keycloak.tokenParsed?.preferred_username[0]}</Avatar>}
                       label={`Zalogowany: ${keycloak.tokenParsed?.preferred_username}`}
                     />
-                    <Button color="primary" variant="contained" size="small" onClick={() => keycloak.logout()}>Wyloguj</Button>
+                    <Button color="primary" variant="outlined" size="small" onClick={() => keycloak.logout()}>Wyloguj</Button>
                     </>
                   }
                   return null;
@@ -134,19 +130,29 @@ export default function AppAppBar() {
                     <CloseRoundedIcon />
                   </IconButton>
                 </Box>
-                <MenuItem>Features</MenuItem>
-                <MenuItem>Testimonials</MenuItem>
-                <MenuItem>Highlights</MenuItem>
-                <MenuItem>Pricing</MenuItem>
-                <MenuItem>FAQ</MenuItem>
-                <MenuItem>Blog</MenuItem>
+
+                <MenuItem>
+                  <Button component={Link} to="/" color="primary" variant="contained" fullWidth>Główna</Button>
+                </MenuItem>
+                <MenuItem>
+                  <Button component={Link} to="/info" color="primary" variant="contained" fullWidth>Info</Button>
+                </MenuItem>
+                <MenuItem>
+                  <Button component={Link} to="/edit" color="primary" variant="contained" fullWidth>Edytuj</Button>
+                </MenuItem>
+                <MenuItem>
+                  <Button component={Link} to="/about" color="primary" variant="contained" fullWidth>About</Button>
+                </MenuItem>
+                <MenuItem>
+                  <Button component={Link} to="/faq" color="primary" variant="contained" fullWidth>FAQ</Button>
+                </MenuItem>
                 <Divider sx={{ my: 3 }} />
                 {
                 (() => {
                   if (!keycloak.authenticated) {
                    return <>
                 <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth onClick={() => keycloak.login()}>Zaloguj</Button>
+                  <Button color="primary" variant="outlined" fullWidth onClick={() => keycloak.login()}>Zaloguj</Button>
                 </MenuItem>
                 <MenuItem>
                   <Button color="primary" variant="outlined" fullWidth onClick={() => keycloak.login()}>Załóż konto</Button>
