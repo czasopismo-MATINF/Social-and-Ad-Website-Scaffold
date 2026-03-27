@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import './Custom.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 import { useEffect } from "react";
@@ -76,6 +77,12 @@ function Edit() {
     attributes: []
   });
 
+  const [blink, setBlink] = useState(false);
+  const handleBlink = () => {
+    setBlink(true);
+    setTimeout(() => setBlink(false), 500);
+  };
+
   useEffect(() => {
     if (!userInfo) {
       return;
@@ -129,10 +136,9 @@ function Edit() {
 
       const updatedData = await response.json();
       dispatch(userInfoCollected(updatedData));
-      //alert('Dane użytkownika zostały zapisane.');
+      handleBlink();
     } catch (error) {
       console.error('Błąd zapisu danych użytkownika:', error);
-      //alert('Nie udało się zapisać zmian. Sprawdź konsolę.');
     }
   };
 
@@ -176,7 +182,7 @@ function Edit() {
               </Box>
             ))
           )}
-          <Button type="submit" variant="outlined" size="large">
+          <Button type="submit" variant={blink ? "contained" : "outlined"} size="large">
             Zapisz zmiany
           </Button>
         </Stack>
