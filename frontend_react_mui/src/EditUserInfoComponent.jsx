@@ -17,10 +17,15 @@ export default function EditUserInfoComponent() {
     attributes: []
   });
 
-  const [blink, setBlink] = useState(false);
-  const handleBlink = () => {
-    setBlink(true);
-    setTimeout(() => setBlink(false), 500);
+  const [successBlink, setSuccessBlink] = useState(false);
+  const [errorBlink, setErrorBlink] = useState(false);
+  const handleSuccessBlink = () => {
+    setSuccessBlink(true);
+    setTimeout(() => setSuccessBlink(false), 500);
+  };
+  const handleErrorBlink = () => {
+    setErrorBlink(true);
+    setTimeout(() => setErrorBlink(false), 500);
   };
 
   useEffect(() => {
@@ -71,14 +76,16 @@ export default function EditUserInfoComponent() {
       });
 
       if (!response.ok) {
+        handleErrorBlink();
         throw new Error(`Aktualizacja nie powiodła się: ${response.status}`);
       }
 
       const updatedData = await response.json();
       dispatch(userInfoCollected(updatedData));
-      handleBlink();
+      handleSuccessBlink();
     } catch (error) {
       console.error('Błąd zapisu danych użytkownika:', error);
+      handleErrorBlink();
     }
   };
 
@@ -120,7 +127,13 @@ export default function EditUserInfoComponent() {
               </Box>
             ))
           )}
-          <Button type="submit" variant={blink ? "contained" : "outlined"} size="large">
+          <Button
+            type="submit"
+            variant={errorBlink || successBlink ? 'contained' : 'outlined'}
+            color={errorBlink ? 'error' : 'primary'}
+            size="large"
+            sx={{ transition: 'background-color 150ms ease, color 150ms ease' }}
+          >
             Zapisz zmiany
           </Button>
         </Stack>
