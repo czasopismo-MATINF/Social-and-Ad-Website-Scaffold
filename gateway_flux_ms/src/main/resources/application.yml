@@ -1,3 +1,10 @@
+cors:
+  cors-origins:
+    - http://localhost:3000
+    - http://localhost:5173
+  allowed-header: "*"
+  allowed-method: "*"
+
 spring:
 
   main:
