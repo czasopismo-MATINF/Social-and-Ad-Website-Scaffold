@@ -33,8 +33,13 @@ function testApi(keycloak) {
 }
 
 import Blog from '../blog/Blog.jsx'
+import UI from './ui.jsx'
 
 function A() {
+  return <UI />
+}
+
+function AStare() {
   // Odczytaj wartość licznika ze stanu
   const counter = useSelector(state => state.example.counter)
   
@@ -87,7 +92,7 @@ function C() {
 }
 
 function D() {
-
+  return <UI />
 }
 
 function App() {
@@ -105,7 +110,6 @@ function App() {
       <Routes>
         <Route path="/" element={<A />} />
         <Route path="/about" element={<B />} />
-
         <Route path="/dashboard">
           <Route index element={<C />} />
           <Route path="settings" element={<D />} />
