@@ -1,7 +1,4 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
@@ -67,9 +64,108 @@ function Info() {
 }
 
 function Edit() {
-  return <UI>
-    Edit
-  </UI>
+
+  const dispatch = useDispatch();
+  const userInfo = useSelector(state => state.example.userInfo);
+  const [formState, setFormState] = useState({
+    attributes: []
+  });
+
+  useEffect(() => {
+    if (!userInfo) {
+      return;
+    }
+    setFormState({
+      attributes: Array.isArray(userInfo.attributes) ? userInfo.attributes.map((attr) => ({
+            attributeName: attr.attributeName ?? attr.name ?? '',
+            attributeValue: attr.attributeValue ?? attr.value ?? ''
+          }))
+        : []
+    });
+  }, [userInfo]);
+
+  const handleChange = (field) => (event) => {
+    setFormState((prev) => ({
+      ...prev,
+      [field]: event.target.value
+    }));
+  };
+
+  const handleAttributeChange = (index, field) => (event) => {
+    setFormState((prev) => ({
+      ...prev,
+      attributes: prev.attributes.map((attr, idx) =>
+        idx === index ? { ...attr, [field]: event.target.value } : attr
+      )
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!userInfo) {
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:3020/users/${keycloak.tokenParsed?.preferred_username}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...userInfo,
+          attributes: formState.attributes
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Aktualizacja nie powiodła się: ${response.status}`);
+      }
+
+      const updatedData = await response.json();
+      dispatch(userInfoCollected(updatedData));
+      //alert('Dane użytkownika zostały zapisane.');
+    } catch (error) {
+      console.error('Błąd zapisu danych użytkownika:', error);
+      //alert('Nie udało się zapisać zmian. Sprawdź konsolę.');
+    }
+  };
+
+  if (!userInfo) {
+    return (
+      <UI>
+        <p>Brak danych użytkownika.</p>
+      </UI>
+    );
+  }
+
+  return (
+    <UI>
+      <form onSubmit={handleSubmit}>
+        {formState.attributes.map((attr, index) => (
+          <div key={index}>
+            <label>
+              Atrybut:
+              <input
+                type="text"
+                value={attr.attributeName}
+                onChange={handleAttributeChange(index, 'attributeName')}
+              />
+            </label>
+            <label>
+              Wartość:
+              <input
+                type="text"
+                value={attr.attributeValue}
+                onChange={handleAttributeChange(index, 'attributeValue')}
+              />
+            </label>
+          </div>
+        ))}
+        <button type="submit">Zapisz zmiany</button>
+      </form>
+    </UI>
+  );
 }
 
 function A() {
