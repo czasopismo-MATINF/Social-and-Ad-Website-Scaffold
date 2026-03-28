@@ -14,10 +14,11 @@ public class PageFieldsConfigFilter {
 
     private List<PageFieldConfigRecord> pageFields = List.of(
            new PageFieldConfigRecord("username", 4, 256),
-           new PageFieldConfigRecord("phone", 1, 256),
-           new PageFieldConfigRecord("fburl", 1, 512),
-           new PageFieldConfigRecord("liurl", 1, 512),
-           new PageFieldConfigRecord("description", 1, 2048)
+           new PageFieldConfigRecord("mobile phone", 0, 256),
+           new PageFieldConfigRecord("fb url", 0, 512),
+           new PageFieldConfigRecord("li url", 0, 512),
+           new PageFieldConfigRecord("description", 0, 2048),
+           new PageFieldConfigRecord("primary language code", 0, 2)
     );
 
 }

@@ -74,4 +74,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(
                 new ErrorResponse(400, "Media type not supported", Instant.now().atOffset(ZoneOffset.UTC)));
     }
+
+    @ExceptionHandler(UserPagePutValidatorFailureException.class)
+    public ResponseEntity<ErrorResponse> handlePutValidation(UserPagePutValidatorFailureException ex) {
+        log.info("Jestem w metodzie: {}", new Object() {}.getClass().getEnclosingMethod().getName());
+        log.error(ex.toString());
+        return ResponseEntity.badRequest().body(
+                new ErrorResponse(400, ex.getMessage(), Instant.now().atOffset(ZoneOffset.UTC))
+        );
+    }
 }
