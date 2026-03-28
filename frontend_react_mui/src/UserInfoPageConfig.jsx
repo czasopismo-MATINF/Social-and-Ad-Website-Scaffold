@@ -6,7 +6,7 @@ const userInfoPageConfig = {
         { attributeName: "fb page", "attributeDisplayName": "Strona na FB"},
         { attributeName: "li page", "attributeDisplayName": "Strona na LI"},
         { attributeName: "description", "attributeDisplayName": "Opis", "multiline": true},
-        { attributeName: "locations", "attributeDisplayName": "Lokalizacje", "array": true},
+        { attributeName: "location", "attributeDisplayName": "Lokalizacje", "array": true},
         { attributeName: "accessibility", "attributeDisplayName": "Dostępność", "multichoice": true, "options": ["Na miejscu", "Z dojazdem", "Online"]},
         { attributeName: "yt page", "attributeDisplayName": "Strona na YT"},
     ]

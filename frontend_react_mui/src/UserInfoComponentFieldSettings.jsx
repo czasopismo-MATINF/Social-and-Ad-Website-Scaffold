@@ -1,4 +1,4 @@
-import { Modal, Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Stack, Typography, TextField } from '@mui/material'
+import { Chip, Modal, Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Stack, Typography, TextField } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 
@@ -36,9 +36,29 @@ function MultiLineDialog(props) {
   )
 }
 
+function ArrayLineComponent(props) {
+  if(props.attr == null || props.attr.attributeValue == null) {
+    return <Typography variant="body1">Brak danych</Typography>
+  }
+  try {
+    console.log("Parsing array attribute value:", props.attr.attributeValue);
+    const arr = JSON.parse(props.attr.attributeValue);
+    return <div>{arr.map((a, index) => (
+  <Chip
+    label={a}
+    color="primary"
+    size="small"
+    sx={{ fontWeight: 600 }}
+    />
+  ))}</div>
+  } catch (error) {
+    return <Typography variant="body1">Błąd parsowania danych JSON.</Typography>
+  }
+}
+
 function getDisplayComponent(attrConfig, attr) {
   if (Object.prototype.hasOwnProperty.call(attrConfig, 'array')) {
-    return <>array</>
+    return <ArrayLineComponent attrConfig={attrConfig} attr={attr} />
   }
   if (Object.prototype.hasOwnProperty.call(attrConfig, 'multichoice')) {
     return <>multichoice</>
