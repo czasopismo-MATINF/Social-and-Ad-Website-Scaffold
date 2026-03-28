@@ -54,7 +54,7 @@ http://localhost:5173
 
 npm run dev
 
-## lub
+## lub:
 
 npm run build
 
