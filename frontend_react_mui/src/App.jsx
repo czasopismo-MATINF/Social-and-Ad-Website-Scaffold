@@ -1,0 +1,144 @@
+import { useState } from 'react'
+import './App.css'
+import './Custom.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+
+import { useEffect } from "react";
+import keycloak from "./keycloak.js";
+
+import { useSelector, useDispatch } from 'react-redux'
+import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected } from '../store/slice.js'
+
+import { Button, TextField, Box, Stack, Typography } from '@mui/material'
+import { Link } from 'react-router-dom'
+
+import Blog from '../blog/Blog.jsx'
+import UI from './UI.jsx'
+import UserInfoComponent from './UserInfoComponent.jsx';
+import EditUserInfoComponent from './EditUserInfoComponent.jsx'
+
+function getUserInfo(keycloak, dispatch) {
+    console.log("GETTING USER INFO");
+    if(!keycloak.authenticated) {
+      console.log("User not authenticated, skipping user info fetch");
+      return;
+    }
+    fetch(`http://localhost:3020/users/${keycloak.tokenParsed?.preferred_username}`, {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + keycloak.token,
+        "Content-Type": "application/json"
+      }
+    }).then(res => res.json())
+    .then(data => {
+      dispatch(userInfoCollected(data));
+    });
+
+}
+
+function Main() {
+  return <UI>
+    Main
+  </UI>
+}
+
+function Info() {
+  const userInfo = useSelector(state => state.example.userInfo);
+  return <UI>
+     <UserInfoComponent userInfo={userInfo}  />
+  </UI>
+}
+
+function Edit() {
+  const userInfo = useSelector(state => state.example.userInfo);
+  return <UI>
+    <EditUserInfoComponent />
+  </UI>
+}
+
+function A() {
+  // Odczytaj wartość licznika ze stanu
+  const counter = useSelector(state => state.example.counter)
+  
+  // Pobierz funkcję dispatch
+  const dispatch = useDispatch()
+
+  return <>
+    <div>
+      <h1>Licznik: {counter}</h1>
+      
+      {/* Zwiększ licznik */}
+      <button onClick={() => dispatch(increment())}>
+        Zwiększ (+)
+      </button>
+      
+      {/* Zmniejsz licznik */}
+      <button onClick={() => dispatch(decrement())}>
+        Zmniejsz (-)
+      </button>
+
+      <Button component={Link} to="/dashboard/keycloak" variant="contained">Keycloak</Button>
+    </div>
+  </>
+}
+
+function B() {
+  return <>
+      <div>
+      {!keycloak.authenticated ? (
+        <>
+          <p>Nie jesteś zalogowany</p>
+          <button onClick={() => keycloak.login()}>Zaloguj</button>
+        </>
+      ) : (
+        <>
+          <p>Witaj, {keycloak.tokenParsed?.preferred_username}</p>
+          {
+            testApi(keycloak)
+          }
+          <button onClick={() => keycloak.logout()}>Wyloguj</button>
+        </>
+      )}
+      <Button component={Link} to="/dashboard/counter" variant="contained">Counter</Button>
+    </div>
+  </>
+}
+
+function App() {
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    keycloak.init({ onLoad: "check-sso" })
+    .then(() => {
+      if (keycloak.authenticated) {
+        dispatch(keycloakLoggedIn());
+        getUserInfo(keycloak, dispatch);
+      } else {
+        dispatch(keycloakLoggedOut());
+      }
+    })
+    .catch(err => console.error("Keycloak init error:", err));
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <Routes>
+
+        <Route path="/" element={<Main />} />
+        <Route path="/info" element={<Info />} />
+        <Route path="/edit" element={<Edit />} />
+
+        <Route path="/dashboard">
+          <Route index element={<Blog />} />
+          <Route path="ui" element={<UI />} />
+          <Route path="keycloak" element={ <B /> } />
+          <Route path="counter" element={ <A /> } />
+        </Route>
+
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App
