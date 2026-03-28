@@ -13,12 +13,15 @@ public class PageFieldsConfigFilter {
     public record PageFieldConfigRecord(String name, int min, int max) {}
 
     private List<PageFieldConfigRecord> pageFields = List.of(
-           new PageFieldConfigRecord("username", 4, 256),
-           new PageFieldConfigRecord("mobile phone", 0, 256),
-           new PageFieldConfigRecord("fb url", 0, 512),
-           new PageFieldConfigRecord("li url", 0, 512),
-           new PageFieldConfigRecord("description", 0, 2048),
-           new PageFieldConfigRecord("primary language code", 0, 2)
+            new PageFieldConfigRecord("name", 0, 100),
+            new PageFieldConfigRecord("last name", 0, 100),
+            new PageFieldConfigRecord("phone", 0, 50),
+            new PageFieldConfigRecord("fb page", 0, 256),
+            new PageFieldConfigRecord("li page", 0, 256),
+            new PageFieldConfigRecord("yt page", 0, 256),
+            new PageFieldConfigRecord("description", 0, 5096),
+            new PageFieldConfigRecord("location", 0, 2048),
+            new PageFieldConfigRecord("accessibility", 0, 256)
     );
 
 }
