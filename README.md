@@ -54,10 +54,15 @@ http://localhost:5173
 
 npm run dev
 
+## lub
+
+npm run build
+
+cd dist
+
+npx vite
+
 ### wejść na stronę:
 
 http://localhost:5173
 
-
-cd build
-npx vite
