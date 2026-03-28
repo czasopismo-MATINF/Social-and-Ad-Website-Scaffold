@@ -1,4 +1,4 @@
-const UserInfoPageConfig = {
+const userInfoPageConfig = {
     "attributes" : [
         { attributeName: "name", "attributeDisplayName": "Imię"},
         { attributeName: "last name", "attributeDisplayName": "Nazwisko"},
@@ -12,4 +12,4 @@ const UserInfoPageConfig = {
     ]
 };
 
-export default UserInfoPageConfig;
+export default userInfoPageConfig;
