@@ -113,9 +113,9 @@ export default function EditUserInfoComponent() {
                 <TextField
                   label="Atrybut"
                   value={attr.attributeName}
-                  onChange={handleAttributeChange(index, 'attributeName')}
                   fullWidth
                   size="small"
+                  disabled
                 />
                 <TextField
                   label="Wartość"
