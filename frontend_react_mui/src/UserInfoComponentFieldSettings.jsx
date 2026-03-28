@@ -41,7 +41,6 @@ function ArrayLineComponent(props) {
     return <Typography variant="body1">Brak danych</Typography>
   }
   try {
-    console.log("Parsing array attribute value:", props.attr.attributeValue);
     const arr = JSON.parse(props.attr.attributeValue);
     return <div>{arr.map((a, index) => (
   <Chip
@@ -56,12 +55,31 @@ function ArrayLineComponent(props) {
   }
 }
 
+function MultiChoiceComponent(props) {
+  if(props.attr == null || props.attr.attributeValue == null) {
+    return <Typography variant="body1">Brak danych</Typography>
+  }
+  try {
+    const arr = JSON.parse(props.attr.attributeValue);
+    return <div>{props.attrConfig.options.map((a, index) => (
+  <Chip
+    label={a}
+    color={arr.includes(a) ? "primary" : "default"}
+    size="small"
+    sx={{ fontWeight: 600 }}
+    />
+  ))}</div>
+  } catch (error) {
+    return <Typography variant="body1">Błąd parsowania danych JSON.</Typography>
+  }
+}
+
 function getDisplayComponent(attrConfig, attr) {
   if (Object.prototype.hasOwnProperty.call(attrConfig, 'array')) {
     return <ArrayLineComponent attrConfig={attrConfig} attr={attr} />
   }
   if (Object.prototype.hasOwnProperty.call(attrConfig, 'multichoice')) {
-    return <>multichoice</>
+    return <MultiChoiceComponent attrConfig={attrConfig} attr={attr} />
   }
   if (Object.prototype.hasOwnProperty.call(attrConfig, 'multiline')) {
     return <MultiLineDialog attrConfig={attrConfig} attr={attr} />
