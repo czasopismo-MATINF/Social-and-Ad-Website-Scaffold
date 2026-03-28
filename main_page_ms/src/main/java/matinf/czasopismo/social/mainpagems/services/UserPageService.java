@@ -10,8 +10,6 @@ import matinf.czasopismo.social.mainpagems.mappers.AttributeMapper;
 import matinf.czasopismo.social.mainpagems.mappers.UserMapper;
 import matinf.czasopismo.social.mainpagems.model.UserPage;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 import matinf.czasopismo.social.mainpagems.data.User;
 
 @Service
@@ -35,73 +33,6 @@ public class UserPageService {
         this.fixUserAttributes(user);
         this.userRepository.save(user);
         return user;
-
-        /*
-        User user = userRepository.findByIdWithAttributes(userName).orElse(null);
-
-        try {
-
-            if (user == null) {
-
-                log.info("Tworzenie użytkownika {}.", userName);
-
-                user = User.builder()
-                        .userName(userName)
-                        .createdAt(LocalDateTime.now())
-                        .updatedAt(LocalDateTime.now())
-                        .build();
-
-                this.userRepository.save(user);
-
-                log.info("Użytkownik {} utworzony. Tworznie jego atrybutów.", userName);
-
-                User finalUser = user;
-                this.pageFieldsConfigFilter.getPageFields().forEach(field -> {
-                    UserPageAttribute pageAttribute = UserPageAttribute.builder()
-                            .attributeName(field.name())
-                            .attributeValue("")
-                            .createdAt(LocalDateTime.now())
-                            .updatedAt((LocalDateTime.now()))
-                            .user(finalUser)
-                            .build();
-                    finalUser.addAttribute(pageAttribute);
-                });
-
-                this.userRepository.save(user);
-
-                log.info("Atrybuty użytkownika {} utworzono.", userName);
-
-            } else {
-
-                log.info("Naprawiam atrybuty użytkownika {}.", userName);
-
-                User finalUser = user;
-                this.pageFieldsConfigFilter.getPageFields().forEach( field -> {
-                   if(!finalUser.isAttributePresent(field.name())) {
-                       UserPageAttribute pageAttribute = UserPageAttribute.builder()
-                               .attributeName(field.name())
-                               .attributeValue("")
-                               .createdAt(LocalDateTime.now())
-                               .updatedAt((LocalDateTime.now()))
-                               .user(finalUser)
-                               .build();
-                       finalUser.addAttribute(pageAttribute);
-                   }
-                });
-
-                this.userRepository.save(user);
-
-                log.info("Atrybuty użytkownika {} naprawiono.", userName);
-
-            }
-
-        } catch(Exception e) {
-            log.error(e.toString());
-        }
-
-        return userRepository.findByIdWithAttributes(userName)
-                .orElseThrow(() -> new UserNotFoundException("User not found."));
-        */
     }
 
     @Transactional
