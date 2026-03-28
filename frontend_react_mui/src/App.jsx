@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom'
 import Blog from '../blog/Blog.jsx'
 import UI from './UI.jsx'
 import UserInfoComponent from './UserInfoComponent.jsx';
+import UserInfoComponentFieldSettings from './UserInfoComponentFieldSettings.jsx';
 import EditUserInfoComponent from './EditUserInfoComponent.jsx'
 
 function getUserInfo(keycloak, dispatch) {
@@ -45,7 +46,7 @@ function Main() {
 function Info() {
   const userInfo = useSelector(state => state.example.userInfo);
   return <UI>
-     <UserInfoComponent userInfo={userInfo}  />
+     <UserInfoComponentFieldSettings userInfo={userInfo}  />
   </UI>
 }
 
