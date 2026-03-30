@@ -52,9 +52,13 @@ http://localhost:5173
 
 ## w aplikacji frontend_react_mui uruchomić:
 
+npm install
+
+### potem:
+
 npm run dev
 
-## lub:
+### lub:
 
 npm run build
 
