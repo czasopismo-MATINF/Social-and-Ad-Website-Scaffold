@@ -17,6 +17,7 @@ import UI from './UI.jsx'
 import UserInfoComponent from './UserInfoComponent.jsx';
 import UserInfoComponentFieldSettings from './UserInfoComponentFieldSettings.jsx';
 import EditUserInfoComponent from './EditUserInfoComponent.jsx'
+import EditUserInfoComponentFieldSettings from './EditUserInfoComponentFieldSettings.jsx'
 
 function getUserInfo(keycloak, dispatch) {
     console.log("GETTING USER INFO");
@@ -50,7 +51,21 @@ function Info() {
   </UI>
 }
 
+function InfoRaw() {
+  const userInfo = useSelector(state => state.example.userInfo);
+  return <UI>
+     <UserInfoComponent userInfo={userInfo}  />
+  </UI>
+}
+
 function Edit() {
+  const userInfo = useSelector(state => state.example.userInfo);
+  return <UI>
+    <EditUserInfoComponentFieldSettings />
+  </UI>
+}
+
+function EditRaw() {
   const userInfo = useSelector(state => state.example.userInfo);
   return <UI>
     <EditUserInfoComponent />
@@ -128,7 +143,9 @@ function App() {
 
         <Route path="/" element={<Main />} />
         <Route path="/info" element={<Info />} />
+        <Route path="/inforaw" element={<InfoRaw />} />
         <Route path="/edit" element={<Edit />} />
+        <Route path="/editraw" element={<EditRaw />} />
 
         <Route path="/dashboard">
           <Route index element={<Blog />} />
