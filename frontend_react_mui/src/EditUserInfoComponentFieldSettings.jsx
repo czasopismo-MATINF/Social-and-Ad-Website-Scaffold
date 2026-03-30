@@ -7,13 +7,62 @@ import keycloak from "./keycloak.js";
 import { useSelector, useDispatch } from 'react-redux'
 import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected } from '../store/slice.js'
 
-import { MenuItem, OutlinedInput, Select, Button, TextField, Box, Stack, Typography } from '@mui/material'
+import { Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, OutlinedInput, Select, Button, TextField, Box, Stack, Typography } from '@mui/material'
 
 import userEditPageConfig from './userEditPageConfig.jsx'
 
 import { useTheme } from '@mui/material/styles';
 
-function MultipleSelect(props) {
+function MultiLineDialogEdit(props) {
+
+  const [open, setOpen] = useState(false)
+  const [text, setText] = useState(props.attr && props.attr.attributeValue ? props.attr.attributeValue : '');
+
+  const handleTextChange = (event) => {
+    setText(event.target.value);
+  };
+  const handleOpen = () => {
+    setOpen(true)
+  }
+  const handleClose = (event, reason) => {
+    // jeśli chcesz zablokować zamykanie kliknięciem poza dialog
+    // if (reason === 'backdropClick') return
+    setOpen(false);
+    props.handleAttributeChange(props.attr.attributeName, text);
+  }
+  const handleCancel = (event, reason) => {
+    setOpen(false);
+  }
+
+  return (
+    <>
+      <Button variant="outlined" onClick={handleOpen}>
+        {props.attr && props.attr.attributeValue ? props.attr.attributeValue.substr(0, 20) + (props.attr.attributeValue.length > 20 ? '...' : '') : 'Brak danych'}
+      </Button>
+      <Dialog open={open} onClose={(e,r)=>{setOpen(false);}}>
+        <DialogTitle>{props.attrConfig.attributeDisplayName}</DialogTitle>
+        <TextField
+          label={props.attrConfig.attributeDisplayName}
+          multiline
+          onChange={handleTextChange}
+          value = {text}
+          minRows={4}
+          maxRows={10}
+        />
+        <DialogActions>
+          <Button onClick={handleCancel} variant="contained">
+            Cancel
+          </Button>
+          <Button onClick={handleClose} variant="contained">
+            Zapisz
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  )
+}
+
+function MultiChoiceComponentEdit(props) {
  
   const { attrConfig, attr, handleAttributeChange } = props;
 
@@ -76,7 +125,10 @@ function DefaultEditComponent(props) {
 
 function getDisplayComponent(attrConfig, attr, handleAttributeChange) {
   if (Object.prototype.hasOwnProperty.call(attrConfig, 'multichoice')) {
-    return <MultipleSelect attrConfig={attrConfig} attr={attr} handleAttributeChange={handleAttributeChange} />
+    return <MultiChoiceComponentEdit attrConfig={attrConfig} attr={attr} handleAttributeChange={handleAttributeChange} />
+  }
+  if(Object.prototype.hasOwnProperty.call(attrConfig, 'multiline')) {
+    return <MultiLineDialogEdit attrConfig={attrConfig} attr={attr} handleAttributeChange={handleAttributeChange} />
   }
   return <DefaultEditComponent attrConfig={attrConfig} attr={attr} handleAttributeChange={handleAttributeChange} />
 }
