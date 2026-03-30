@@ -1,0 +1,40 @@
+openapi: 3.0.0
+info:
+  title: Ad API
+  version: 1.0.0
+
+paths:
+  /ads/manage/{adid}:
+    parameters:
+      - name: adid
+        in: path
+        required: true
+        description: Unique ad id.
+        schema:
+          type: integer
+          format: int32
+    get:
+      summary: Get ad with {id}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdPage'
+components:
+  schemas:
+    AdPage:
+      type: object
+      description: Ad with title, content.
+      properties:
+        title:
+          type: string
+          description: Ad title.
+          example: "Red car with trailer ..."
+        content:
+          type: string
+          description: Ad content.
+          example: "I'd like to sell ... "
+
+
