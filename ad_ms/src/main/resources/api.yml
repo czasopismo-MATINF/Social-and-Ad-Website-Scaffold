@@ -17,6 +17,14 @@ paths:
   /ads:
     get:
       summary: Search for ads with specified parameters.
+      parameters:
+         - name: userId
+           in: query
+           description: Filter ads by user ID.
+           required: false
+           schema:
+             type: string
+             format: uuid
       responses:
         200:
           description: OK
@@ -46,8 +54,8 @@ paths:
         required: true
         description: Unique ad id.
         schema:
-          type: integer
-          format: int32
+          type: string
+          format: uuid
     get:
       summary: Get ad with {id}.
       responses:
@@ -87,16 +95,18 @@ components:
       description: Ad with ad id, title, content.
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         title:
           type: string
         content:
           type: string
         category_id:
-          type: integer
+          type: string
+          format: uuid
     AdPageRequest:
       type: object
-      description: Ad with ad id, title, content.
+      description: New ad with ad title, content.
       required:
         - title
         - content
@@ -122,6 +132,7 @@ components:
       description: Category with id, description.
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         description:
           type: String
