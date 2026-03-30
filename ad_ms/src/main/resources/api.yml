@@ -20,6 +20,25 @@ paths:
       responses:
         200:
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdPages'
+    post:
+      summary: Create a new ad.
+      requestBody:
+        description: Title and content for new ad.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdPageRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdPage'
   /ads/{id}:
     parameters:
       - name: id
@@ -52,20 +71,17 @@ paths:
       responses:
         204:
           description: No content
-    post:
-      summary: Create a new ad.
-      requestBody:
-        description: Title and content for new ad.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdPageRequest'
-      responses:
-        200:
-          description: OK
 
 components:
   schemas:
+    AdPages:
+      type: object
+      description: Object with ads.
+      properties:
+        ads:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdPage'
     AdPage:
       type: object
       description: Ad with ad id, title, content.
@@ -76,6 +92,8 @@ components:
           type: string
         content:
           type: string
+        category_id:
+          type: integer
     AdPageRequest:
       type: object
       description: Ad with ad id, title, content.
