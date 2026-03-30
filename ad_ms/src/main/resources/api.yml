@@ -4,9 +4,25 @@ info:
   version: 1.0.0
 
 paths:
-  /ads/manage/{adid}:
+  /categories:
+    get:
+      summary: Get all ad categories with descriptions.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoriesPage'
+  /ads:
+    get:
+      summary: Search for ads with specified parameters.
+      responses:
+        200:
+          description: OK
+  /ads/{id}:
     parameters:
-      - name: adid
+      - name: id
         in: path
         required: true
         description: Unique ad id.
@@ -14,19 +30,58 @@ paths:
           type: integer
           format: int32
     get:
-      summary: Get ad with {id}
+      summary: Get ad with {id}.
       responses:
-        '200':
+        200:
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdPage'
+    put:
+      summary: Update ad with {id}.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdPage'
+    delete:
+      summary: Delete ad with {id}.
+      responses:
+        204:
+          description: No content
+    post:
+      summary: Create a new ad.
+      requestBody:
+        description: Title and content for new ad.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdPageRequest'
+      responses:
+        200:
+          description: OK
+
 components:
   schemas:
     AdPage:
       type: object
-      description: Ad with title, content.
+      description: Ad with ad id, title, content.
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+    AdPageRequest:
+      type: object
+      description: Ad with ad id, title, content.
+      required:
+        - title
+        - content
       properties:
         title:
           type: string
@@ -36,5 +91,19 @@ components:
           type: string
           description: Ad content.
           example: "I'd like to sell ... "
-
-
+    CategoriesPage:
+      type: object
+      description: Object with all categories as field categories.
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryPage'
+    CategoryPage:
+      type: object
+      description: Category with id, description.
+      properties:
+        id:
+          type: integer
+        description:
+          type: String
