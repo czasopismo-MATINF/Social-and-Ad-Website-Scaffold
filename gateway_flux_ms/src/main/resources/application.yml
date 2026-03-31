@@ -34,7 +34,7 @@ spring:
             - id: ads-service
               uri: http://social-ad-ms:8080
               predicates:
-                - Path=/ads/**
+                - Path=/ads/**, /categories/**
               filters:
                 - RemoveRequestHeader=Cookie
 

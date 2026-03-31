@@ -8,7 +8,7 @@ import java.time.ZoneOffset;
 
 public class AdMapper {
 
-    public static AdPage toDto(Ad ad) {
+    public static AdPage toReturnType(Ad ad) {
         AdPage adPage = new AdPage();
         adPage.id(ad.getId()).category(ad.getCategoryId()).user(ad.getUserId()).title(ad.getTitle()).content(ad.getContent())
                 .createdAt(ad.getCreatedAt()).updatedAt(ad.getUpdatedAt());
@@ -24,4 +24,5 @@ public class AdMapper {
                 .build();
 
     }
+
 }

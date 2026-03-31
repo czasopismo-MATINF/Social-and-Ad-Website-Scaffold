@@ -57,7 +57,7 @@ public class AdsController implements AdsApi {
         if(ad.isEmpty()) {
             throw new AdNotFoundException(String.format("Ad not found exception.", id));
         }
-        return ResponseEntity.ok(AdMapper.toDto(ad.get()));
+        return ResponseEntity.ok(AdMapper.toReturnType(ad.get()));
     }
 
     @Override
@@ -73,7 +73,7 @@ public class AdsController implements AdsApi {
             throw new RuntimeException(ex.getMessage());
         }
         log.info("User {} updatuje ogłoszenie {}.", userFeignDto.uuid(), id);
-        return ResponseEntity.ok(AdMapper.toDto(this.adService.updateAd(id, userFeignDto.uuid(), adPageRequest)));
+        return ResponseEntity.ok(AdMapper.toReturnType(this.adService.updateAd(id, userFeignDto.uuid(), adPageRequest)));
     }
 
     @Override
@@ -89,6 +89,6 @@ public class AdsController implements AdsApi {
             throw new RuntimeException(ex.getMessage());
         }
         log.info("User {} dodaje nowe ogłoszenie.", userFeignDto.uuid());
-        return ResponseEntity.ok(AdMapper.toDto(this.adService.createAd(userFeignDto.uuid(), adPageRequest)));
+        return ResponseEntity.ok(AdMapper.toReturnType(this.adService.createAd(userFeignDto.uuid(), adPageRequest)));
     }
 }

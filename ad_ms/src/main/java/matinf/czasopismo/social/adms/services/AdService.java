@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import matinf.czasopismo.social.adms.data.Ad;
 import matinf.czasopismo.social.adms.data.AdRepository;
+import matinf.czasopismo.social.adms.data.Category;
+import matinf.czasopismo.social.adms.data.CategoryRepository;
 import matinf.czasopismo.social.adms.exceptions.AdNotFoundException;
 import matinf.czasopismo.social.adms.exceptions.UserNotAuthorizedException;
 import matinf.czasopismo.social.adms.model.AdPageRequest;
@@ -13,6 +15,7 @@ import matinf.czasopismo.social.adms.mappers.AdMapper;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,6 +25,7 @@ import java.util.UUID;
 public class AdService {
 
     private final AdRepository adRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public Ad createAd(UUID userUUID, AdPageRequest adPageRequest) {
@@ -62,5 +66,10 @@ public class AdService {
         ad.get().setCategoryId(adPageRequest.getCategory());
         ad.get().setUpdatedAt(OffsetDateTime.now(ZoneOffset.UTC));
         return ad.get();
+    }
+
+    @Transactional
+    public List<Category> getAllCategories() {
+        return this.categoryRepository.findAll();
     }
 }
