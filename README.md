@@ -10,7 +10,7 @@ docker build -t gateway_ms:latest .
 
 docker build -t mainpage_ms:latest .
 
-docker build -t ad_ms:latest
+docker build -t ad_ms:latest .
 
 ### w katalogu docker-compose dodać katalogi (uważać na uprawnienia):
 
