@@ -26,6 +26,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(AdNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleAdNotFoundException(AdNotFoundException ex) {
+        log.info("Jestem w metodzie: {}", new Object() {}.getClass().getEnclosingMethod().getName());
+        log.error(ex.toString());
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                Instant.now().atOffset(ZoneOffset.UTC)
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
         log.info("Jestem w metodzie: {}", new Object() {}.getClass().getEnclosingMethod().getName());

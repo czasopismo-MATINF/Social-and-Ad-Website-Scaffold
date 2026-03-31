@@ -9,6 +9,7 @@ import matinf.czasopismo.social.adms.model.AdPageRequest;
 import org.springframework.stereotype.Service;
 import matinf.czasopismo.social.adms.mappers.AdMapper;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,6 +24,11 @@ public class AdService {
         Ad ad = AdMapper.createEmptyAd(adPageRequest);
         ad.setUserId(userUUID);
         return this.adRepository.save(ad);
+    }
+
+    @Transactional
+    public Optional<Ad> getAdById(UUID id) {
+       return this.adRepository.findById(id);
     }
 
 }

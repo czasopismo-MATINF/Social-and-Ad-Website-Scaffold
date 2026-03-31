@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import matinf.czasopismo.social.adms.api.AdsApi;
 import matinf.czasopismo.social.adms.beans.AdPageRequestValidator;
+import matinf.czasopismo.social.adms.data.Ad;
 import matinf.czasopismo.social.adms.data.UserFeignDto;
 import matinf.czasopismo.social.adms.exceptions.AdPagePostValidatorFailureException;
 import matinf.czasopismo.social.adms.model.AdPage;
@@ -15,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import matinf.czasopismo.social.adms.mappers.AdMapper;
 import matinf.czasopismo.social.adms.services.AdService;
+import matinf.czasopismo.social.adms.exceptions.AdNotFoundException;
+
+import java.util.Optional;
 import java.util.UUID;
 import matinf.czasopismo.social.adms.feign.UserFeignClient;
 
@@ -40,7 +44,11 @@ public class AdsController implements AdsApi {
 
     @Override
     public ResponseEntity<AdPage> adsIdGet(UUID id) {
-        return AdsApi.super.adsIdGet(id);
+        Optional<Ad> ad = this.adService.getAdById(id);
+        if(ad.isEmpty()) {
+            throw new AdNotFoundException(String.format("Ad not found exception {}.", id));
+        }
+        return ResponseEntity.ok(AdMapper.toDto(ad.get()));
     }
 
     @Override
