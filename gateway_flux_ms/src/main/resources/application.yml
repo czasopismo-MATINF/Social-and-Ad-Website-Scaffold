@@ -31,6 +31,12 @@ spring:
                 - Path=/users/**
               filters:
                 - RemoveRequestHeader=Cookie
+            - id: ads-service
+              uri: http://social-ad-ms:8080
+              predicates:
+                - Path=/ads/**
+              filters:
+                - RemoveRequestHeader=Cookie
 
 server:
   port: 3020

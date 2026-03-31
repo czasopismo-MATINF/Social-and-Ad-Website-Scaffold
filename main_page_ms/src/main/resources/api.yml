@@ -102,7 +102,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+  /internal/users/{username}:
+    get:
+      summary: Get user info page by username
+      description: >
+        Returns the user info page for a given username.
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Unique username of the user within the realm.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User info page data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfoPage'
 components:
   schemas:
     UserPage:
@@ -168,4 +186,18 @@ components:
           type: integer
         max:
           type: integer
-
+    UserInfoPage:
+      type: object
+      description: User info page for internal communication.
+      properties:
+        name:
+          type: string
+          description: Name of the user.
+          example: "userName"
+        uuid:
+          type: string
+          format: uuid
+          description: UUID value of the user.
+      required:
+        - name
+        - uuid

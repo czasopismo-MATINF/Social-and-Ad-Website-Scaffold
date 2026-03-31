@@ -92,7 +92,7 @@ components:
             $ref: '#/components/schemas/AdPage'
     AdPage:
       type: object
-      description: Ad with ad id, title, content.
+      description: Ad with ad id, title, content, category_id.
       properties:
         id:
           type: string
@@ -110,15 +110,22 @@ components:
       required:
         - title
         - content
+        - category
       properties:
         title:
           type: string
           description: Ad title.
           example: "Red car with trailer ..."
+          minLength: 1
         content:
           type: string
           description: Ad content.
           example: "I'd like to sell ... "
+          minLength: 1
+        category:
+          type: string
+          format: uuid
+          description: Category id.
     CategoriesPage:
       type: object
       description: Object with all categories as field categories.
@@ -136,3 +143,21 @@ components:
           format: uuid
         description:
           type: String
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - message
+        - timestamp
+      properties:
+        status:
+          type: integer
+          format: int32
+          example: 404
+        message:
+          type: string
+          example: Ad not found
+        timestamp:
+          type: string
+          format: date-time
+          example: 2026-03-20T14:48:00Z
