@@ -20,6 +20,6 @@ public class InternalController implements InternalApi {
     @Override
     public ResponseEntity<UserInfoPage> internalUsersUsernameGet(String username) {
         User user = this.userPageService.getUserWithAttributes(username);
-        return ResponseEntity.ok(InternalMapper.toDto(user));
+        return ResponseEntity.ok(InternalMapper.toReturnType(user));
     }
 }
