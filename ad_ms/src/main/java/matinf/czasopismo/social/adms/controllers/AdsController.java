@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import matinf.czasopismo.social.adms.api.AdsApi;
 import matinf.czasopismo.social.adms.beans.AdPageRequestValidator;
-import matinf.czasopismo.social.adms.data.UserDto;
+import matinf.czasopismo.social.adms.data.UserFeignDto;
 import matinf.czasopismo.social.adms.exceptions.AdPagePostValidatorFailureException;
 import matinf.czasopismo.social.adms.model.AdPage;
 import matinf.czasopismo.social.adms.model.AdPageRequest;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import matinf.czasopismo.social.adms.mappers.AdMapper;
 import matinf.czasopismo.social.adms.services.AdService;
 import java.util.UUID;
-import matinf.czasopismo.social.adms.feign.UserClient;
+import matinf.czasopismo.social.adms.feign.UserFeignClient;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +25,7 @@ public class AdsController implements AdsApi {
     private final HttpServletRequest request;
     private final AdPageRequestValidator adPageRequestValidator;
     private final AdService adService;
-    private final UserClient userClient;
+    private final UserFeignClient userClient;
 
     @Override
     public ResponseEntity<AdPages> adsGet(UUID userId) {
@@ -51,11 +51,11 @@ public class AdsController implements AdsApi {
     public ResponseEntity<AdPage> adsPost(AdPageRequest adPageRequest) {
         String user = request.getHeader("X-Username");
         if(!this.adPageRequestValidator.isValid(adPageRequest)) {
-            throw new AdPagePostValidatorFailureException(String.format("Title or content not long enough."));
+            throw new AdPagePostValidatorFailureException(String.format("Ad title or content not long enough."));
         }
-        UserDto userDto = this.userClient.getUser(user);
-        log.info("User {} dodaje nowe ogłoszenie.", userDto.uuid());
+        UserFeignDto userFeignDto = this.userClient.getUser(user);
+        log.info("User {} dodaje nowe ogłoszenie.", userFeignDto.uuid());
         //obsłużyc wyjątki feign
-        return ResponseEntity.ok(AdMapper.toDto(this.adService.createAd(userDto.uuid(), adPageRequest)));
+        return ResponseEntity.ok(AdMapper.toDto(this.adService.createAd(userFeignDto.uuid(), adPageRequest)));
     }
 }

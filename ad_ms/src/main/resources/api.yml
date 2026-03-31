@@ -18,7 +18,7 @@ paths:
     get:
       summary: Search for ads with specified parameters.
       parameters:
-         - name: userId
+         - name: user
            in: query
            description: Filter ads by user ID.
            required: false
@@ -33,9 +33,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/AdPages'
     post:
-      summary: Create a new ad.
+      summary: Create a new ad for a logged in user.
       requestBody:
-        description: Title and content for new ad.
+        description: Title, content, category for the new ad.
         content:
           application/json:
             schema:
@@ -84,7 +84,7 @@ components:
   schemas:
     AdPages:
       type: object
-      description: Object with ads.
+      description: Object with ads in field ads.
       properties:
         ads:
           type: array
@@ -92,7 +92,7 @@ components:
             $ref: '#/components/schemas/AdPage'
     AdPage:
       type: object
-      description: Ad with ad id, title, content, category_id.
+      description: Ad with ad id, title, content, category id, user id.
       properties:
         id:
           type: string
@@ -101,12 +101,15 @@ components:
           type: string
         content:
           type: string
-        category_id:
+        category:
+          type: string
+          format: uuid
+        user:
           type: string
           format: uuid
     AdPageRequest:
       type: object
-      description: New ad with ad title, content.
+      description: New ad with ad title, content, category.
       required:
         - title
         - content

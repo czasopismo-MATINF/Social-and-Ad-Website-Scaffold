@@ -1,6 +1,6 @@
 package matinf.czasopismo.social.adms.feign;
 
-import matinf.czasopismo.social.adms.data.UserDto;
+import matinf.czasopismo.social.adms.data.UserFeignDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
         name = "user-service",
         url = "${user.service.url}" // opcjonalne, jeśli nie używasz service discovery
 )
-public interface UserClient {
+public interface UserFeignClient {
 
     @GetMapping("/internal/users/{userName}")
-    UserDto getUser(@PathVariable String userName);
+    UserFeignDto getUser(@PathVariable String userName);
+
 }

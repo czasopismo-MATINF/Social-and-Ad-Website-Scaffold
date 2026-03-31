@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
         log.error(ex.toString());
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                "Title or content not long enough",
+                "Ad title or content not long enough",
                 Instant.now().atOffset(ZoneOffset.UTC)
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);

@@ -12,7 +12,7 @@ public class AdMapper {
 
     public static AdPage toDto(Ad ad) {
         AdPage adPage = new AdPage();
-        adPage.id(ad.getId()).categoryId(ad.getCategoryId()).title(ad.getTitle()).content(ad.getContent());
+        adPage.id(ad.getId()).category(ad.getCategoryId()).user(ad.getUserId()).title(ad.getTitle()).content(ad.getContent());
         return adPage;
     }
 
