@@ -39,14 +39,23 @@ public class AdsController implements AdsApi {
 
     @Override
     public ResponseEntity<Void> adsIdDelete(UUID id) {
-        return AdsApi.super.adsIdDelete(id);
+        String user = request.getHeader("X-Username");
+        UserFeignDto userFeignDto;
+        try {
+            userFeignDto = this.userClient.getUser(user);
+        } catch (FeignException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+        log.info("User {} chce usunąć ogłoszenie {}.", userFeignDto.uuid(), id);
+        this.adService.deleteAd(id, userFeignDto.uuid());
+        return ResponseEntity.noContent().build();
     }
 
     @Override
     public ResponseEntity<AdPage> adsIdGet(UUID id) {
         Optional<Ad> ad = this.adService.getAdById(id);
         if(ad.isEmpty()) {
-            throw new AdNotFoundException(String.format("Ad not found exception {}.", id));
+            throw new AdNotFoundException(String.format("Ad not found exception.", id));
         }
         return ResponseEntity.ok(AdMapper.toDto(ad.get()));
     }
@@ -62,12 +71,13 @@ public class AdsController implements AdsApi {
         if(!this.adPageRequestValidator.isValid(adPageRequest)) {
             throw new AdPagePostValidatorFailureException(String.format("Ad title or content not long enough."));
         }
-        UserFeignDto userFeignDto = this.userClient.getUser(user);
+        UserFeignDto userFeignDto;
         try {
-            log.info("User {} dodaje nowe ogłoszenie.", userFeignDto.uuid());
+            userFeignDto = this.userClient.getUser(user);
         } catch (FeignException ex) {
             throw new RuntimeException(ex.getMessage());
         }
+        log.info("User {} dodaje nowe ogłoszenie.", userFeignDto.uuid());
         return ResponseEntity.ok(AdMapper.toDto(this.adService.createAd(userFeignDto.uuid(), adPageRequest)));
     }
 }

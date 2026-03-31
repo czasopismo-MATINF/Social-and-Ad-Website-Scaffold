@@ -79,6 +79,12 @@ paths:
       responses:
         204:
           description: No content
+        '401':
+          description: "Unauthorized attempt to update someone else's data."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
