@@ -107,6 +107,14 @@ components:
         user:
           type: string
           format: uuid
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the entity was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the entity was last updated
     AdPageRequest:
       type: object
       description: New ad with ad title, content, category.

@@ -76,8 +76,8 @@ CREATE TABLE IF NOT EXISTS ads (
     user_id UUID NOT NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 BEGIN;
