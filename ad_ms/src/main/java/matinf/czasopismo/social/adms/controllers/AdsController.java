@@ -11,13 +11,17 @@ import matinf.czasopismo.social.adms.data.UserFeignDto;
 import matinf.czasopismo.social.adms.exceptions.AdPagePostValidatorFailureException;
 import matinf.czasopismo.social.adms.model.AdPage;
 import matinf.czasopismo.social.adms.model.AdPageRequest;
-import matinf.czasopismo.social.adms.model.AdPages;
+import matinf.czasopismo.social.adms.model.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import matinf.czasopismo.social.adms.mappers.AdMapper;
 import matinf.czasopismo.social.adms.services.AdService;
 import matinf.czasopismo.social.adms.exceptions.AdNotFoundException;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import matinf.czasopismo.social.adms.feign.UserFeignClient;
@@ -32,9 +36,69 @@ public class AdsController implements AdsApi {
     private final AdService adService;
     private final UserFeignClient userClient;
 
+    private Sort parseSort(List<String> sortParams) {
+        if (sortParams == null || sortParams.isEmpty()) {
+            return Sort.unsorted();
+        }
+        List<Sort.Order> orders = sortParams.stream()
+                .map(param -> {
+                    String[] parts = param.split(",");
+                    String property = parts[0];
+                    Sort.Direction direction = parts.length > 1
+                            ? Sort.Direction.fromString(parts[1])
+                            : Sort.Direction.ASC;
+                    return new Sort.Order(direction, property);
+                })
+                .toList();
+
+        return Sort.by(orders);
+    }
+
+    /*
     @Override
-    public ResponseEntity<AdPages> adsGet(UUID userId) {
-        return AdsApi.super.adsGet(userId);
+    public ResponseEntity<Page> adsGet(Integer page, Integer size, List<String> sort, UUID user) {
+        Pageable pageable = PageRequest.of(
+                page != null ? page : 0,
+                size != null ? size : 20,
+                parseSort(sort)
+        );
+        Page<?> result = adService
+                .getAds(pageable, page, size, sort, user)
+                .map(AdMapper::toReturnType);
+
+        return ResponseEntity.ok(result);
+    }
+    */
+
+    @Override
+    public ResponseEntity<Page> adsGet(Integer page, Integer size, List<String> sort, UUID user) {
+
+        Pageable pageable = PageRequest.of(
+                page != null ? page : 0,
+                size != null ? size : 20,
+                parseSort(sort)
+        );
+
+        org.springframework.data.domain.Page<Ad> springPage = adService.getAds(pageable, page, size, sort, user);
+
+        List<AdPage> mappedContent = springPage
+                .getContent()
+                .stream()
+                .map(AdMapper::toReturnType)
+                .toList();
+
+        Page apiPage = new Page();
+        apiPage.setContent(mappedContent);
+        apiPage.setTotalElements(springPage.getTotalElements());
+        apiPage.setTotalPages(springPage.getTotalPages());
+        apiPage.setSize(springPage.getSize());
+        apiPage.setNumber(springPage.getNumber());
+        apiPage.setFirst(springPage.isFirst());
+        apiPage.setLast(springPage.isLast());
+        apiPage.setNumberOfElements(springPage.getNumberOfElements());
+        apiPage.setEmpty(springPage.isEmpty());
+
+        return ResponseEntity.ok(apiPage);
     }
 
     @Override

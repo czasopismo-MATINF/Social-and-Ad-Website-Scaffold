@@ -10,6 +10,9 @@ import matinf.czasopismo.social.adms.data.CategoryRepository;
 import matinf.czasopismo.social.adms.exceptions.AdNotFoundException;
 import matinf.czasopismo.social.adms.exceptions.UserNotAuthorizedException;
 import matinf.czasopismo.social.adms.model.AdPageRequest;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import matinf.czasopismo.social.adms.mappers.AdMapper;
 
@@ -71,5 +74,12 @@ public class AdService {
     @Transactional
     public List<Category> getAllCategories() {
         return this.categoryRepository.findAll();
+    }
+
+    @Transactional
+    public Page<Ad> getAds(Pageable pageable, Integer page, Integer size, List<String> sort, UUID user) {
+
+        return this.adRepository.findByUserId(user, pageable);
+
     }
 }
