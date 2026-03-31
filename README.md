@@ -1,6 +1,6 @@
 # Zbudowanie i uruchomienie aplikacji:
 
-## Otworzenie projektów gateway_flux_ms i mainpage_ms i uruchomienie w każym z nich:
+## Otworzenie projektów gateway_flux_ms i mainpage_ms i ad_ms i uruchomienie w każym z nich:
 
 mvn clean install -DskipTests
 
@@ -9,6 +9,8 @@ mvn clean install -DskipTests
 docker build -t gateway_ms:latest .
 
 docker build -t mainpage_ms:latest .
+
+docker build -t ad_ms:latest
 
 ### w katalogu docker-compose dodać katalogi (uważać na uprawnienia):
 
@@ -69,4 +71,6 @@ npx vite
 ### wejść na stronę:
 
 http://localhost:5173
+
+(hasła i użytkownicy do pgadmina(pgadmin@example.com,pgadminpassword), adminera(pguser,pgpassword), grafany(admin,admin), kafki ui, keycloaka(admin,admin) admina odczytać z pliku docker-compose.yml i tam sprawdzić.)
 
