@@ -1,5 +1,6 @@
 package matinf.czasopismo.social.adms.controllers;
 
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,8 +55,11 @@ public class AdsController implements AdsApi {
             throw new AdPagePostValidatorFailureException(String.format("Ad title or content not long enough."));
         }
         UserFeignDto userFeignDto = this.userClient.getUser(user);
-        log.info("User {} dodaje nowe ogłoszenie.", userFeignDto.uuid());
-        //obsłużyc wyjątki feign
+        try {
+            log.info("User {} dodaje nowe ogłoszenie.", userFeignDto.uuid());
+        } catch (FeignException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
         return ResponseEntity.ok(AdMapper.toDto(this.adService.createAd(userFeignDto.uuid(), adPageRequest)));
     }
 }
