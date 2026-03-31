@@ -4,11 +4,12 @@ import matinf.czasopismo.social.mainpagems.data.User;
 import matinf.czasopismo.social.mainpagems.model.UserPage;
 import matinf.czasopismo.social.mainpagems.model.UserPageAttribute;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 public class UserMapper {
 
-    public static UserPage toDto(User user) {
+    public static UserPage toReturnType(User user) {
         UserPage userPage = new UserPage();
         user.getAttributes().forEach(attr -> {
             userPage.addAttributesItem(new UserPageAttribute(attr.getAttributeName(), attr.getAttributeValue()));
@@ -19,8 +20,8 @@ public class UserMapper {
     public static User createEmptyModelUser(String username) {
         return User.builder()
                 .userName(username)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(OffsetDateTime.now(ZoneOffset.UTC))
+                .updatedAt(OffsetDateTime.now(ZoneOffset.UTC))
                 .build();
     }
 

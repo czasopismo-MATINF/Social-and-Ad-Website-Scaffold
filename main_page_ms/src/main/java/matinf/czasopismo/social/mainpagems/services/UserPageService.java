@@ -28,7 +28,6 @@ public class UserPageService {
 
     @Transactional
     public User getUserWithAttributesWithFieldsFilter(String username) {
-
         User user = this.getOrCreateUser(username);
         this.fixUserAttributes(user);
         this.userRepository.save(user);

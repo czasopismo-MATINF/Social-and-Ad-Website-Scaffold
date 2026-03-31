@@ -152,6 +152,13 @@ services:
     logging:
       driver: json-file
 
+  adms:
+    image: ad_ms:latest
+    container_name: social-ad-ms
+    restart: always
+    logging:
+      driver: json-file
+
 volumes:
   social-pgdata:
   social-pgadmindata:

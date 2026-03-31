@@ -1,13 +1,12 @@
-package matinf.czasopismo.social.mainpagems.data;
+package matinf.czasopismo.social.adms.data;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user_page_attributes")
+@Table(name = "ads")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,7 +14,7 @@ import java.util.UUID;
 @Builder
 @ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class UserPageAttribute {
+public class Ad {
 
     @Id
     @GeneratedValue
@@ -23,17 +22,21 @@ public class UserPageAttribute {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    @ToString.Exclude
-    private User user;
-
-    @Column(name = "attribute_name", nullable = false)
+    @Column(nullable = false)
     @ToString.Include
-    private String attributeName;
+    private String title;
 
-    @Column(name = "attribute_value", nullable = false)
-    private String attributeValue;
+    @Column(nullable = false)
+    @ToString.Include
+    private String content;
+
+    @Column(name="category_id", nullable = false)
+    @ToString.Include
+    private UUID categoryId;
+
+    @Column(name="user_id", nullable = false)
+    @ToString.Include
+    private UUID userId;
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;

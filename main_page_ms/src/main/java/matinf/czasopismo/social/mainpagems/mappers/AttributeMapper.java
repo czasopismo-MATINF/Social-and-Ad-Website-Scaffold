@@ -3,7 +3,8 @@ package matinf.czasopismo.social.mainpagems.mappers;
 import matinf.czasopismo.social.mainpagems.data.User;
 import matinf.czasopismo.social.mainpagems.data.UserPageAttribute;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 public class AttributeMapper {
 
@@ -15,13 +16,14 @@ public class AttributeMapper {
     }
 
     public static UserPageAttribute createModelAttribute(matinf.czasopismo.social.mainpagems.model.UserPageAttribute pageAttribute) {
-        return UserPageAttribute.builder().attributeName(pageAttribute.getAttributeName()).createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+        return UserPageAttribute.builder().attributeName(pageAttribute.getAttributeName())
+                .createdAt(OffsetDateTime.now(ZoneOffset.UTC))
+                .updatedAt(OffsetDateTime.now(ZoneOffset.UTC))
                 .attributeValue(pageAttribute.getAttributeValue()).build();
     }
 
     public static UserPageAttribute createEmptyModelAttribute(String attributeName) {
-        return UserPageAttribute.builder().createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).attributeName(attributeName).attributeValue("").build();
+        return UserPageAttribute.builder().createdAt(OffsetDateTime.now(ZoneOffset.UTC)).updatedAt(OffsetDateTime.now(ZoneOffset.UTC)).attributeName(attributeName).attributeValue("").build();
     }
 
 }

@@ -27,10 +27,10 @@ public class UsersAPIController implements UsersApi {
         String user = request.getHeader("X-Username");
         if(user != null && user.equals(username)) {
             log.info("Użytkownik {} z filtrowaniem pól szuka samego siebie.", user);
-            return ResponseEntity.ok(UserMapper.toDto((this.userPageService.getUserWithAttributesWithFieldsFilter(username))));
+            return ResponseEntity.ok(UserMapper.toReturnType((this.userPageService.getUserWithAttributesWithFieldsFilter(username))));
         } else {
             log.info("Zapytanie {} bez filtrowania pól szuka użytkownika {}.", user, username);
-            return ResponseEntity.ok(UserMapper.toDto((this.userPageService.getUserWithAttributes(username))));
+            return ResponseEntity.ok(UserMapper.toReturnType((this.userPageService.getUserWithAttributes(username))));
         }
     }
 
@@ -44,6 +44,6 @@ public class UsersAPIController implements UsersApi {
             log.info("Użytkownik {} nie jest autoryzowany do zmieniania danych użytkownika {}.", user, username);
             throw new UserNotAuthorizedException(String.format("User %s not authorized to change data for user %s.", user, username));
         }
-        return ResponseEntity.ok(UserMapper.toDto(this.userPageService.updateUser(username, userPage)));
+        return ResponseEntity.ok(UserMapper.toReturnType(this.userPageService.updateUser(username, userPage)));
     }
 }

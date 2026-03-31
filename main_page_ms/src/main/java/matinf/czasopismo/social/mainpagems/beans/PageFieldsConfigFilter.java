@@ -12,7 +12,7 @@ public class PageFieldsConfigFilter {
 
     public record PageFieldConfigRecord(String name, int min, int max) {}
 
-    private List<PageFieldConfigRecord> pageFields = List.of(
+    private final List<PageFieldConfigRecord> pageFields = List.of(
             new PageFieldConfigRecord("name", 0, 100),
             new PageFieldConfigRecord("last name", 0, 100),
             new PageFieldConfigRecord("phone", 0, 50),

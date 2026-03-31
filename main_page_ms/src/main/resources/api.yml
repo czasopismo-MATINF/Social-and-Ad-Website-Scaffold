@@ -6,13 +6,13 @@ info:
 paths:
   /test_response:
     get:
-      summary: Get test response
+      summary: Get test response.
       responses:
         '200':
           description: OK
   /page_fields_config:
     get:
-      summary: Get page fields config
+      summary: Get page fields config.
       responses:
         '200':
           description: User page fields config.
@@ -22,9 +22,8 @@ paths:
                 $ref: '#/components/schemas/PageFieldsConfig'
   /users/{username}:
     get:
-      summary: Get user page by username
-      description: >
-        Returns the user page for a given username.
+      summary: Get user page by username.
+      description: Returns the user page for a given username.
       parameters:
         - name: username
           in: path
@@ -32,35 +31,35 @@ paths:
           description: Unique username of the user within the realm.
           schema:
             type: string
-            minLength: 4
+            minLength: 1
             maxLength: 256
       responses:
         '200':
-          description: User page data
+          description: User page data.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserPage'
         '404':
-          description: User not found
+          description: User not found.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '400':
-          description: Bad request
+          description: Bad request.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Unexpected server error
+          description: Unexpected server error.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
-      summary: Update user page
+      summary: Update user page.
       description: Updates the user page attributes.
       parameters:
         - name: username
@@ -69,7 +68,7 @@ paths:
           description: Unique username of the user within the realm.
           schema:
             type: string
-            minLength: 4
+            minLength: 1
             maxLength: 256
       requestBody:
         required: true
@@ -79,30 +78,47 @@ paths:
               $ref: '#/components/schemas/UserPage'
       responses:
         '200':
-          description: User page updated successfully
+          description: User page updated successfully.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserPage'
         '400':
-          description: Invalid request body
+          description: Invalid request body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized attempt to update someone else's data
+          description: Unauthorized attempt to update someone else's data.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Unexpected server error
+          description: Unexpected server error.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+  /internal/users/{username}:
+    get:
+      summary: Get user info page by username.
+      description: Returns the user info page for a given username.
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: Unique username of the user within the realm.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User info page data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfoPage'
 components:
   schemas:
     UserPage:
@@ -116,6 +132,9 @@ components:
     UserPageAttribute:
       type: object
       description: Single attribute of the user page.
+      required:
+        - attributeName
+        - attributeValue
       properties:
         attributeName:
           type: string
@@ -125,10 +144,6 @@ components:
           type: string
           description: Value of the attribute.
           example: "userName"
-      required:
-        - attributeName
-        - attributeValue
-      additionalProperties: false
     ErrorResponse:
       type: object
       required:
@@ -150,6 +165,8 @@ components:
     PageFieldsConfig:
       type: object
       description: Page fields config.
+      required:
+        - attributes
       properties:
         attributes:
           type: array
@@ -158,14 +175,29 @@ components:
     PageField:
       type: object
       required:
-        - username
+        - name
         - min
         - max
       properties:
-        username:
+        name:
           type: string
         min:
           type: integer
         max:
           type: integer
+    UserInfoPage:
+      type: object
+      description: User info page for internal communication.
+      required:
+        - name
+        - uuid
+      properties:
+        name:
+          type: string
+          description: Name of the user.
+          example: "userName"
+        uuid:
+          type: string
+          format: uuid
+          description: UUID value of the user.
 
