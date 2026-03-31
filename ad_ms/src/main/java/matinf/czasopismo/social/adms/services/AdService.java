@@ -11,7 +11,8 @@ import matinf.czasopismo.social.adms.model.AdPageRequest;
 import org.springframework.stereotype.Service;
 import matinf.czasopismo.social.adms.mappers.AdMapper;
 
-import javax.swing.text.html.Option;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,5 +46,21 @@ public class AdService {
             throw new UserNotAuthorizedException("User not authorized in delete method.");
         }
         this.adRepository.delete(ad.get());
+    }
+
+    @Transactional
+    public Ad updateAd(UUID id, UUID uuid, AdPageRequest adPageRequest) {
+        Optional<Ad> ad = this.adRepository.findById(id);
+        if(ad.isEmpty()) {
+            throw new AdNotFoundException("Ad not found in update method.");
+        }
+        if(!ad.get().getUserId().equals(uuid)) {
+            throw new UserNotAuthorizedException("User not authorized in update method.");
+        }
+        ad.get().setTitle(adPageRequest.getTitle());
+        ad.get().setContent(adPageRequest.getContent());
+        ad.get().setCategoryId(adPageRequest.getCategory());
+        ad.get().setUpdatedAt(OffsetDateTime.now(ZoneOffset.UTC));
+        return ad.get();
     }
 }

@@ -14,6 +14,18 @@ import java.time.ZoneOffset;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(UserNotAuthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotAuthorized(UserNotAuthorizedException ex) {
+        log.info("Jestem w metodzie: {}", new Object() {}.getClass().getEnclosingMethod().getName());
+        log.error(ex.toString());
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                ex.getMessage(),
+                Instant.now().atOffset(ZoneOffset.UTC)
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
     @ExceptionHandler(AdPagePostValidatorFailureException.class)
     public ResponseEntity<ErrorResponse> handleTitleOrContentNotLongEnough(AdPagePostValidatorFailureException ex) {
         log.info("Jestem w metodzie: {}", new Object() {}.getClass().getEnclosingMethod().getName());

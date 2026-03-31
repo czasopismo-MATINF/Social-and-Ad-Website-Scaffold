@@ -61,8 +61,19 @@ public class AdsController implements AdsApi {
     }
 
     @Override
-    public ResponseEntity<AdPage> adsIdPut(UUID id) {
-        return AdsApi.super.adsIdPut(id);
+    public ResponseEntity<AdPage> adsIdPut(UUID id, AdPageRequest adPageRequest) {
+        String user = request.getHeader("X-Username");
+        if(!this.adPageRequestValidator.isValid(adPageRequest)) {
+            throw new AdPagePostValidatorFailureException(String.format("Ad title or content not long enough."));
+        }
+        UserFeignDto userFeignDto;
+        try {
+            userFeignDto = this.userClient.getUser(user);
+        } catch (FeignException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+        log.info("User {} updatuje ogłoszenie {}.", userFeignDto.uuid(), id);
+        return ResponseEntity.ok(AdMapper.toDto(this.adService.updateAd(id, userFeignDto.uuid(), adPageRequest)));
     }
 
     @Override

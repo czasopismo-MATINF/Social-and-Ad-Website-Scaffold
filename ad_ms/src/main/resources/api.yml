@@ -67,6 +67,12 @@ paths:
                 $ref: '#/components/schemas/AdPage'
     put:
       summary: Update ad with {id}.
+      requestBody:
+        description: Title, content, category for updated ad.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdPageRequest'
       responses:
         200:
           description: OK
