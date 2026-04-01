@@ -129,6 +129,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserPageAttribute'
+        id:
+          type: string
+          format: uuid
     UserPageAttribute:
       type: object
       description: Single attribute of the user page.

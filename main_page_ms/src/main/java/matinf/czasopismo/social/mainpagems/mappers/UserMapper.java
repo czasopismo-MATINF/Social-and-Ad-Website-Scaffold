@@ -11,6 +11,7 @@ public class UserMapper {
 
     public static UserPage toReturnType(User user) {
         UserPage userPage = new UserPage();
+        userPage.id(user.getId());
         user.getAttributes().forEach(attr -> {
             userPage.addAttributesItem(new UserPageAttribute(attr.getAttributeName(), attr.getAttributeValue()));
         });
