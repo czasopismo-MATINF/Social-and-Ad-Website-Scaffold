@@ -79,6 +79,8 @@ services:
     depends_on:
       - loki
       - prometheus
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
 
   pgkeycloack:
     image: postgres:17.9
