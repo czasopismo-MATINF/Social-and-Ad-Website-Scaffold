@@ -40,3 +40,11 @@ spring:
 
 server:
   port: 3020
+
+management:
+  server:
+    port: 3021
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,gateway
