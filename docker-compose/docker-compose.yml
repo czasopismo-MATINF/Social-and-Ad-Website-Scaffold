@@ -21,7 +21,7 @@ services:
       - ./initdb:/docker-entrypoint-initdb.d
 
   adminer:
-    image: adminer
+    image: adminer:5.4.2
     container_name: social-adminer
     ports:
       - 9101:8080
@@ -29,7 +29,7 @@ services:
       - pg
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:9.13.0
     container_name: social-pgadmin
     ports:
       - 9102:80
@@ -44,7 +44,7 @@ services:
       - pg
 
   loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.7
     container_name: social-loki
     volumes:
       - ./loki-config.yaml:/etc/loki/local-config.yaml
@@ -55,7 +55,7 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
 
   promtail:
-    image: grafana/promtail:latest
+    image: grafana/promtail:3.6
     container_name: social-promtail
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
@@ -66,13 +66,13 @@ services:
       - loki
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3
     container_name: social-prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:12.4
     container_name: social-grafana
     ports:
       - "9104:3000"
@@ -81,7 +81,7 @@ services:
       - prometheus
 
   pgkeycloack:
-    image: postgres:16
+    image: postgres:17.9
     container_name: social-keycloak-pg
     restart: always
     environment:
@@ -92,7 +92,7 @@ services:
       - social-pgdata-keycloack:/var/lib/postgresql/data
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.0.5
+    image: quay.io/keycloak/keycloak:26.5
     container_name: social-keycloak
     restart: always
     command:
@@ -133,7 +133,7 @@ services:
       KAFKA_NUM_PARTITIONS: 3
 
   kafkaui:
-    image: provectuslabs/kafka-ui
+    image: provectuslabs/kafka-ui:v0.7.2
     container_name: social-kafka-ui
     ports:
       - 9103:8080
