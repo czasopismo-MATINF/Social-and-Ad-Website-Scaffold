@@ -9,6 +9,8 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 
+import { useSearchParams } from "react-router-dom";
+
 import { useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux'
 import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, userAdsCollected } from '../../store/slice.js'
@@ -145,7 +147,10 @@ export default function EditAds() {
 
   const dispatch = useDispatch();
 
-  const [page, setPage] = React.useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialPage = Number(searchParams.get("page") ?? 1);
+
+  const [page, setPage] = React.useState(initialPage - 1);
   const [ads, setAds] = React.useState(null);
   
   useEffect(() => {
@@ -155,8 +160,11 @@ export default function EditAds() {
   }, [userInfo, page]);
 
   const handlePageChange = (_, value) => {
-    setPage(value - 1); // MUI -> Spring Data
+    setPage(value - 1); // MUI -> Spring 
+    setSearchParams({ page: value });
   };
+
+
 
   /*
   const [articleInfo, setArticleInfo] = React.useState([]);
