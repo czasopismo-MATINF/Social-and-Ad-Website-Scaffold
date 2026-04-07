@@ -30,7 +30,7 @@ const articleInfo = [
 ];
 */
 
-function getUserAds(keycloak, dispatch, userInfo, pageNumber, pageSize) {
+function getUserAds(keycloak, dispatch, userInfo, pageNumber, pageSize, setAds) {
     console.log("GETTING USER ADS");
     if(!keycloak.authenticated) {
       console.log("User not authenticated, skipping user info fetch");
@@ -45,6 +45,7 @@ function getUserAds(keycloak, dispatch, userInfo, pageNumber, pageSize) {
     }).then(res => res.json())
     .then(data => {
       console.log("USER ADS FETCHED", data);
+      setAds(data);
       dispatch(userAdsCollected(data));
     });
 
@@ -140,14 +141,22 @@ Author.propTypes = {
 export default function EditAds() {
 
   const userInfo = useSelector(state => state.example.userInfo);
-  const userAds = useSelector(state => state.example.userAds);
+  //const userAds = useSelector(state => state.example.userAds);
 
   const dispatch = useDispatch();
 
+  const [page, setPage] = React.useState(0);
+  const [ads, setAds] = React.useState(null);
+  
   useEffect(() => {
-    console.log("USER INFO UPDATED");
-    getUserAds(keycloak, dispatch, userInfo, 0, 4);
-  }, [userInfo]);
+    if (userInfo?.id) {
+        getUserAds(keycloak, dispatch, userInfo, page, 4, setAds);
+    }
+  }, [userInfo, page]);
+
+  const handlePageChange = (_, value) => {
+    setPage(value - 1); // MUI -> Spring Data
+  };
 
   /*
   const [articleInfo, setArticleInfo] = React.useState([]);
@@ -182,7 +191,7 @@ export default function EditAds() {
         Ogłoszenia użytkownika
       </Typography>
       <Grid container spacing={8} columns={12} sx={{ my: 4 }}>
-        {userAds?.content?.map((article, index) => (
+        {ads?.content?.map((article, index) => (
           <Grid key={index} size={{ xs: 12, sm: 6 }}>
             <Box
               sx={{
@@ -223,7 +232,13 @@ export default function EditAds() {
         ))}
       </Grid>
       <Box sx={{ display: 'flex', flexDirection: 'row', pt: 4 }}>
-        <Pagination hidePrevButton hideNextButton count={10} boundaryCount={10} />
+        <Pagination
+            page={(ads?.number ?? 0) + 1}      // Spring → MUI
+            count={ads?.totalPages ?? 1}       // liczba stron
+            onChange={handlePageChange}
+            color="primary"
+            boundaryCount={2}
+        />
       </Box>
     </div>
   );
