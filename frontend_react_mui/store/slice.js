@@ -6,6 +6,7 @@ const slice = createSlice({
     counter: 0,
     keycloakLoggedIn: false,
     userInfo : null,
+    userAds: null,
   },
   reducers: {
     increment: (state) => { state.counter++ },
@@ -13,8 +14,9 @@ const slice = createSlice({
     keycloakLoggedIn: (state) => { state.keycloakLoggedIn = true },
     keycloakLoggedOut: (state) => { state.keycloakLoggedIn = false },
     userInfoCollected: (state, action) => { state.userInfo = action.payload },
+    userAdsCollected: (state, action) => { state.userAds = action.payload },
   }
 })
 
-export const { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected } = slice.actions
+export const { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, userAdsCollected } = slice.actions
 export default slice.reducer
