@@ -99,7 +99,30 @@ const TitleTypography = styled(Typography)(({ theme }) => ({
   },
 }));
 
-function Author({ authors, updatedAt, article, navigate }) {
+function Author({ authors, updatedAt, article, navigate, dispatch, userInfo, pageNumber, pageSize, setAds}) {
+
+  const handleDelete = async (id) => {
+  try {
+    const response = await fetch(`http://localhost:3020/ads/${article.id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": "Bearer " + keycloak.token
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Błąd podczas usuwania ogłoszenia");
+    }
+
+    // odśwież listę ogłoszeń
+    getUserAds(keycloak, dispatch, userInfo, pageNumber, 4, setAds);
+
+  } catch (error) {
+    console.error(error);
+    // tu możesz dodać snackbar błędu
+  }
+};
+
   return (
     <Box
       sx={{
@@ -129,6 +152,9 @@ function Author({ authors, updatedAt, article, navigate }) {
       </Box>
       <Button onClick={() => navigate(`/editads/edit/${article.id}`)}>
         edytuj
+      </Button>
+      <Button onClick={handleDelete}>
+         usuń
       </Button>
       <Typography variant="caption">{updatedAt}</Typography>
     </Box>
@@ -239,7 +265,10 @@ export default function EditAds() {
               >
                 {article.content}
               </StyledTypography>
-              <Author authors={[{name : keycloak.tokenParsed.preferred_username}]} updatedAt={article.updatedAt} article={article} navigate={navigate}/>
+              <Author authors={[{name : keycloak.tokenParsed.preferred_username}]} updatedAt={article.updatedAt} 
+              article={article} navigate={navigate}
+              dispatch={dispatch} userInfo={userInfo} pageNumber={page} pageSize={4} setAds={setAds}
+              />
             </Box>
           </Grid>
         ))}
