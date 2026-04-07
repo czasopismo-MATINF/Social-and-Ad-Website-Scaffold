@@ -165,19 +165,20 @@ export default function EditAds() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = Number(searchParams.get("page") ?? 1);
+  const pageSize = Number(searchParams.get("size") ?? 4);
 
   const [page, setPage] = React.useState(initialPage - 1);
   const [ads, setAds] = React.useState(null);
   
   useEffect(() => {
     if (userInfo?.id) {
-        getUserAds(keycloak, userInfo, page, 4, setAds);
+        getUserAds(keycloak, userInfo, page, pageSize, setAds);
     }
   }, [userInfo, page]);
 
   const handlePageChange = (_, value) => {
     setPage(value - 1);
-    setSearchParams({ page: value });
+    setSearchParams({ page: value, size: pageSize });
   };
 
   const [focusedCardIndex, setFocusedCardIndex] = React.useState(null);
@@ -231,7 +232,7 @@ export default function EditAds() {
               </StyledTypography>
               <Author authors={[{name : keycloak.tokenParsed.preferred_username}]} updatedAt={article.updatedAt} 
               article={article} navigate={navigate}
-              userInfo={userInfo} pageNumber={page} pageSize={4} setAds={setAds}
+              userInfo={userInfo} pageNumber={page} pageSize={pageSize} setAds={setAds}
               />
             </Box>
           </Grid>
