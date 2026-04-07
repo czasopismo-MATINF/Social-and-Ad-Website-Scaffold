@@ -54,7 +54,7 @@ export default function NewAdForm({ reloadAds }) {
       }
 
       const saved = await response.json();
-      console.log(response.json());
+      console.log(saved);
       handleSuccessBlink();
 
       if (reloadAds) reloadAds();
