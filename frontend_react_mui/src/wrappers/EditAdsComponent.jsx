@@ -2,18 +2,16 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import AppTheme from '../../shared-theme/AppTheme.jsx';
 import AppAppBar from '../components/AppAppBar.jsx';
-import MainContent from '../components/MainContent.jsx';
-import Latest from '../components/Latest.jsx';
 import Footer from '../components/Footer.jsx';
 import EditAds from '../components/EditAds.jsx';
 import PageContent from '../components/PageContent.jsx';
 
 import * as React from 'react';
 
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from 'react-redux'
+import { useSearchParams } from "react-router-dom";
+import { useSelector } from 'react-redux';
 
-import NewAdFormComponent from '../components/NewAdFormComponent.jsx'
+import NewAdForm from '../components/NewAdForm.jsx';
 
 import keycloak from "../keycloak.js";
 
@@ -67,7 +65,9 @@ export default function EditAdsComponent({children, ...props}) {
         component="main"
         sx={{ display: 'flex', flexDirection: 'column', my: 16, gap: 4, pt: 10 }}
       >
-        <PageContent><NewAdFormComponent reloadAds={() => {getUserAds(keycloak, userInfo, page, pageSize, setAds);}} /></PageContent>
+        <PageContent>
+          <NewAdForm reloadAds={() => {getUserAds(keycloak, userInfo, page, pageSize, setAds);}} />
+        </PageContent>
         <EditAds reloadAds={() => {getUserAds(keycloak, userInfo, page, pageSize, setAds);}}
          ads={ads} page={page} pageSize={pageSize} handlePageChange={handlePageChange}/>
       </Container>

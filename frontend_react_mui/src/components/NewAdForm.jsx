@@ -11,11 +11,11 @@ import {
   MenuItem
 } from "@mui/material";
 
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import keycloak from "../keycloak";
 
-export default function NewAdFormComponent({ reloadAds }) {
+export default function NewAdForm({ reloadAds }) {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -54,6 +54,7 @@ export default function NewAdFormComponent({ reloadAds }) {
       }
 
       const saved = await response.json();
+      console.log(response.json());
       handleSuccessBlink();
 
       if (reloadAds) reloadAds();

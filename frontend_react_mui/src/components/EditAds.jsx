@@ -8,12 +8,11 @@ import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
-
-import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from '@mui/material'
 
-import { useEffect } from "react";
-import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from "react-router-dom";
+
+import { useSelector } from 'react-redux'
 
 import keycloak from "../keycloak.js";
 
