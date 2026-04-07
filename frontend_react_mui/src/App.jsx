@@ -1,23 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import './Custom.css'
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 
-import { useEffect } from "react";
 import keycloak from "./keycloak.js";
 
 import { useSelector, useDispatch } from 'react-redux'
-import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected } from '../store/slice.js'
+import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, categoriesLoaded } from '../store/slice.js'
 
-import { Button, TextField, Box, Stack, Typography } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Button } from '@mui/material'
 
 import Blog from '../blog/Blog.jsx'
-import UI from './UI.jsx'
+import UI from './wrappers/UI.jsx'
+
 import UserInfoComponent from './UserInfoComponent.jsx';
 import UserInfoComponentFieldSettings from './UserInfoComponentFieldSettings.jsx';
 import EditUserInfoComponent from './EditUserInfoComponent.jsx'
 import EditUserInfoComponentFieldSettings from './EditUserInfoComponentFieldSettings.jsx'
+import EditAdsComponent from './wrappers/EditAdsComponent.jsx'
+import EditAdComponent from './wrappers/EditAdComponent.jsx'
 
 function getUserInfo(keycloak, dispatch) {
     console.log("GETTING USER INFO");
@@ -33,9 +34,28 @@ function getUserInfo(keycloak, dispatch) {
       }
     }).then(res => res.json())
     .then(data => {
+      console.log("USER INFO FETCHED", data);
       dispatch(userInfoCollected(data));
     });
+}
 
+function getCategoriesInfo(keycloak, dispatch) {
+    console.log("GETTING CATEGORIES INFO");
+    if(!keycloak.authenticated) {
+      console.log("User not authenticated, skipping user info fetch");
+      return;
+    }
+    fetch(`http://localhost:3020/categories`, {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + keycloak.token,
+        "Content-Type": "application/json"
+      }
+    }).then(res => res.json())
+    .then(data => {
+      console.log("CATEGORIES INFO FETCHED", data);
+      dispatch(categoriesLoaded(data));
+    });
 }
 
 function Main() {
@@ -70,6 +90,16 @@ function EditRaw() {
   return <UI>
     <EditUserInfoComponent />
   </UI>
+}
+
+function EditAds() {
+  const userInfo = useSelector(state => state.example.userInfo);
+  return <EditAdsComponent />
+}
+
+function EditAdPage() {
+  const userInfo = useSelector(state => state.example.userInfo);
+  return <EditAdComponent />
 }
 
 function A() {
@@ -130,6 +160,7 @@ function App() {
       if (keycloak.authenticated) {
         dispatch(keycloakLoggedIn());
         getUserInfo(keycloak, dispatch);
+        getCategoriesInfo(keycloak, dispatch);
       } else {
         dispatch(keycloakLoggedOut());
       }
@@ -146,6 +177,8 @@ function App() {
         <Route path="/inforaw" element={<InfoRaw />} />
         <Route path="/edit" element={<Edit />} />
         <Route path="/editraw" element={<EditRaw />} />
+        <Route path="/editads" element={<EditAds />} />
+        <Route path="/editads/edit/:id" element={<EditAdPage />} />
 
         <Route path="/dashboard">
           <Route index element={<Blog />} />
