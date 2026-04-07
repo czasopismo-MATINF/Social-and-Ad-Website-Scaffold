@@ -84,7 +84,7 @@ const TitleTypography = styled(Typography)(({ theme }) => ({
 
 function Author({ authors, updatedAt, article, navigate, userInfo, pageNumber, pageSize, setAds}) {
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
   try {
     const response = await fetch(`http://localhost:3020/ads/${article.id}`, {
       method: "DELETE",
@@ -137,7 +137,13 @@ function Author({ authors, updatedAt, article, navigate, userInfo, pageNumber, p
       <Button onClick={handleDelete}>
          usuń
       </Button>
-      <Typography variant="caption">{updatedAt}</Typography>
+      <Typography variant="caption">
+        {new Date(updatedAt).toLocaleDateString("pl-PL", {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        })}
+      </Typography>
     </Box>
   );
 }
@@ -210,7 +216,7 @@ export default function EditAds() {
                 tabIndex={0}
                 className={focusedCardIndex === index ? 'Mui-focused' : ''}
               >
-                {article.title}{article.id}
+                {article.title}
                 <NavigateNextRoundedIcon
                   className="arrow"
                   sx={{ fontSize: '1rem' }}
