@@ -136,9 +136,8 @@ Author.propTypes = {
   ).isRequired,
 };
 
-export default function EditAds({...props}) {
+export default function EditAdsList({...props}) {
 
-  const userInfo = useSelector(state => state.example.userInfo);
   const categoriesInfo = useSelector(state => state.example.categories);
 
   const navigate = useNavigate();

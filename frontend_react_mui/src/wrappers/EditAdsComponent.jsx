@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 import AppTheme from '../../shared-theme/AppTheme.jsx';
 import AppAppBar from '../components/AppAppBar.jsx';
 import Footer from '../components/Footer.jsx';
-import EditAds from '../components/EditAds.jsx';
+import EditAdsList from '../components/EditAdsList.jsx';
 import PageContent from '../components/PageContent.jsx';
 
 import * as React from 'react';
@@ -68,7 +68,7 @@ export default function EditAdsComponent({children, ...props}) {
         <PageContent>
           <NewAdForm reloadAds={() => {getUserAds(keycloak, userInfo, page, pageSize, setAds);}} />
         </PageContent>
-        <EditAds reloadAds={() => {getUserAds(keycloak, userInfo, page, pageSize, setAds);}}
+        <EditAdsList reloadAds={() => {getUserAds(keycloak, userInfo, page, pageSize, setAds);}}
          ads={ads} page={page} pageSize={pageSize} handlePageChange={handlePageChange}/>
       </Container>
       <Footer />
