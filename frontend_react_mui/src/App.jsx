@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 import keycloak from "./keycloak.js";
 
 import { useSelector, useDispatch } from 'react-redux'
-import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected } from '../store/slice.js'
+import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, categoriesLoaded } from '../store/slice.js'
 
 import { Button } from '@mui/material'
 
@@ -37,7 +37,25 @@ function getUserInfo(keycloak, dispatch) {
       console.log("USER INFO FETCHED", data);
       dispatch(userInfoCollected(data));
     });
+}
 
+function getCategoriesInfo(keycloak, dispatch) {
+    console.log("GETTING CATEGORIES INFO");
+    if(!keycloak.authenticated) {
+      console.log("User not authenticated, skipping user info fetch");
+      return;
+    }
+    fetch(`http://localhost:3020/categories`, {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + keycloak.token,
+        "Content-Type": "application/json"
+      }
+    }).then(res => res.json())
+    .then(data => {
+      console.log("CATEGORIES INFO FETCHED", data);
+      dispatch(categoriesLoaded(data));
+    });
 }
 
 function Main() {
@@ -146,6 +164,7 @@ function App() {
       if (keycloak.authenticated) {
         dispatch(keycloakLoggedIn());
         getUserInfo(keycloak, dispatch);
+        getCategoriesInfo(keycloak, dispatch);
       } else {
         dispatch(keycloakLoggedOut());
       }

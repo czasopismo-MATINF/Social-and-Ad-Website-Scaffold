@@ -6,7 +6,7 @@ const slice = createSlice({
     counter: 0,
     keycloakLoggedIn: false,
     userInfo : null,
-    userAds: null,
+    categories: null,
   },
   reducers: {
     increment: (state) => { state.counter++ },
@@ -14,9 +14,14 @@ const slice = createSlice({
     keycloakLoggedIn: (state) => { state.keycloakLoggedIn = true },
     keycloakLoggedOut: (state) => { state.keycloakLoggedIn = false },
     userInfoCollected: (state, action) => { state.userInfo = action.payload },
-    userAdsCollected: (state, action) => { state.userAds = action.payload },
+    categoriesLoaded: (state, action) => { state.categories = {
+      "categories" : action.payload,
+      "getName" : function(id) {
+         return this.categories.categories.find(item => item.id === id)?.description;
+      }
+    }},
   }
 })
 
-export const { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, userAdsCollected } = slice.actions
+export const { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, userAdsCollected, categoriesLoaded } = slice.actions
 export default slice.reducer

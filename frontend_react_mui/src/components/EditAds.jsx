@@ -160,6 +160,7 @@ Author.propTypes = {
 export default function EditAds() {
 
   const userInfo = useSelector(state => state.example.userInfo);
+  const categoriesInfo = useSelector(state => state.example.categories);
 
   const navigate = useNavigate();
 
@@ -207,7 +208,7 @@ export default function EditAds() {
               }}
             >
               <Typography gutterBottom variant="caption" component="div">
-                {article.category}
+                {categoriesInfo.getName(article.category)}
               </Typography>
               <TitleTypography
                 gutterBottom
