@@ -19,7 +19,6 @@ import EditUserInfoComponent from './EditUserInfoComponent.jsx'
 import EditUserInfoComponentFieldSettings from './EditUserInfoComponentFieldSettings.jsx'
 import EditAdsComponent from './wrappers/EditAdsComponent.jsx'
 import EditAdComponent from './wrappers/EditAdComponent.jsx'
-import NewAdFormComponent from './components/NewAdFormComponent.jsx'
 
 function getUserInfo(keycloak, dispatch) {
     console.log("GETTING USER INFO");
@@ -95,9 +94,7 @@ function EditRaw() {
 
 function EditAds() {
   const userInfo = useSelector(state => state.example.userInfo);
-  return <EditAdsComponent>
-    <NewAdFormComponent />
-  </EditAdsComponent>
+  return <EditAdsComponent />
 }
 
 function EditAdPage() {

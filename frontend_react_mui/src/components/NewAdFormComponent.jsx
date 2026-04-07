@@ -15,7 +15,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import keycloak from "../keycloak";
 
-export default function NewAdFormComponent({ onSuccess }) {
+export default function NewAdFormComponent({ reloadAds }) {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -56,7 +56,7 @@ export default function NewAdFormComponent({ onSuccess }) {
       const saved = await response.json();
       handleSuccessBlink();
 
-      if (onSuccess) onSuccess(saved);
+      if (reloadAds) reloadAds();
 
       setTitle("");
       setContent("");

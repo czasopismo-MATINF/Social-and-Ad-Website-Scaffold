@@ -17,26 +17,6 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import keycloak from "../keycloak.js";
 
-function getUserAds(keycloak, userInfo, pageNumber, pageSize, setAds) {
-    console.log("GETTING USER ADS");
-    if(!keycloak.authenticated) {
-      console.log("User not authenticated, skipping user info fetch");
-      return;
-    }
-    fetch(`http://localhost:3020/ads?user=${userInfo.id}&page=${pageNumber}&size=${pageSize}&sort=updatedAt,desc&sort=title,asc`, {
-      method: "GET",
-      headers: {
-        "Authorization": "Bearer " + keycloak.token,
-        "Content-Type": "application/json"
-      }
-    }).then(res => res.json())
-    .then(data => {
-      console.log("USER ADS FETCHED", data);
-      setAds(data);
-    });
-
-}
-
 const StyledTypography = styled(Typography)({
   display: '-webkit-box',
   WebkitBoxOrient: 'vertical',
@@ -82,7 +62,7 @@ const TitleTypography = styled(Typography)(({ theme }) => ({
   },
 }));
 
-function Author({ authors, updatedAt, article, navigate, userInfo, pageNumber, pageSize, setAds}) {
+function Author({ authors, updatedAt, article, navigate, reloadAds}) {
 
   const handleDelete = async () => {
   try {
@@ -97,7 +77,7 @@ function Author({ authors, updatedAt, article, navigate, userInfo, pageNumber, p
       throw new Error("Błąd podczas usuwania ogłoszenia");
     }
 
-    getUserAds(keycloak, userInfo, pageNumber, pageSize, setAds);
+    reloadAds();
 
   } catch (error) {
     console.error(error);
@@ -157,30 +137,12 @@ Author.propTypes = {
   ).isRequired,
 };
 
-export default function EditAds() {
+export default function EditAds({...props}) {
 
   const userInfo = useSelector(state => state.example.userInfo);
   const categoriesInfo = useSelector(state => state.example.categories);
 
   const navigate = useNavigate();
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialPage = Number(searchParams.get("page") ?? 1);
-  const pageSize = Number(searchParams.get("size") ?? 4);
-
-  const [page, setPage] = React.useState(initialPage - 1);
-  const [ads, setAds] = React.useState(null);
-  
-  useEffect(() => {
-    if (userInfo?.id) {
-        getUserAds(keycloak, userInfo, page, pageSize, setAds);
-    }
-  }, [userInfo, page]);
-
-  const handlePageChange = (_, value) => {
-    setPage(value - 1);
-    setSearchParams({ page: value, size: pageSize });
-  };
 
   const [focusedCardIndex, setFocusedCardIndex] = React.useState(null);
   const handleFocus = (index) => {
@@ -196,7 +158,7 @@ export default function EditAds() {
         Ogłoszenia użytkownika
       </Typography>
       <Grid container spacing={8} columns={12} sx={{ my: 4 }}>
-        {ads?.content?.map((article, index) => (
+        {props.ads?.content?.map((article, index) => (
           <Grid key={index} size={{ xs: 12, sm: 6 }}>
             <Box
               sx={{
@@ -232,8 +194,7 @@ export default function EditAds() {
                 {article.content}
               </StyledTypography>
               <Author authors={[{name : keycloak.tokenParsed.preferred_username}]} updatedAt={article.updatedAt} 
-              article={article} navigate={navigate}
-              userInfo={userInfo} pageNumber={page} pageSize={pageSize} setAds={setAds}
+                article={article} navigate={navigate} reloadAds={props.reloadAds}
               />
             </Box>
           </Grid>
@@ -241,9 +202,9 @@ export default function EditAds() {
       </Grid>
       <Box sx={{ display: 'flex', flexDirection: 'row', pt: 4 }}>
         <Pagination
-            page={(ads?.number ?? 0) + 1}      // Spring → MUI
-            count={ads?.totalPages ?? 1}       // liczba stron
-            onChange={handlePageChange}
+            page={(props.ads?.number ?? 0) + 1}      // Spring → MUI
+            count={props.ads?.totalPages ?? 1}       // liczba stron
+            onChange={props.handlePageChange}
             color="primary"
             boundaryCount={2}
         />
