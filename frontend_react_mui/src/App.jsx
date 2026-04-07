@@ -19,6 +19,7 @@ import UserInfoComponentFieldSettings from './UserInfoComponentFieldSettings.jsx
 import EditUserInfoComponent from './EditUserInfoComponent.jsx'
 import EditUserInfoComponentFieldSettings from './EditUserInfoComponentFieldSettings.jsx'
 import EditAdsComponent from './EditAdsComponent.jsx'
+import EditAdComponent from './EditAdComponent.jsx'
 
 function getUserInfo(keycloak, dispatch) {
     console.log("GETTING USER INFO");
@@ -78,6 +79,13 @@ function EditAds() {
     const userInfo = useSelector(state => state.example.userInfo);
   return <UI>
     <EditAdsComponent />
+  </UI>
+}
+
+function EditAdPage() {
+    const userInfo = useSelector(state => state.example.userInfo);
+  return <UI>
+    <EditAdComponent />
   </UI>
 }
 
@@ -156,6 +164,7 @@ function App() {
         <Route path="/edit" element={<Edit />} />
         <Route path="/editraw" element={<EditRaw />} />
         <Route path="/editads" element={<EditAds />} />
+        <Route path="/editads/edit/:id" element={<EditAdPage />} />
 
         <Route path="/dashboard">
           <Route index element={<Blog />} />

@@ -9,7 +9,8 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { Button } from '@mui/material'
 
 import { useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux'
@@ -38,7 +39,7 @@ function getUserAds(keycloak, dispatch, userInfo, pageNumber, pageSize, setAds) 
       console.log("User not authenticated, skipping user info fetch");
       return;
     }
-    fetch(`http://localhost:3020/ads?user=${userInfo.id}&page=${pageNumber}&size=${pageSize}`, {
+    fetch(`http://localhost:3020/ads?user=${userInfo.id}&page=${pageNumber}&size=${pageSize}&sort=updatedAt,desc&sort=title,asc`, {
       method: "GET",
       headers: {
         "Authorization": "Bearer " + keycloak.token,
@@ -98,7 +99,7 @@ const TitleTypography = styled(Typography)(({ theme }) => ({
   },
 }));
 
-function Author({ authors, updatedAt }) {
+function Author({ authors, updatedAt, article, navigate }) {
   return (
     <Box
       sx={{
@@ -126,6 +127,9 @@ function Author({ authors, updatedAt }) {
           {authors.map((author) => author.name).join(', ')}
         </Typography>
       </Box>
+      <Button onClick={() => navigate(`/editads/edit/${article.id}`)}>
+        edytuj
+      </Button>
       <Typography variant="caption">{updatedAt}</Typography>
     </Box>
   );
@@ -146,6 +150,7 @@ export default function EditAds() {
   //const userAds = useSelector(state => state.example.userAds);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = Number(searchParams.get("page") ?? 1);
@@ -234,7 +239,7 @@ export default function EditAds() {
               >
                 {article.content}
               </StyledTypography>
-              <Author authors={[{name : keycloak.tokenParsed.preferred_username}]} updatedAt={article.updatedAt} />
+              <Author authors={[{name : keycloak.tokenParsed.preferred_username}]} updatedAt={article.updatedAt} article={article} navigate={navigate}/>
             </Box>
           </Grid>
         ))}
