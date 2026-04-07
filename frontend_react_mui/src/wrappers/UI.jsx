@@ -1,11 +1,11 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
-import AppTheme from '../shared-theme/AppTheme.jsx';
-import AppAppBar from './components/AppAppBar.jsx';
-import MainContent from './components/MainContent.jsx';
-import Latest from './components/Latest.jsx';
-import Footer from './components/Footer.jsx';
-import PageContent from './components/PageContent.jsx';
+import AppTheme from '../../shared-theme/AppTheme.jsx';
+import AppAppBar from '../components/AppAppBar.jsx';
+import MainContent from '../components/MainContent.jsx';
+import Latest from '../components/Latest.jsx';
+import Footer from '../components/Footer.jsx';
+import PageContent from '../components/PageContent.jsx';
 
 export default function UI({children, ...props}) {
   return (

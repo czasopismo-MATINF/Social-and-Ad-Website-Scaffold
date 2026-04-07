@@ -11,7 +11,7 @@ import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoColl
 import { Button } from '@mui/material'
 
 import Blog from '../blog/Blog.jsx'
-import UI from './UI.jsx'
+import UI from './wrappers/UI.jsx'
 
 import UserInfoComponent from './UserInfoComponent.jsx';
 import UserInfoComponentFieldSettings from './UserInfoComponentFieldSettings.jsx';
@@ -19,6 +19,7 @@ import EditUserInfoComponent from './EditUserInfoComponent.jsx'
 import EditUserInfoComponentFieldSettings from './EditUserInfoComponentFieldSettings.jsx'
 import EditAdsComponent from './wrappers/EditAdsComponent.jsx'
 import EditAdComponent from './wrappers/EditAdComponent.jsx'
+import NewAdFormComponent from './components/NewAdFormComponent.jsx'
 
 function getUserInfo(keycloak, dispatch) {
     console.log("GETTING USER INFO");
@@ -93,17 +94,15 @@ function EditRaw() {
 }
 
 function EditAds() {
-    const userInfo = useSelector(state => state.example.userInfo);
-  return <UI>
-    <EditAdsComponent />
-  </UI>
+  const userInfo = useSelector(state => state.example.userInfo);
+  return <EditAdsComponent>
+    <NewAdFormComponent />
+  </EditAdsComponent>
 }
 
 function EditAdPage() {
-    const userInfo = useSelector(state => state.example.userInfo);
-  return <UI>
-    <EditAdComponent />
-  </UI>
+  const userInfo = useSelector(state => state.example.userInfo);
+  return <EditAdComponent />
 }
 
 function A() {

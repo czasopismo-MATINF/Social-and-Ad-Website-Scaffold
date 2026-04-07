@@ -6,8 +6,9 @@ import MainContent from '../components/MainContent.jsx';
 import Latest from '../components/Latest.jsx';
 import Footer from '../components/Footer.jsx';
 import EditAds from '../components/EditAds.jsx';
+import PageContent from '../components/PageContent.jsx';
 
-export default function EditAdsComponent(props) {
+export default function EditAdsComponent({children, ...props}) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
@@ -17,6 +18,7 @@ export default function EditAdsComponent(props) {
         component="main"
         sx={{ display: 'flex', flexDirection: 'column', my: 16, gap: 4, pt: 10 }}
       >
+        <PageContent>{children}</PageContent>
         <EditAds />
       </Container>
       <Footer />
