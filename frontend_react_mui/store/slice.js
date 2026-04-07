@@ -14,11 +14,10 @@ const slice = createSlice({
     keycloakLoggedIn: (state) => { state.keycloakLoggedIn = true },
     keycloakLoggedOut: (state) => { state.keycloakLoggedIn = false },
     userInfoCollected: (state, action) => { state.userInfo = action.payload },
-    categoriesLoaded: (state, action) => { state.categories = {
-      "categories" : action.payload,
-      "getName" : function(id) {
-         return this.categories.categories.find(item => item.id === id)?.description;
-      }
+    
+    categoriesLoaded: (state, action) => {
+      state.categories = {
+        categories : action.payload,
     }},
   }
 })

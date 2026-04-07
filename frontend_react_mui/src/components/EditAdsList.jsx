@@ -168,7 +168,7 @@ export default function EditAdsList({...props}) {
               }}
             >
               <Typography gutterBottom variant="caption" component="div">
-                {categoriesInfo.getName(article.category)}
+                {categoriesInfo.categories.categories.find(item => item.id === article.category)?.description}
               </Typography>
               <TitleTypography
                 gutterBottom
