@@ -14,26 +14,10 @@ import { Button } from '@mui/material'
 
 import { useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux'
-import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, userAdsCollected } from '../../store/slice.js'
 
 import keycloak from "../keycloak.js";
 
-/*
-const articleInfo = [
-  {
-    tag: 'Engineering',
-    title: 'The future of AI in software engineering',
-    description:
-      'Artificial intelligence is revolutionizing software engineering. Explore how AI-driven tools are enhancing development processes and improving software quality.',
-    authors: [
-      { name: 'Remy Sharp', avatar: '/static/images/avatar/1.jpg' },
-      { name: 'Travis Howard', avatar: '/static/images/avatar/2.jpg' },
-    ],
-  },
-];
-*/
-
-function getUserAds(keycloak, dispatch, userInfo, pageNumber, pageSize, setAds) {
+function getUserAds(keycloak, userInfo, pageNumber, pageSize, setAds) {
     console.log("GETTING USER ADS");
     if(!keycloak.authenticated) {
       console.log("User not authenticated, skipping user info fetch");
@@ -49,7 +33,6 @@ function getUserAds(keycloak, dispatch, userInfo, pageNumber, pageSize, setAds) 
     .then(data => {
       console.log("USER ADS FETCHED", data);
       setAds(data);
-      dispatch(userAdsCollected(data));
     });
 
 }
@@ -99,7 +82,7 @@ const TitleTypography = styled(Typography)(({ theme }) => ({
   },
 }));
 
-function Author({ authors, updatedAt, article, navigate, dispatch, userInfo, pageNumber, pageSize, setAds}) {
+function Author({ authors, updatedAt, article, navigate, userInfo, pageNumber, pageSize, setAds}) {
 
   const handleDelete = async (id) => {
   try {
@@ -114,12 +97,10 @@ function Author({ authors, updatedAt, article, navigate, dispatch, userInfo, pag
       throw new Error("Błąd podczas usuwania ogłoszenia");
     }
 
-    // odśwież listę ogłoszeń
-    getUserAds(keycloak, dispatch, userInfo, pageNumber, 4, setAds);
+    getUserAds(keycloak, userInfo, pageNumber, pageSize, setAds);
 
   } catch (error) {
     console.error(error);
-    // tu możesz dodać snackbar błędu
   }
 };
 
@@ -173,9 +154,7 @@ Author.propTypes = {
 export default function EditAds() {
 
   const userInfo = useSelector(state => state.example.userInfo);
-  //const userAds = useSelector(state => state.example.userAds);
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -186,40 +165,19 @@ export default function EditAds() {
   
   useEffect(() => {
     if (userInfo?.id) {
-        getUserAds(keycloak, dispatch, userInfo, page, 4, setAds);
+        getUserAds(keycloak, userInfo, page, 4, setAds);
     }
   }, [userInfo, page]);
 
   const handlePageChange = (_, value) => {
-    setPage(value - 1); // MUI -> Spring 
+    setPage(value - 1);
     setSearchParams({ page: value });
   };
 
-
-
-  /*
-  const [articleInfo, setArticleInfo] = React.useState([]);
-
-    useEffect(() => {
-    if (userAds !== null && userAds !== undefined) {
-        setArticleInfo(
-        userAds.content.map(ad => ({
-            tag: ad.category,
-            title: ad.title,
-            description: ad.content,
-            authors: ad.authors
-        }))
-        );
-    }
-    }, [userAds]);
-*/
-
   const [focusedCardIndex, setFocusedCardIndex] = React.useState(null);
-
   const handleFocus = (index) => {
     setFocusedCardIndex(index);
   };
-
   const handleBlur = () => {
     setFocusedCardIndex(null);
   };
@@ -267,7 +225,7 @@ export default function EditAds() {
               </StyledTypography>
               <Author authors={[{name : keycloak.tokenParsed.preferred_username}]} updatedAt={article.updatedAt} 
               article={article} navigate={navigate}
-              dispatch={dispatch} userInfo={userInfo} pageNumber={page} pageSize={4} setAds={setAds}
+              userInfo={userInfo} pageNumber={page} pageSize={4} setAds={setAds}
               />
             </Box>
           </Grid>

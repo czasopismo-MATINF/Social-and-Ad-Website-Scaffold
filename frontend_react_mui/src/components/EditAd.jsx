@@ -29,7 +29,6 @@ export default function EditAdPage() {
     setTimeout(() => setErrorBlink(false), 500);
   };
 
-  // Pobierz ogłoszenie po ID
   useEffect(() => {
     fetch(`http://localhost:3020/ads/${id}`, {
       headers: {
@@ -43,32 +42,30 @@ export default function EditAdPage() {
       });
   }, [id]);
 
-const handleSave = async () => {
-  try {
-    const response = await fetch(`http://localhost:3020/ads/${id}`, {
-      method: "PUT",
-      headers: {
-        "Authorization": "Bearer " + keycloak.token,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(ad)
-    });
+  const handleSave = async () => {
+    try {
+      const response = await fetch(`http://localhost:3020/ads/${id}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": "Bearer " + keycloak.token,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(ad)
+      });
 
-    if (!response.ok) {
-      throw new Error("Błąd podczas zapisywania ogłoszenia");
+      if (!response.ok) {
+        handleErrorBlink();
+        throw new Error("Błąd podczas zapisywania ogłoszenia");
+      }
+
+      const updated = await response.json();
+      handleSuccessBlink();
+
+    } catch (error) {
+      handleErrorBlink();
+      console.error(error);
     }
-
-    const updated = await response.json();
-    console.log("Zapisano:", updated);
-
-    handleSuccessBlink(); // Twój efekt wizualny
-
-  } catch (error) {
-    console.error(error);
-    // tu możesz dodać snackbar z błędem
-  }
-};
-
+  };
 
   if (loading || !ad) return <Typography>Ładowanie...</Typography>;
 

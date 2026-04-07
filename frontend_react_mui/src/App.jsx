@@ -1,25 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import './Custom.css'
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 
-import { useEffect } from "react";
 import keycloak from "./keycloak.js";
 
 import { useSelector, useDispatch } from 'react-redux'
 import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected } from '../store/slice.js'
 
-import { Button, TextField, Box, Stack, Typography } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Button } from '@mui/material'
 
 import Blog from '../blog/Blog.jsx'
 import UI from './UI.jsx'
+
 import UserInfoComponent from './UserInfoComponent.jsx';
 import UserInfoComponentFieldSettings from './UserInfoComponentFieldSettings.jsx';
 import EditUserInfoComponent from './EditUserInfoComponent.jsx'
 import EditUserInfoComponentFieldSettings from './EditUserInfoComponentFieldSettings.jsx'
-import EditAdsComponent from './EditAdsComponent.jsx'
-import EditAdComponent from './EditAdComponent.jsx'
+import EditAdsComponent from './wrappers/EditAdsComponent.jsx'
+import EditAdComponent from './wrappers/EditAdComponent.jsx'
 
 function getUserInfo(keycloak, dispatch) {
     console.log("GETTING USER INFO");
