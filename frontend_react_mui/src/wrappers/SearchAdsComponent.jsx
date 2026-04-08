@@ -71,11 +71,57 @@ export default function EditAdsComponent({children, ...props}) {
   };
 
   const handleSearchForm = (filters) => {
-    console.log(filters);
-    setSearchParams(prev => {
-      //TODO: tu powinno być pobranie aktualnych searchParams z aktualnym stronicowaniem i nadpisanie filtrów
-      const params = new URLSearchParams(filters);
-      console.log(params);
+    //przygotowanie niektórych parametrów filtrów, które wszystkie są jako dane String w formacie do tablic
+    const cleanFilters = Object.fromEntries(
+      Object.entries(filters).filter(([_, v]) => v !== null && v !== undefined && v !== "")
+    );
+    cleanFilters.users = cleanFilters.users ? cleanFilters.users.split(",") : [];
+    cleanFilters.categories = cleanFilters.categories ? cleanFilters.categories.split(",") : [];
+    
+    console.log(cleanFilters);
+
+    setSearchParams(prev => {    // pobieramy poprzednie wartości
+      const prevPage = prev.get("page");
+      const prevSize = prev.get("size");
+
+      // tworzymy NOWY obiekt searchParams
+      const params = new URLSearchParams();
+
+      // ustawiamy page
+      if (prevPage !== null) {
+        params.set("page", prevPage);
+      } else {
+        params.set("page", 1); // domyślna strona
+      }
+
+      // ustawiamy size
+      if (prevSize !== null) {
+        params.set("size", prevSize);
+      } else {
+        params.set("size", 4); // domyślny rozmiar strony
+      }
+
+      Object.entries(cleanFilters).forEach(([key, value]) => {
+
+        // 1. Jeśli wartość jest tablicą → usuń stare i dodaj nowe
+        if (Array.isArray(value)) {
+          params.delete(key);
+          value.forEach(v => params.append(key, v));
+          return;
+        }
+
+        // 2. Jeśli wartość jest pusta → usuń parametr
+        if (value === undefined || value === null || value === "") {
+          params.delete(key);
+          return;
+        }
+
+        // 3. Normalne wartości
+        params.set(key, value);
+      });
+
+      console.log(params.toString());
+
       return params;
     });
   };

@@ -18,6 +18,8 @@ import keycloak from "../keycloak";
 export default function SerachAdForm({ handleSearchForm, searchParams }) {
 
   const [keyword, setKeyword] = useState(searchParams.get("keyword"));
+  const [users, setUsers] = useState(searchParams.getAll("users").join(","));
+  const [categories, setCategories] = useState(searchParams.getAll("categories").join(","));
 
   const categoriesInfo = useSelector(state => state.example.categories);
 
@@ -34,9 +36,11 @@ export default function SerachAdForm({ handleSearchForm, searchParams }) {
 
   const handleSubmit = async () => {
     handleSuccessBlink();
-    //TODO: wysyłać coraz nowe pola formularza jako nowe filtry
+    //wysyłać coraz nowe pola formularza jako nowe filtry
     handleSearchForm({
-      keyword: keyword
+      keyword: keyword,
+      users: users,
+      categories: categories,
     });
   };
 
@@ -52,6 +56,20 @@ export default function SerachAdForm({ handleSearchForm, searchParams }) {
           label="Słowo kluczowe"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
+          fullWidth
+        />
+
+        <TextField
+          label="Użytkownicy"
+          value={users}
+          onChange={(e) => setUsers(e.target.value)}
+          fullWidth
+        />
+
+        <TextField
+          label="Kategorie"
+          value={categories}
+          onChange={(e) => setCategories(e.target.value)}
           fullWidth
         />
 
