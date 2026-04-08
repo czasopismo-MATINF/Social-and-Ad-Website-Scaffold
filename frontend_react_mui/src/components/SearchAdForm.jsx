@@ -15,11 +15,9 @@ import { useSelector } from 'react-redux'
 
 import keycloak from "../keycloak";
 
-export default function SerachAdForm({ reloadAds }) {
+export default function SerachAdForm({ handleSearchForm, searchParams }) {
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [category, setCategory] = useState("");
+  const [keyword, setKeyword] = useState(searchParams.get("keyword"));
 
   const categoriesInfo = useSelector(state => state.example.categories);
 
@@ -35,77 +33,26 @@ export default function SerachAdForm({ reloadAds }) {
   };
 
   const handleSubmit = async () => {
-    const newAd = { title, content, category };
-
-    try {
-      const response = await fetch("http://localhost:3020/ads", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + keycloak.token,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(newAd)
-      });
-
-      if (!response.ok) {
-        handleErrorBlink();
-        console.log(response);
-        throw new Error("Nie udało się dodać ogłoszenia");
-      }
-
-      const saved = await response.json();
-      console.log(saved);
-      handleSuccessBlink();
-
-      if (reloadAds) reloadAds();
-
-      setTitle("");
-      setContent("");
-      setCategory("");
-
-    } catch (error) {
-      handleErrorBlink();
-      console.error(error);
-    }
+    handleSuccessBlink();
+    //TODO: wysyłać coraz nowe pola formularza jako nowe filtry
+    handleSearchForm({
+      keyword: keyword
+    });
   };
 
   return (
     <Paper sx={{ p: 4, maxWidth: 700, mx: "auto", mt: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Dodaj nowe ogłoszenie
+        Szukaj ogłoszeń
       </Typography>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        
-          <FormControl fullWidth>
-          <InputLabel>Kategoria</InputLabel>
-          <Select
-            value={category}
-            label="Kategoria"
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            {categoriesInfo?.categories?.categories?.map(cat => (
-              <MenuItem key={cat.id} value={cat.id}>
-                {cat.description}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
 
         <TextField
-          label="Tytuł"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          label="Słowo kluczowe"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
           fullWidth
-        />
-
-        <TextField
-          label="Treść"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          fullWidth
-          multiline
-          minRows={6}
         />
 
         <Button

@@ -11,6 +11,7 @@ import * as React from 'react';
 
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
 import { categoriesLoaded } from '../../store/slice.js'
 
@@ -49,23 +50,35 @@ export default function EditAdsComponent({children, ...props}) {
   const categoriesInfo = useSelector(state => state.example.categories);
 
   const location = useLocation();
-  const queryString = location.search; // np. "?page=1&size=20&keyword=test"
+//  const queryString = location.search; // np. "?page=1&size=20&keyword=test"
   const [searchParams, setSearchParams] = useSearchParams();
-  const urlPage = Number(searchParams.get("page") ?? 1);
-  const pageSize = Number(searchParams.get("size") ?? 4);
-  const backendPage = Number(searchParams.get("page") ?? 1) - 1;
+//  const urlPage = Number(searchParams.get("page") ?? 1);
+//  const pageSize = Number(searchParams.get("size") ?? 4);
+//  const backendPage = Number(searchParams.get("page") ?? 1) - 1;
 
   const [ads, setAds] = React.useState(null);
 
   const dispatch = useDispatch();
 
+  const navigate = useNavigate();
+
   const handlePageChange = (_, value) => {
-  setSearchParams(prev => {
-    const params = new URLSearchParams(prev);
-    params.set("page", value);
-    return params;
-  });
-};
+    setSearchParams(prev => {
+      const params = new URLSearchParams(prev);
+      params.set("page", value);
+      return params;
+    });
+  };
+
+  const handleSearchForm = (filters) => {
+    console.log(filters);
+    setSearchParams(prev => {
+      //TODO: tu powinno być pobranie aktualnych searchParams z aktualnym stronicowaniem i nadpisanie filtrów
+      const params = new URLSearchParams(filters);
+      console.log(params);
+      return params;
+    });
+  };
 
   React.useEffect(() => {
     getCategoriesInfo(dispatch);
@@ -88,7 +101,7 @@ export default function EditAdsComponent({children, ...props}) {
         sx={{ display: 'flex', flexDirection: 'column', my: 16, gap: 4, pt: 10 }}
       >
         <PageContent>
-          <SearchAdForm />
+          <SearchAdForm handleSearchForm={handleSearchForm} searchParams={searchParams} />
         </PageContent>
         <SearchAdsList ads={ads} handlePageChange={handlePageChange}/>
       </Container>
