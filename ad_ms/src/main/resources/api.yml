@@ -30,6 +30,44 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: from
+          in: query
+          description: Filter ads later than ...
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: Filter ads fresher than ...
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: users
+          in: query
+          description: Filter ads by users ids seperated by commas.
+          required: false
+          schema:
+            type:
+            items:
+              type: string
+              format:
+        - name: categories
+          in: query
+          description: Filter ads by list of categories ids seperated by commas.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+        - name: keyword
+          in: query
+          description: Filter ads by keyword in title, content.
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: List of ads.

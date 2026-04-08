@@ -12,15 +12,18 @@ import matinf.czasopismo.social.adms.exceptions.AdPagePostValidatorFailureExcept
 import matinf.czasopismo.social.adms.model.AdPage;
 import matinf.czasopismo.social.adms.model.AdPageRequest;
 import matinf.czasopismo.social.adms.model.Page;
+import matinf.czasopismo.social.adms.querysearch.AdsFilter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import matinf.czasopismo.social.adms.mappers.AdMapper;
+import matinf.czasopismo.social.adms.mappers.PageMapper;
 import matinf.czasopismo.social.adms.services.AdService;
 import matinf.czasopismo.social.adms.exceptions.AdNotFoundException;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,6 +74,28 @@ public class AdsController implements AdsApi {
     */
 
     @Override
+    public ResponseEntity<Page> adsGet(Integer page, Integer size, List<String> sort, UUID user, OffsetDateTime from, OffsetDateTime to, List<String> users, List<UUID> categories, String keyword) {
+
+        Pageable pageable = PageRequest.of(
+                page != null ? page : 0,
+                size != null ? size : 20,
+                parseSort(sort)
+        );
+
+        AdsFilter filter = new AdsFilter(user, from, to, users, categories, keyword);
+
+        org.springframework.data.domain.Page<Ad> springPage = adService.getAds(pageable, filter);
+        
+        List<AdPage> mappedContent = springPage
+                .getContent()
+                .stream()
+                .map(AdMapper::toReturnType)
+                .toList();
+
+        return ResponseEntity.ok(PageMapper.toApiPage(mappedContent, springPage));
+
+    }
+/*
     public ResponseEntity<Page> adsGet(Integer page, Integer size, List<String> sort, UUID user) {
 
         Pageable pageable = PageRequest.of(
@@ -100,6 +125,7 @@ public class AdsController implements AdsApi {
 
         return ResponseEntity.ok(apiPage);
     }
+    */
 
     @Override
     public ResponseEntity<Void> adsIdDelete(UUID id) {

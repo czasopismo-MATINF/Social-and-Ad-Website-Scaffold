@@ -19,6 +19,7 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/ads").permitAll()
                         //.pathMatchers("/actuator/**").permitAll()
                         .anyExchange().authenticated()
                 )
