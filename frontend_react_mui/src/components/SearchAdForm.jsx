@@ -20,6 +20,8 @@ export default function SerachAdForm({ handleSearchForm, searchParams }) {
   const [keyword, setKeyword] = useState(searchParams.get("keyword"));
   const [users, setUsers] = useState(searchParams.getAll("users").join(","));
   const [categories, setCategories] = useState(searchParams.getAll("categories").join(","));
+  const [from, setFrom] = useState(searchParams.get("from"));
+  const [to, setTo] = useState(searchParams.get("to"));
 
   const categoriesInfo = useSelector(state => state.example.categories);
 
@@ -41,6 +43,8 @@ export default function SerachAdForm({ handleSearchForm, searchParams }) {
       keyword: keyword,
       users: users,
       categories: categories,
+      from: from,
+      to: to,
     });
   };
 
@@ -70,6 +74,20 @@ export default function SerachAdForm({ handleSearchForm, searchParams }) {
           label="Kategorie"
           value={categories}
           onChange={(e) => setCategories(e.target.value)}
+          fullWidth
+        />
+
+        <TextField
+          label="Od"
+          value={from}
+          onChange={(e) => setFrom(e.target.value)}
+          fullWidth
+        />
+
+        <TextField
+          label="Do"
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
           fullWidth
         />
 
