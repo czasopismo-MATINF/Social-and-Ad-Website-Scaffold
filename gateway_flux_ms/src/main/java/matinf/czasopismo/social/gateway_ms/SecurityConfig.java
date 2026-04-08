@@ -20,6 +20,7 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/ads").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/categories").permitAll()
                         //.pathMatchers("/actuator/**").permitAll()
                         .anyExchange().authenticated()
                 )
