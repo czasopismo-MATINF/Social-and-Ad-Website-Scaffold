@@ -8,7 +8,7 @@ public record AdsFilter(
         UUID user,
         OffsetDateTime from,
         OffsetDateTime to,
-        List<String> users,
+        List<UUID> users,
         List<UUID> categories,
         String keyword
 ) {}

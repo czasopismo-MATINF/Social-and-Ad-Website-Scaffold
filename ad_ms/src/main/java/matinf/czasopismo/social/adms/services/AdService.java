@@ -10,10 +10,12 @@ import matinf.czasopismo.social.adms.data.CategoryRepository;
 import matinf.czasopismo.social.adms.exceptions.AdNotFoundException;
 import matinf.czasopismo.social.adms.exceptions.UserNotAuthorizedException;
 import matinf.czasopismo.social.adms.model.AdPageRequest;
+import matinf.czasopismo.social.adms.querysearch.AdSpecifications;
 import matinf.czasopismo.social.adms.querysearch.AdsFilter;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import matinf.czasopismo.social.adms.mappers.AdMapper;
 
@@ -92,4 +94,36 @@ public class AdService {
         return this.adRepository.findByUserId(filter.user(), pageable);
 
     }
+
+    @Transactional
+    public Page<Ad> getFilterAds(Pageable pageable, AdsFilter filter) {
+        Specification<Ad> spec = Specification.where(null);
+
+        if (filter.user() != null) {
+            spec = spec.and(AdSpecifications.userId(filter.user()));
+        }
+
+        if (filter.users() != null && !filter.users().isEmpty()) {
+            spec = spec.and(AdSpecifications.userIdIn(filter.users()));
+        }
+
+        if (filter.from() != null) {
+            spec = spec.and(AdSpecifications.updatedAfter(filter.from()));
+        }
+
+        if (filter.to() != null) {
+            spec = spec.and(AdSpecifications.updatedBefore(filter.to()));
+        }
+
+        if (filter.categories() != null && !filter.categories().isEmpty()) {
+            spec = spec.and(AdSpecifications.categoriesIn(filter.categories()));
+        }
+
+        if (filter.keyword() != null && !filter.keyword().isBlank()) {
+            spec = spec.and(AdSpecifications.keyword(filter.keyword()));
+        }
+
+        return adRepository.findAll(spec, pageable);
+    }
+
 }

@@ -74,7 +74,7 @@ public class AdsController implements AdsApi {
     */
 
     @Override
-    public ResponseEntity<Page> adsGet(Integer page, Integer size, List<String> sort, UUID user, OffsetDateTime from, OffsetDateTime to, List<String> users, List<UUID> categories, String keyword) {
+    public ResponseEntity<Page> adsGet(Integer page, Integer size, List<String> sort, UUID user, OffsetDateTime from, OffsetDateTime to, List<UUID> users, List<UUID> categories, String keyword) {
 
         Pageable pageable = PageRequest.of(
                 page != null ? page : 0,
@@ -84,8 +84,8 @@ public class AdsController implements AdsApi {
 
         AdsFilter filter = new AdsFilter(user, from, to, users, categories, keyword);
 
-        org.springframework.data.domain.Page<Ad> springPage = adService.getAds(pageable, filter);
-        
+        org.springframework.data.domain.Page<Ad> springPage = adService.getFilterAds(pageable, filter);
+
         List<AdPage> mappedContent = springPage
                 .getContent()
                 .stream()

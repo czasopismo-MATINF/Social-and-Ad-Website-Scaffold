@@ -52,7 +52,7 @@ paths:
             type:
             items:
               type: string
-              format:
+              format: UUID
         - name: categories
           in: query
           description: Filter ads by list of categories ids seperated by commas.
