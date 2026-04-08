@@ -19,6 +19,7 @@ import EditUserInfoComponent from './EditUserInfoComponent.jsx'
 import EditUserInfoComponentFieldSettings from './EditUserInfoComponentFieldSettings.jsx'
 import EditAdsComponent from './wrappers/EditAdsComponent.jsx'
 import EditAdComponent from './wrappers/EditAdComponent.jsx'
+import SearchAdsComponent from './wrappers/SearchAdsComponent.jsx'
 
 function getUserInfo(keycloak, dispatch) {
     console.log("GETTING USER INFO");
@@ -102,6 +103,11 @@ function EditAdPage() {
   return <EditAdComponent />
 }
 
+function SearchAds() {
+  const userInfo = useSelector(state => state.example.userInfo);
+  return <SearchAdsComponent />
+}
+
 function A() {
   // Odczytaj wartość licznika ze stanu
   const counter = useSelector(state => state.example.counter)
@@ -179,6 +185,7 @@ function App() {
         <Route path="/editraw" element={<EditRaw />} />
         <Route path="/editads" element={<EditAds />} />
         <Route path="/editads/edit/:id" element={<EditAdPage />} />
+        <Route path="/searchads" element={<SearchAds />} />
 
         <Route path="/dashboard">
           <Route index element={<Blog />} />

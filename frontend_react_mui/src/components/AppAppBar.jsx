@@ -67,6 +67,7 @@ export default function AppAppBar() {
               <Button component={Link} to="/edit" variant="text" color="info" size="small">Edytuj</Button>
               <Button component={Link} to="/editraw" variant="text" color="info" size="small">Edytuj Surowe</Button>
               <Button component={Link} to="/editads" variant="text" color="info" size="small">Edytuj Ogłoszenia</Button>
+              <Button component={Link} to="/searchads" variant="text" color="info" size="small">Szukaj Ogłoszeń</Button>
               <Button component={Link} to="/about" variant="text" color="info" size="small">
                 About
               </Button>
@@ -150,6 +151,9 @@ export default function AppAppBar() {
                 </MenuItem>
                 <MenuItem>
                   <Button component={Link} to="/editads" color="primary" variant="contained" fullWidth>Edytuj Ogłoszenia</Button>
+                </MenuItem>
+                <MenuItem>
+                  <Button component={Link} to="/searchads" color="primary" variant="contained" fullWidth>Szukaj Ogłoszeń</Button>
                 </MenuItem>
                 <MenuItem>
                   <Button component={Link} to="/about" color="primary" variant="contained" fullWidth>About</Button>
