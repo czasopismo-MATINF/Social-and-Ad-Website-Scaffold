@@ -175,6 +175,13 @@ services:
     logging:
       driver: json-file
 
+  websocketms:
+    image: websocket_ms:latest
+    container_name: social-websocket-ms
+    restart: always
+    logging:
+      driver: json-file
+
 volumes:
   social-pgdata:
   social-pgadmindata:

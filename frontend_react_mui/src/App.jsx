@@ -21,6 +21,9 @@ import EditAdsComponent from './wrappers/EditAdsComponent.jsx'
 import EditAdComponent from './wrappers/EditAdComponent.jsx'
 import SearchAdsComponent from './wrappers/SearchAdsComponent.jsx'
 
+/* WEBSOCKET */
+import { Client } from '@stomp/stompjs';
+
 function getUserInfo(keycloak, dispatch) {
     console.log("GETTING USER INFO");
     if(!keycloak.authenticated) {
@@ -157,6 +160,34 @@ function B() {
 }
 
 function App() {
+
+    useEffect(() => {
+
+      const client = new Client({
+        brokerURL: 'ws://localhost:3020/websocket-ms',
+        reconnectDelay: 5000,
+      });
+
+      client.onConnect = () => {
+
+        console.log("Connected!");
+        
+        client.subscribe('/topic/room.123', msg => {
+          console.log("Received:", msg.body);
+        });
+
+        client.publish({
+          destination: '/app/test.send',
+          body: JSON.stringify({ content: "Hi, this is client!" })
+        });
+      
+      };
+
+      client.activate();
+
+      return () => client.deactivate();
+
+  }, []);
 
   const dispatch = useDispatch();
 

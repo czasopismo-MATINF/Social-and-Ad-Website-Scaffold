@@ -43,6 +43,13 @@ spring:
                 - Path=/messages/**, /conversations/**
               filters:
                 - RemoveRequestHeader=Cookie
+            - id: websocket-service
+              uri: http://social-websocket-ms:8080
+              predicates:
+                - Path=/websocket-ms/**
+              filters:
+                - StripPrefix=0
+
 
 server:
   port: 3020

@@ -21,6 +21,8 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/ads").permitAll()
                         .pathMatchers(HttpMethod.GET, "/categories").permitAll()
+                        //TODO: na razie odbezpieczone websockety
+                        .pathMatchers("/websocket-ms/**").permitAll()
                         //.pathMatchers("/actuator/**").permitAll()
                         .anyExchange().authenticated()
                 )
