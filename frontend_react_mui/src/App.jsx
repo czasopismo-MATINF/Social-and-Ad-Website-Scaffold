@@ -24,6 +24,18 @@ import ChatComponent from './wrappers/ChatComponent.jsx'
 
 import { Client } from '@stomp/stompjs';
 
+const client = new Client({
+  reconnectDelay: 1000,
+  webSocketFactory: () => {
+    keycloak.updateToken(30);
+    const token = keycloak.token;
+    //console.log("Connecting to web socket." + token);
+    //console.log(token);
+    //console.log(`ws://localhost:3020/websocket-ms?token=${token}`);
+    return new WebSocket(`ws://localhost:3020/websocket-ms?token=${token}`);
+  }
+});
+
 function getUserInfo(keycloak, dispatch) {
     console.log("GETTING USER INFO");
     if(!keycloak.authenticated) {
@@ -64,40 +76,32 @@ function getCategoriesInfo(keycloak, dispatch) {
 
 function connectToWebSocket(keycloak, dispatch) {
 
-  const client = new Client({
-    reconnectDelay: 5000,
-    webSocketFactory: () => {
-      const token = keycloak.token;
-      console.log(token);
-      //console.log(`ws://localhost:3020/websocket-ms?token=${token}`);
-      return new WebSocket(`ws://localhost:3020/websocket-ms?token=${token}`);
-    }
-  });
+  if(!client.connected) {
 
-  client.onConnect = () => {
-    console.log("Websocket connected.");
-    client.subscribe(`/topic/room.123`, msg => {
-      const body = JSON.parse(msg.body);
-      console.log(body);
-      dispatch(addTestMessage({
-        message: body
-      }));
-    });
-
-    /*
-    for(let i = 0; i < 10; ++i) {
-      client.publish({
-        destination: '/app/test.send',
-        body: JSON.stringify({
-          content: `${i}`
-        }),
+    client.onConnect = () => {
+      console.log("Websocket connected.");
+      client.subscribe(`/topic/room.123`, msg => {
+        const body = JSON.parse(msg.body);
+        console.log(body);
+        dispatch(addTestMessage({
+          message: body
+        }));
       });
-    }
-    */
-  
-  };
 
-  client.activate();
+      for(let i = 0; i < 3; ++i) {
+        client.publish({
+          destination: '/app/test.send',
+          body: JSON.stringify({
+            content: `${i}`
+          }),
+        });
+      }
+
+    };
+
+    client.activate();
+
+  }
 
 }
 
