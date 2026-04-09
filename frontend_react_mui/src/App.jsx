@@ -99,16 +99,17 @@ function connectToWebSocket(keycloak, dispatch) {
 }
 
 function Main() {
+  const userInfo = useSelector(state => state.example.userInfo);
+  const messages = useSelector(state => state.example.testMessages);
   return <UI>
-    Main
+     {messages.map(m => <div>{m.message.content}</div>)}
   </UI>
 }
 
 function Info() {
   const userInfo = useSelector(state => state.example.userInfo);
-  const messages = useSelector(state => state.example.testMessages);
   return <UI>
-     {messages.map(m => <div>{m.message.content}</div>)}
+     <UserInfoComponentFieldSettings userInfo={userInfo}  />
   </UI>
 }
 
