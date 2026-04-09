@@ -4,21 +4,161 @@ info:
   version: 1.0.0
 
 paths:
-  /conversations:
+
+  /messages:
     post:
-      summary: Create a new conversation.
+      summary: Send a new message from one user to another.
+      requestBody:
+        description: From user, to user, message content.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '200':
+          description: Delivery confirmation.
+
+  /conversations:
+    get:
+      summary: Get filtered conversations.
       parameters:
         - name: participants
           in: query
-          description: Participants of the conversation.
           required: true
+          description: Filter conversations by unique user participants ids (uuids).
           schema:
             type: array
             items:
               type: string
-              format: UUID
+              format: uuid
       responses:
-        200:
-          description: OK
-        409:
-          description: Chat is already created.
+        '200':
+          description: List of conversations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationsListPage'
+
+  /conversations/{id}:
+    get:
+      summary: Get conversation.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Conversation id (uuid).
+          schema:
+            type: string
+            format: uuid
+        - name: withMessages
+          in: query
+          required: false
+          description: Should also conversation messages be returned.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Conversation with its messages.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationPage'
+
+components:
+  schemas:
+
+    SendMessageRequest:
+      type: object
+      description: New message request with from user, to user, message content.
+      required:
+        - from
+        - to
+        - content
+      properties:
+        from:
+          description: From user UUID.
+          type: string
+          format: uuid
+        to:
+          description: To user UUID.
+          type: string
+          format: uuid
+        content:
+          description: Message content.
+          type: string
+          minLength: 1
+
+    ConversationsListPage:
+      type: object
+      description: Object with conversations as field conversations.
+      properties:
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConversationPage'
+
+    ConversationPage:
+      type: object
+      description: Object representing a single Coversation.
+      required:
+        - id
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the entity was created.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the entity was last updated.
+        messages:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MessagePage'
+
+    MessagePage:
+      type: object
+      description: Object representing a single message.
+      required:
+        - id
+        - senderId
+        - content
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        senderId:
+          type: string
+          format: uuid
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the entity was created.
+
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - message
+        - timestamp
+      properties:
+        status:
+          type: integer
+          format: int32
+          example: 404
+        message:
+          type: string
+          example: Ad not found
+        timestamp:
+          type: string
+          format: date-time
+          example: 2026-03-20T14:48:00Z
