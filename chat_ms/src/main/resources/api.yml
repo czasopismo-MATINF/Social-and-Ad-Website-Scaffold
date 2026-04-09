@@ -118,7 +118,6 @@ components:
           description: Timestamp when the entity was last updated.
         messages:
           type: array
-          nullable: true
           items:
             $ref: '#/components/schemas/MessagePage'
 

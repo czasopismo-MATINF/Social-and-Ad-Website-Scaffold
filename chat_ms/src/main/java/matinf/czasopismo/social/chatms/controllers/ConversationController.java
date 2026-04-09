@@ -2,7 +2,6 @@ package matinf.czasopismo.social.chatms.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import matinf.czasopismo.social.chatms.api.ConversationsApi;
 import matinf.czasopismo.social.chatms.model.ConversationPage;
 import matinf.czasopismo.social.chatms.model.ConversationsListPage;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,7 @@ public class ConversationController implements matinf.czasopismo.social.chatms.a
 
     @Override
     public ResponseEntity<ConversationPage> conversationsIdGet(UUID id, Boolean withMessages) {
-        return ConversationsApi.super.conversationsIdGet(id, withMessages);
+        return ResponseEntity.ok(this.conversationService.getConversation(id, withMessages));
     }
 
 }
