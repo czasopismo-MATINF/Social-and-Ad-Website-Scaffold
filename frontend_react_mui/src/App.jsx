@@ -20,6 +20,7 @@ import EditUserInfoComponentFieldSettings from './EditUserInfoComponentFieldSett
 import EditAdsComponent from './wrappers/EditAdsComponent.jsx'
 import EditAdComponent from './wrappers/EditAdComponent.jsx'
 import SearchAdsComponent from './wrappers/SearchAdsComponent.jsx'
+import ChatComponent from './wrappers/ChatComponent.jsx'
 
 import { Client } from '@stomp/stompjs';
 
@@ -83,6 +84,7 @@ function connectToWebSocket(keycloak, dispatch) {
       }));
     });
 
+    /*
     for(let i = 0; i < 10; ++i) {
       client.publish({
         destination: '/app/test.send',
@@ -91,6 +93,7 @@ function connectToWebSocket(keycloak, dispatch) {
         }),
       });
     }
+    */
   
   };
 
@@ -98,12 +101,11 @@ function connectToWebSocket(keycloak, dispatch) {
 
 }
 
-function Main() {
+function Chat() {
   const userInfo = useSelector(state => state.example.userInfo);
   const messages = useSelector(state => state.example.testMessages);
-  return <UI>
-     {messages.map(m => <div>{m.message.content}</div>)}
-  </UI>
+  return <ChatComponent>
+  </ChatComponent>
 }
 
 function Info() {
@@ -223,7 +225,7 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Main />} />
+        <Route path="/" element={<Chat />} />
         <Route path="/info" element={<Info />} />
         <Route path="/inforaw" element={<InfoRaw />} />
         <Route path="/edit" element={<Edit />} />

@@ -61,7 +61,7 @@ export default function AppAppBar() {
             <Sitemark />
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
 
-              <Button component={Link} to="/" variant="text" color="info" size="small">Główna</Button>
+              <Button component={Link} to="/" variant="text" color="info" size="small">Czat</Button>
               <Button component={Link} to="/info" variant="text" color="info" size="small">Info</Button>
               <Button component={Link} to="/inforaw" variant="text" color="info" size="small">Info Surowe</Button>
               <Button component={Link} to="/edit" variant="text" color="info" size="small">Edytuj</Button>
@@ -135,7 +135,7 @@ export default function AppAppBar() {
                 </Box>
 
                 <MenuItem>
-                  <Button component={Link} to="/" color="primary" variant="contained" fullWidth>Główna</Button>
+                  <Button component={Link} to="/" color="primary" variant="contained" fullWidth>Czat</Button>
                 </MenuItem>
                 <MenuItem>
                   <Button component={Link} to="/info" color="primary" variant="contained" fullWidth>Info</Button>
