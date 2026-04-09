@@ -89,3 +89,60 @@ INSERT INTO categories (description) VALUES ('Moda');
 INSERT INTO categories (description) VALUES ('Dom i ogród');
 
 COMMIT;
+
+CREATE DATABASE social_pg_chats
+    WITH 
+    OWNER = pguser
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.utf8'
+    LC_CTYPE = 'en_US.utf8'
+    TEMPLATE = template0;
+
+\c social_pg_chats;
+
+CREATE TABLE conversations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    metadata JSONB,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE conversation_participants (
+    conversation_id UUID NOT NULL REFERENCES conversations(id),
+    user_id UUID NOT NULL,
+    metadata JSONB,
+    PRIMARY KEY (conversation_id, user_id)
+);
+
+CREATE TABLE messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_id UUID NOT NULL REFERENCES conversations(id),
+    sender_id UUID NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    metadata JSONB
+);
+
+CREATE INDEX idx_messages_conversation_created_at
+    ON messages (conversation_id, created_at DESC);
+
+CREATE INDEX idx_participants_user_conversation
+    ON conversation_participants (user_id, conversation_id);
+
+CREATE INDEX idx_conversations_updated_at
+    ON conversations (updated_at DESC);
+
+CREATE OR REPLACE FUNCTION update_conversation_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE conversations
+    SET updated_at = now()
+    WHERE id = NEW.conversation_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER messages_after_insert
+AFTER INSERT ON messages
+FOR EACH ROW
+EXECUTE FUNCTION update_conversation_timestamp();
