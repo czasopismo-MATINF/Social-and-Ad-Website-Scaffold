@@ -6,6 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -30,4 +31,10 @@ public class Conversation {
 
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
+
+    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
+    private List<ConversationParticipant> participants;
+
+    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
+    private List<Message> messages;
 }
