@@ -168,6 +168,13 @@ services:
     logging:
       driver: json-file
 
+  chatms:
+    image: chat_ms:latest
+    container_name: social-chat-ms
+    restart: always
+    logging:
+      driver: json-file
+
 volumes:
   social-pgdata:
   social-pgadmindata:

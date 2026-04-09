@@ -37,6 +37,12 @@ spring:
                 - Path=/ads/**, /categories/**
               filters:
                 - RemoveRequestHeader=Cookie
+            - id: chat-service
+              uri: http://social-chat-ms:8080
+              predicates:
+                - Path=/messages/**, /conversations/**
+              filters:
+                - RemoveRequestHeader=Cookie
 
 server:
   port: 3020

@@ -5,4 +5,4 @@ scrape_configs:
   - job_name: 'spring-actuator'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['social-mainpage-ms:8080', 'social-ad-ms:8080', 'social-gateway-ms:3021']
+      - targets: ['social-mainpage-ms:8080', 'social-ad-ms:8080', 'social-chat-ms:8080', 'social-gateway-ms:3021']
