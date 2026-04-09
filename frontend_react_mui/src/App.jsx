@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 import keycloak from "./keycloak.js";
 
 import { useSelector, useDispatch } from 'react-redux'
-import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, categoriesLoaded } from '../store/slice.js'
+import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, categoriesLoaded, addTestMessage } from '../store/slice.js'
 
 import { Button } from '@mui/material'
 
@@ -21,7 +21,6 @@ import EditAdsComponent from './wrappers/EditAdsComponent.jsx'
 import EditAdComponent from './wrappers/EditAdComponent.jsx'
 import SearchAdsComponent from './wrappers/SearchAdsComponent.jsx'
 
-/* WEBSOCKET */
 import { Client } from '@stomp/stompjs';
 
 function getUserInfo(keycloak, dispatch) {
@@ -62,6 +61,43 @@ function getCategoriesInfo(keycloak, dispatch) {
     });
 }
 
+function connectToWebSocket(keycloak, dispatch) {
+
+  const client = new Client({
+    reconnectDelay: 5000,
+    webSocketFactory: () => {
+      const token = keycloak.token;
+      console.log(token);
+      //console.log(`ws://localhost:3020/websocket-ms?token=${token}`);
+      return new WebSocket(`ws://localhost:3020/websocket-ms?token=${token}`);
+    }
+  });
+
+  client.onConnect = () => {
+    console.log("Websocket connected.");
+    client.subscribe(`/topic/room.123`, msg => {
+      const body = JSON.parse(msg.body);
+      console.log(body);
+      dispatch(addTestMessage({
+        message: body
+      }));
+    });
+
+    for(let i = 0; i < 10; ++i) {
+      client.publish({
+        destination: '/app/test.send',
+        body: JSON.stringify({
+          content: `${i}`
+        }),
+      });
+    }
+  
+  };
+
+  client.activate();
+
+}
+
 function Main() {
   return <UI>
     Main
@@ -70,8 +106,9 @@ function Main() {
 
 function Info() {
   const userInfo = useSelector(state => state.example.userInfo);
+  const messages = useSelector(state => state.example.testMessages);
   return <UI>
-     <UserInfoComponentFieldSettings userInfo={userInfo}  />
+     {messages.map(m => <div>{m.message.content}</div>)}
   </UI>
 }
 
@@ -161,37 +198,10 @@ function B() {
 
 function App() {
 
-    useEffect(() => {
-
-      const client = new Client({
-        brokerURL: 'ws://localhost:3020/websocket-ms',
-        reconnectDelay: 5000,
-      });
-
-      client.onConnect = () => {
-
-        console.log("Connected!");
-        
-        client.subscribe('/topic/room.123', msg => {
-          console.log("Received:", msg.body);
-        });
-
-        client.publish({
-          destination: '/app/test.send',
-          body: JSON.stringify({ content: "Hi, this is client!" })
-        });
-      
-      };
-
-      client.activate();
-
-      return () => client.deactivate();
-
-  }, []);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
+    
     keycloak.init({ onLoad: "check-sso" })
     .then(() => {
       if (keycloak.authenticated) {
@@ -203,6 +213,9 @@ function App() {
       }
     })
     .catch(err => console.error("Keycloak init error:", err));
+
+    connectToWebSocket(keycloak, dispatch);
+
   }, []);
 
   return (
