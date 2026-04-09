@@ -1,17 +1,23 @@
 package matinf.czasopismo.social.chatms.controllers;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import matinf.czasopismo.social.chatms.api.ConversationsApi;
 import matinf.czasopismo.social.chatms.model.ConversationPage;
 import matinf.czasopismo.social.chatms.model.ConversationsListPage;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
 
+@RestController
+@Slf4j
 public class ConversationController implements matinf.czasopismo.social.chatms.api.ConversationsApi {
 
     @Override
     public ResponseEntity<ConversationsListPage> conversationsGet(List<UUID> participants) {
+        log.info("In Chat service.");
         return ConversationsApi.super.conversationsGet(participants);
     }
 
