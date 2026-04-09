@@ -2,8 +2,8 @@
 # Building and Running the Application:
 (mind that almost all commits', prs' comments and UI are in Polish)
 
-## Otworzenie projektów gateway_flux_ms i mainpage_ms i ad_ms i chat_ms i uruchomienie w każym z nich:
-## Open projects gateway_flux_mx and mainpage_ms and ad_ms and chat_ms and run in each of them:
+## Otworzenie projektów gateway_flux_ms i mainpage_ms i ad_ms i chat_ms i websocket_ms i uruchomienie w każym z nich:
+## Open projects gateway_flux_mx and mainpage_ms and ad_ms and chat_ms and websocket_ms and run in each of them:
 
 mvn clean install -DskipTests
 
@@ -17,6 +17,8 @@ docker build -t mainpage_ms:latest .
 docker build -t ad_ms:latest .
 
 docker build -t chat_ms:latest .
+
+docker build -t websocket_ms:latest .
 
 ### w katalogu docker-compose dodać katalogi (uważać na uprawnienia):
 ### in the docker-compose directory add directories (be careful with permissions):
