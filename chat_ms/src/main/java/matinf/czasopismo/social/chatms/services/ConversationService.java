@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import matinf.czasopismo.social.chatms.data.ConversationRepository;
 import matinf.czasopismo.social.chatms.data.Message;
 import matinf.czasopismo.social.chatms.data.MessageRepository;
+import matinf.czasopismo.social.chatms.exceptions.UserNotAuthorizedException;
 import matinf.czasopismo.social.chatms.mappers.ConversationMapper;
 import org.springframework.stereotype.Service;
 
@@ -31,10 +32,14 @@ public class ConversationService {
     }
 
     @Transactional
-    public matinf.czasopismo.social.chatms.model.ConversationPage getConversation(UUID id, boolean withMessages) {
+    public matinf.czasopismo.social.chatms.model.ConversationPage getConversation(UUID id, boolean withMessages, UUID uuid, String user) {
 
         var conversation = conversationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Conversation not found."));
+
+        if(conversation.getParticipants().stream().filter(p -> p.getId().getUserId().equals(uuid)).findAny().isEmpty()) {
+            throw new UserNotAuthorizedException(String.format("User %s not authorized to view this conversation.", user));
+        }
 
         List<Message> messages = List.of();
 
