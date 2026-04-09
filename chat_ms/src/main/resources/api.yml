@@ -1,0 +1,24 @@
+openapi: 3.0.0
+info:
+  title: Ad API
+  version: 1.0.0
+
+paths:
+  /conversations:
+    post:
+      summary: Create a new conversation.
+      parameters:
+        - name: participants
+          in: query
+          description: Participants of the conversation.
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+              format: UUID
+      responses:
+        200:
+          description: OK
+        409:
+          description: Chat is already created.
