@@ -26,7 +26,7 @@ public class ChatWebSocketController {
 
     @MessageMapping("/test.send")
     public void handleChatMessage(@Payload TestMessage message) {
-        log.info("Klient przesłał testową czat wiadomość: {}.", message.toString());
+        //log.info("Klient przesłał testową czat wiadomość: {}.", message.toString());
         producer.send(message);
     }
 

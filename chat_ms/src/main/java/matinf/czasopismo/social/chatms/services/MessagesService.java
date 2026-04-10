@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import matinf.czasopismo.social.chatms.data.*;
+import matinf.czasopismo.social.chatms.kafka.ChatKafkaProducer;
+import matinf.czasopismo.social.chatms.kafka.ChatMessage;
+import org.apache.kafka.common.KafkaException;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -20,6 +23,8 @@ public class MessagesService {
     private final MessageRepository messageRepository;
     private final ConversationRepository conversationRepository;
     private final ConversationParticipantRepository conversationParticipantRepository;
+
+    private final ChatKafkaProducer producer;
 
     @Transactional
     public void sendNewMessage(
@@ -74,6 +79,18 @@ public class MessagesService {
                 .content(content)
                 .createdAt(OffsetDateTime.now())
                 .build();
+
+        try {
+            this.producer.send(
+                    ChatMessage.builder()
+                            .from(from)
+                            .to(to)
+                            .conversationId(conversation.getId())
+                            .content(message.getContent())
+                            .createdAt(message.getCreatedAt()).build());
+        } catch(KafkaException ignored) {
+
+        }
 
         messageRepository.save(message);
     }

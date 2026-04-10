@@ -1,8 +1,8 @@
-package matinf.czasopismo.social.websocketms;
+package matinf.czasopismo.social.chatms.kafka;
 
 import lombok.*;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Builder
@@ -17,6 +17,6 @@ public class ChatMessage {
     private UUID to;
     private UUID conversationId;
     private String content;
-    private Instant createdAt;
+    private OffsetDateTime createdAt;
 
 }

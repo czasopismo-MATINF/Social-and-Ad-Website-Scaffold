@@ -1,0 +1,35 @@
+spring:
+
+  application:
+    name: chatms
+
+  datasource:
+    url: jdbc:postgresql://social-pg:5432/social_pg_chats
+    username: pguser
+    password: pgpassword
+    driver-class-name: org.postgresql.Driver
+
+  kafka:
+    bootstrap-servers: social-kafka-broker:9092
+    consumer:
+      group-id: chat-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    listener:
+      missing-topics-fatal: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+user:
+  service:
+    url: http://social-mainpage-ms:8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
