@@ -80,9 +80,12 @@ public class MessagesService {
                 .createdAt(OffsetDateTime.now())
                 .build();
 
+        messageRepository.save(message);
+
         try {
             this.producer.send(
                     ChatMessage.builder()
+                            .id(message.getId())
                             .from(from)
                             .to(to)
                             .conversationId(conversation.getId())
@@ -92,7 +95,6 @@ public class MessagesService {
 
         }
 
-        messageRepository.save(message);
     }
 
 

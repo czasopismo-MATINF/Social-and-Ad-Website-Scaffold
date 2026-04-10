@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 import keycloak from "./keycloak.js";
 
 import { useSelector, useDispatch } from 'react-redux'
-import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, categoriesLoaded, addTestMessage } from '../store/slice.js'
+import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, categoriesLoaded, addTestMessage, processMessage } from '../store/slice.js'
 
 import { Button } from '@mui/material'
 
@@ -91,7 +91,7 @@ function connectToWebSocket(keycloak, dispatch) {
       client.subscribe(`/user/queue/private`, msg => {
         const body = JSON.parse(msg.body);
         console.log(body);
-        //TODO: dodawanie nowej wiadomości do store redux
+        dispatch(processMessage(body));
       });
 
       for(let i = 0; i < 3; ++i) {

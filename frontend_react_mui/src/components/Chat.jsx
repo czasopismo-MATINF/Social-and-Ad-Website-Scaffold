@@ -14,7 +14,10 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import TwitterIcon from '@mui/icons-material/X';
 import SitemarkIcon from './SitemarkIcon.jsx';
 
+import { useSelector, useDispatch } from 'react-redux'
+
 function Copyright() {
+
   return (
     <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
       {'Copyright © '}
@@ -33,6 +36,10 @@ function Copyright() {
 }
 
 export default function Chat() {
+
+  const conversations = useSelector(state => state.example.conversations);
+  const [active, setActive] = React.useState(0);
+
   return (
     <React.Fragment>
       <Divider />
@@ -66,55 +73,21 @@ export default function Chat() {
             }}
           >
             <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-              Product
+              Rozmowy/użytkownicy:
             </Typography>
+{ conversations.map((c,i) =>
             <Link
+              onClick={() => {setActive(i)}}
               variant="body2"
               href="#"
               sx={{
                 color: 'text.secondary',
               }}
             >
-              Features
+              {c.id}
             </Link>
-            <Link
-              variant="body2"
-              href="#"
-              sx={{
-                color: 'text.secondary',
-              }}
-            >
-              Testimonials
-            </Link>
-            <Link
-              variant="body2"
-              href="#"
-              sx={{
-                color: 'text.secondary',
-              }}
-            >
-              Highlights
-            </Link>
-            <Link
-              variant="body2"
-              href="#"
-              sx={{
-                color: 'text.secondary',
-              }}
-            >
-              Pricing
-            </Link>
-            <Link
-              variant="body2"
-              href="#"
-              sx={{
-                color: 'text.secondary',
-              }}
-            >
-              FAQs
-            </Link>
+)}            
           </Box>
-          
 
           <Box
             sx={{
@@ -124,8 +97,9 @@ export default function Chat() {
             }}
           >
             <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-              Legal
+              Wiadomości:
             </Typography>
+{ conversations[active].messages.map(m =>
             <Link
               variant="body2"
               href="#"
@@ -133,65 +107,10 @@ export default function Chat() {
                 color: 'text.secondary',
               }}
             >
-              111111111111111111111111111111111111111111111111111111111
+              {m.content}:{m.from}
             </Link>
-                        <Link
-              variant="body2"
-              href="#"
-              sx={{
-                color: 'text.secondary',
-              }}
-            >
-              111111111111111111111111111111111111111111111111111111111
-            </Link>
-                        <Link
-              variant="body2"
-              href="#"
-              sx={{
-                color: 'text.secondary',
-              }}
-            >
-              111111111111111111111111111111111111111111111111111111111
-            </Link>
-                        <Link
-              variant="body2"
-              href="#"
-              sx={{
-                color: 'text.secondary',
-              }}
-            >
-              11111111111111111111\11111111111111111111111
-            </Link>
-                        <Link
-              variant="body2"
-              href="#"
-              sx={{
-                color: 'text.secondary',
-              }}
-            >
-              111111111111111111111111111111111111111111111111111111111
-            </Link>
-            <Link
-              variant="body2"
-              href="#"
-              sx={{
-                color: 'text.secondary',
-              }}
-            >
-              Privacy
-            </Link>
-            <Link
-              variant="body2"
-              href="#"
-              sx={{
-                color: 'text.secondary',
-              }}
-            >
-              Contact
-            </Link>
+)}
           </Box>
-
-
         </Box>
 
 

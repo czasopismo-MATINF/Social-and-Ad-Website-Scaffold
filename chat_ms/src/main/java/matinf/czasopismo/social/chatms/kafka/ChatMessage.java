@@ -14,6 +14,7 @@ import java.util.UUID;
 @ToString
 public class ChatMessage {
 
+    private UUID id;
     private UUID from;
     private UUID to;
     private UUID conversationId;
