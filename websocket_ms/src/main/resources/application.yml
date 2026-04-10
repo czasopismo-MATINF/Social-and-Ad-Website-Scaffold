@@ -15,6 +15,10 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
+user:
+  service:
+    url: http://social-mainpage-ms:8080
+
 management:
   server:
     port: 3021

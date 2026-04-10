@@ -19,6 +19,8 @@ import java.util.Base64;
 @Slf4j
 public class JwtGlobalFilter implements GlobalFilter, Ordered {
 
+    private final boolean LOG = false;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
@@ -32,16 +34,16 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
                 String[] parts = token.split("\\.");
                 String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
 
-                log.info("JWT payload: {}", payloadJson);
+                if(LOG) log.info("JWT payload: {}", payloadJson);
 
                 // Wyciągnięcie iss
                 JsonNode payload = new ObjectMapper().readTree(payloadJson);
                 String iss = payload.get("iss").asText();
 
-                log.info("JWT iss claim = {}", iss);
+                if(LOG) log.info("JWT iss claim = {}", iss);
 
             } catch (Exception e) {
-                log.error("Failed to decode JWT", e);
+                if(LOG) log.error("Failed to decode JWT", e);
             }
         }
 
@@ -49,7 +51,7 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
 
         if (auth != null && auth.startsWith("Bearer ")) {
 
-            log.info("Parsing JWT in JwtGlobalFilter {}", auth);
+            if(LOG) log.info("Parsing JWT in JwtGlobalFilter {}", auth);
 
             try {
 
@@ -69,7 +71,7 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
                 return chain.filter(exchange.mutate().request(mutated).build());
 
             } catch (Exception e) {
-                log.error("Exception in JwtGlobalFilter {}", e.toString());
+                if(LOG) log.error("Exception in JwtGlobalFilter {}", e.toString());
                 return chain.filter(exchange);
             }
         }

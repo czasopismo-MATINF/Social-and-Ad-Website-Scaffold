@@ -21,15 +21,21 @@ public class JwtService {
 
     private volatile JWKSet jwkSet;
 
+    private final boolean LOG = false;
+
     public JwtService() {
         refreshKeys();
     }
 
     public boolean validateToken(String token) {
-        log.info("Sprawdzam token: {}.", token);
+
+        if(LOG) log.info("Sprawdzam token: {}.", token);
+
         try {
             SignedJWT jwt = SignedJWT.parse(token);
-        log.info("1 {}.", jwt.toString());
+
+            if(LOG) log.info("1 {}.", jwt.toString());
+
             // 1. Pobierz klucz publiczny z JWKS
             JWK jwk = getKey(jwt.getHeader().getKeyID());
             if (jwk == null) {
@@ -37,31 +43,43 @@ public class JwtService {
                 jwk = getKey(jwt.getHeader().getKeyID());
                 if (jwk == null) return false;
             }
-        log.info("2 {}.", jwk.toString());
+
+            if(LOG) log.info("2 {}.", jwk.toString());
+
             // 2. Weryfikacja podpisu
             JWSVerifier verifier = new RSASSAVerifier((RSAKey) jwk);
             if (!jwt.verify(verifier)) return false;
-        log.info("3 {}.", verifier.toString());
-        log.info("Issuer {}.", jwt.getJWTClaimsSet().getIssuer());
+
+            if(LOG) log.info("3 {}.", verifier.toString());
+            if(LOG) log.info("Issuer {}.", jwt.getJWTClaimsSet().getIssuer());
+
             // 3. Weryfikacja issuer
             if (!issuer.equals(jwt.getJWTClaimsSet().getIssuer())) return false;
-        log.info("4.");
-        log.info(jwt.getJWTClaimsSet().getIssuer());
-        log.info(issuer);
+
+            if(LOG) log.info("4.");
+            if(LOG) log.info(jwt.getJWTClaimsSet().getIssuer());
+            if(LOG) log.info(issuer);
+
             // 4. Weryfikacja dat
             Date now = new Date();
-        log.info("4.5 {}.", jwt.getJWTClaimsSet().getExpirationTime().toString());
-        if(jwt.getJWTClaimsSet().getNotBeforeTime() != null) log.info("4.6 {}.", jwt.getJWTClaimsSet().getNotBeforeTime().toString());
-        log.info("4.7 {}.", now.toString());
+
+            if(LOG) log.info("4.5 {}.", jwt.getJWTClaimsSet().getExpirationTime().toString());
+            if(LOG) if(jwt.getJWTClaimsSet().getNotBeforeTime() != null) log.info("4.6 {}.", jwt.getJWTClaimsSet().getNotBeforeTime().toString());
+            if(LOG) log.info("4.7 {}.", now.toString());
+
             if (jwt.getJWTClaimsSet().getExpirationTime().before(now)) return false;
             if (jwt.getJWTClaimsSet().getNotBeforeTime() != null &&
                     jwt.getJWTClaimsSet().getNotBeforeTime().after(now)) return false;
-        log.info("5 {} zwracam true.", now.toString());
+
+            if(LOG) log.info("5 {} zwracam true.", now.toString());
+
             return true;
 
         } catch (Exception e) {
-            log.info("6 - zwracam false.");
+
+            if(LOG) log.info("6 - zwracam false.");
             return false;
+
         }
     }
 
@@ -77,4 +95,5 @@ public class JwtService {
             this.jwkSet = null;
         }
     }
+
 }

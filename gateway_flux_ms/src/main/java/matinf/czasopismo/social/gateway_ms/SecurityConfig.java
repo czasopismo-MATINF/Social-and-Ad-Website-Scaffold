@@ -1,5 +1,6 @@
 package matinf.czasopismo.social.gateway_ms;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -11,6 +12,9 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
+
+    @Value("${management.server.port}")
+    private String actuatorPort;
 
     @Bean
     @Order(1)
@@ -29,12 +33,12 @@ public class SecurityConfig {
                 .build();
     }
 
-    // Security dla portu 3021 (Actuator) — całkowicie odbezpieczony
+    // Security dla portu management.server.port (Actuator) — całkowicie odbezpieczony wewnątrz sieci wewnętrznej docker-compose
     @Bean
     @Order(0)
     public SecurityWebFilterChain actuatorSecurity(ServerHttpSecurity http) {
         return http
-                .securityMatcher(new PortSecurityMatcher(3021))
+                .securityMatcher(new PortSecurityMatcher(Integer.valueOf(this.actuatorPort)))
                 .authorizeExchange(exchanges -> exchanges
                         .anyExchange().permitAll()
                 )

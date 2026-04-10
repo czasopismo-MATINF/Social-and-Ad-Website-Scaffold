@@ -28,11 +28,9 @@ const client = new Client({
   reconnectDelay: 1000,
   webSocketFactory: () => {
     keycloak.updateToken(30);
-    const token = keycloak.token;
-    //console.log("Connecting to web socket." + token);
-    //console.log(token);
-    //console.log(`ws://localhost:3020/websocket-ms?token=${token}`);
-    return new WebSocket(`ws://localhost:3020/websocket-ms?token=${token}`);
+    console.log("Connecting to web socket.");
+    //console.log("Connecting to web socket." + keycloak.token);
+    return new WebSocket(`ws://localhost:3020/websocket-ms?token=${keycloak.token}`);
   }
 });
 
@@ -101,6 +99,8 @@ function connectToWebSocket(keycloak, dispatch) {
 
     client.activate();
 
+  } else {
+    console.log("Websocket client already connected.");
   }
 
 }
@@ -215,6 +215,9 @@ function App() {
         dispatch(keycloakLoggedIn());
         getUserInfo(keycloak, dispatch);
         getCategoriesInfo(keycloak, dispatch);
+
+        connectToWebSocket(keycloak, dispatch);
+      
       } else {
         dispatch(keycloakLoggedOut());
       }
