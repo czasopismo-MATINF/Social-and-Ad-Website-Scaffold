@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 import keycloak from "./keycloak.js";
 
 import { useSelector, useDispatch } from 'react-redux'
-import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, categoriesLoaded } from '../store/slice.js'
+import { increment, decrement, keycloakLoggedIn, keycloakLoggedOut, userInfoCollected, categoriesLoaded, addTestMessage, processMessage } from '../store/slice.js'
 
 import { Button } from '@mui/material'
 
@@ -20,9 +20,19 @@ import EditUserInfoComponentFieldSettings from './EditUserInfoComponentFieldSett
 import EditAdsComponent from './wrappers/EditAdsComponent.jsx'
 import EditAdComponent from './wrappers/EditAdComponent.jsx'
 import SearchAdsComponent from './wrappers/SearchAdsComponent.jsx'
+import ChatComponent from './wrappers/ChatComponent.jsx'
 
-/* WEBSOCKET */
 import { Client } from '@stomp/stompjs';
+
+const client = new Client({
+  reconnectDelay: 2000,
+  webSocketFactory: () => {
+    keycloak.updateToken(30);
+    console.log("Connecting to web socket.");
+    //console.log("Connecting to web socket." + keycloak.token);
+    return new WebSocket(`ws://localhost:3020/websocket-ms?token=${keycloak.token}`);
+  }
+});
 
 function getUserInfo(keycloak, dispatch) {
     console.log("GETTING USER INFO");
@@ -62,10 +72,52 @@ function getCategoriesInfo(keycloak, dispatch) {
     });
 }
 
-function Main() {
-  return <UI>
-    Main
-  </UI>
+function connectToWebSocket(keycloak, dispatch) {
+
+  if(!client.connected) {
+
+    client.onConnect = () => {
+
+      console.log("Websocket connected.");
+      
+      client.subscribe(`/topic/room.123`, msg => {
+        const body = JSON.parse(msg.body);
+        console.log(body);
+        dispatch(addTestMessage({
+          message: body
+        }));
+      });
+
+      client.subscribe(`/user/queue/private`, msg => {
+        const body = JSON.parse(msg.body);
+        console.log(body);
+        dispatch(processMessage(body));
+      });
+
+      for(let i = 0; i < 3; ++i) {
+        client.publish({
+          destination: '/app/test.send',
+          body: JSON.stringify({
+            content: `${i}`
+          }),
+        });
+      }
+
+    };
+
+    client.activate();
+
+  } else {
+    console.log("Websocket client already connected.");
+  }
+
+}
+
+function Chat() {
+  const userInfo = useSelector(state => state.example.userInfo);
+  const messages = useSelector(state => state.example.testMessages);
+  return <ChatComponent>
+  </ChatComponent>
 }
 
 function Info() {
@@ -161,55 +213,34 @@ function B() {
 
 function App() {
 
-    useEffect(() => {
-
-      const client = new Client({
-        brokerURL: 'ws://localhost:3020/websocket-ms',
-        reconnectDelay: 5000,
-      });
-
-      client.onConnect = () => {
-
-        console.log("Connected!");
-        
-        client.subscribe('/topic/room.123', msg => {
-          console.log("Received:", msg.body);
-        });
-
-        client.publish({
-          destination: '/app/test.send',
-          body: JSON.stringify({ content: "Hi, this is client!" })
-        });
-      
-      };
-
-      client.activate();
-
-      return () => client.deactivate();
-
-  }, []);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
+    
     keycloak.init({ onLoad: "check-sso" })
     .then(() => {
       if (keycloak.authenticated) {
         dispatch(keycloakLoggedIn());
         getUserInfo(keycloak, dispatch);
         getCategoriesInfo(keycloak, dispatch);
+
+        connectToWebSocket(keycloak, dispatch);
+      
       } else {
         dispatch(keycloakLoggedOut());
       }
     })
     .catch(err => console.error("Keycloak init error:", err));
+
+    connectToWebSocket(keycloak, dispatch);
+
   }, []);
 
   return (
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Main />} />
+        <Route path="/" element={<Chat />} />
         <Route path="/info" element={<Info />} />
         <Route path="/inforaw" element={<InfoRaw />} />
         <Route path="/edit" element={<Edit />} />

@@ -1,7 +1,6 @@
-package matinf.czasopismo.social.websocketms;
+package matinf.czasopismo.social.chatms.kafka;
 
 import lombok.RequiredArgsConstructor;
-import matinf.czasopismo.social.chatms.kafka.ChatMessage;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -10,14 +9,9 @@ import org.springframework.stereotype.Service;
 public class ChatKafkaProducer {
 
     private final KafkaTemplate<String, ChatMessage> kafkaTemplate;
-    private final KafkaTemplate<String, TestMessage> kafkaTestTemplate;
 
     public void send(ChatMessage message) {
         kafkaTemplate.send("chat.messages", "roomId", message);
-    }
-
-    public void send(TestMessage message) {
-        kafkaTestTemplate.send("test.messages", "roomId", message);
     }
 
 }

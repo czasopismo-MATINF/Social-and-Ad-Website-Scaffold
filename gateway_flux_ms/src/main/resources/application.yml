@@ -49,6 +49,7 @@ spring:
                 - Path=/websocket-ms/**
               filters:
                 - StripPrefix=0
+                - WebSocketAuthFilter
 
 
 server:

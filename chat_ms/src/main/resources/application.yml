@@ -1,6 +1,14 @@
 spring:
+
   application:
-    name: websocketms
+    name: chatms
+
+  datasource:
+    url: jdbc:postgresql://social-pg:5432/social_pg_chats
+    username: pguser
+    password: pgpassword
+    driver-class-name: org.postgresql.Driver
+
   kafka:
     bootstrap-servers: social-kafka-broker:9092
     consumer:
@@ -20,9 +28,8 @@ user:
     url: http://social-mainpage-ms:8080
 
 management:
-  server:
-    port: 3021
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus,gateway
+        include: health,info,metrics,prometheus
+
