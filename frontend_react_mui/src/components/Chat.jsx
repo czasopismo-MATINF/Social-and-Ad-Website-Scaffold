@@ -15,6 +15,9 @@ import TwitterIcon from '@mui/icons-material/X';
 import SitemarkIcon from './SitemarkIcon.jsx';
 
 import { useSelector, useDispatch } from 'react-redux'
+import { useState } from "react";
+
+import keycloak from "../keycloak.js";
 
 function Copyright() {
 
@@ -35,6 +38,72 @@ function Copyright() {
   );
 }
 
+const SimpleMessageForm = () => {
+
+  const userInfo = useSelector(state => state.example.userInfo);
+  const [to, setTo] = useState("");
+  const [content, setContent] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const payload = { to, content };
+
+    try {
+      const response = await fetch("http://localhost:3020/messages", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: to,
+          from: userInfo.id,
+          content: content
+        }),
+      });
+
+      if (!response.ok) {
+        // obsługa błędu
+        console.error("Błąd wysyłania");
+        return;
+      }
+
+      // opcjonalnie: czyszczenie formularza
+      setTo("");
+      setContent("");
+    } catch (err) {
+      console.error("Błąd sieci:", err);
+    }
+  };
+
+  return (
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{ display: "flex", flexDirection: "column", gap: 2, width: 400 }}
+    >
+      <TextField
+        label="To"
+        value={to}
+        onChange={(e) => setTo(e.target.value)}
+        fullWidth
+      />
+      <TextField
+        label="Content"
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        fullWidth
+        multiline
+        minRows={3}
+      />
+      <Button type="submit" variant="outlined">
+        Wyślij
+      </Button>
+    </Box>
+  );
+};
+
 export default function Chat() {
 
   const conversations = useSelector(state => state.example.conversations);
@@ -54,7 +123,7 @@ export default function Chat() {
         }}
       >
 
-
+      <SimpleMessageForm />
 
         <Box
           sx={{
@@ -99,7 +168,7 @@ export default function Chat() {
             <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
               Wiadomości:
             </Typography>
-{ conversations[active].messages.map(m =>
+{ conversations[active]?.messages.map(m =>
             <Link
               variant="body2"
               href="#"
