@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
 import TwoColumnPage from "./pages/TwoColumnPage";
 import UserAdsListPage from "./pages/UserAdsListPage";
+import AdsListPage from "./pages/AdsListPage";
 
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -97,6 +98,7 @@ const App = () => {
           <Route path="/" element={<div>Witaj na stronie głównej</div>} />
           <Route path="/two-columns" element={<TwoColumnPage />} />
           <Route path="/userads" element={<UserAdsListPage />} />
+          <Route path="/ads" element={<AdsListPage />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>
