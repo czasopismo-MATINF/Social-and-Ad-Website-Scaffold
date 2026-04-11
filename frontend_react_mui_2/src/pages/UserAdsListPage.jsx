@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -22,7 +22,7 @@ import { useSelector } from 'react-redux';
 import NewAdForm from '../components/NewAdForm.jsx'
 import EditAdInlineForm from '../components/EditAdInlineForm.jsx'
 
-function getUserAds(keycloak, userInfo, pageNumber, pageSize, setAds) {
+function getUserAds(keycloak, userInfo, pageNumber, pageSize, callback) {
     console.log("GETTING USER ADS");
     if(!keycloak.authenticated) {
       console.log("User not authenticated, skipping user info fetch");
@@ -38,7 +38,7 @@ function getUserAds(keycloak, userInfo, pageNumber, pageSize, setAds) {
 
     .then(data => {
       console.log("USER ADS FETCHED", data);
-      setAds(data);
+      if(callback) callback(data);
     });
 }
 
@@ -77,10 +77,40 @@ const UserAdsListPage = () => {
 
   const [page, setPage] = React.useState(initialPage - 1);
   const [ads, setAds] = React.useState(null);
+  const [visibilityAds, setVisibilityAds] = useState(null);
   
+  const updateVisibilityAds = (newAds) => {
+    newAds.content.forEach(ad => {
+      ad.editFormHidden = true;
+    })
+    if(!ads) return newAds;
+    ads.content.forEach(sa => {
+      let na = newAds.content.filter(na => na.id === sa.id)[0];
+      if(na) {
+        na.editFormHidden = sa.editFormHidden;
+      }
+    })
+    return newAds;
+  }
+
+  const hideAdEditForm = (ad) => {
+    let a = ads.content.filter(a => a.id === ad.id)[0];
+    if(a) a.editFormHidden = true;
+    setAds({...ads});
+  }
+
+  const showAdEditForm = (ad) => {
+    let a = ads.content.filter(a => a.id === ad.id)[0];
+    if(a) a.editFormHidden = false;
+    setAds({...ads});
+  }
+
   React.useEffect(() => {
     if (userInfo && userInfo.user) {
-        getUserAds(keycloak, userInfo, page, pageSize, setAds);
+        getUserAds(keycloak, userInfo, page, pageSize, (ads) => {
+          ads = updateVisibilityAds(ads);
+          setAds(ads);
+        });
     }
   }, [userInfo, page]);
 
@@ -90,7 +120,10 @@ const UserAdsListPage = () => {
   };
 
   const reloadAds = () => {
-     getUserAds(keycloak, userInfo, page, pageSize, setAds);
+     getUserAds(keycloak, userInfo, page, pageSize, (ads) => {
+      ads = updateVisibilityAds(ads);
+      setAds(ads);
+     });
   }
 
   return (
@@ -115,6 +148,7 @@ const UserAdsListPage = () => {
           </TableHead>
 
           <TableBody>
+
             {ads?.content?.map(ad => (
               
               <>
@@ -139,7 +173,7 @@ const UserAdsListPage = () => {
                     variant="outlined"
                     color="primary"
                     sx={{ mr: 1 }}
-                    onClick={() => console.log("EDIT", ad.id)}
+                    onClick={() => {showAdEditForm(ad);}}
                   >
                     Edytuj
                   </Button>
@@ -154,10 +188,14 @@ const UserAdsListPage = () => {
                 </TableCell>
               </TableRow>
 
-              <EditAdInlineForm ad={ad} reloadAds={reloadAds} />
+              {!ad.editFormHidden && <EditAdInlineForm ad={ad} reloadAds={() => {
+                hideAdEditForm(ad);
+                reloadAds();
+              }}/>}
               
               </>
             ))}
+
           </TableBody>
 
         </Table>

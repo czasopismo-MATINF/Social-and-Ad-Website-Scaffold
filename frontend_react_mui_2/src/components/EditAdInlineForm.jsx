@@ -74,7 +74,7 @@ return (
             fullWidth
             multiline
             /></TableCell>
-    <TableCell colspan={3}><TextField
+    <TableCell colSpan={3}><TextField
             label="Tytuł"
             value={content}
             onChange={(e) => setContent(e.target.value)}
