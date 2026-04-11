@@ -20,6 +20,7 @@ import { useSearchParams } from "react-router-dom";
 import { useSelector } from 'react-redux';
 
 import NewAdForm from '../components/NewAdForm.jsx'
+import EditAdInlineForm from '../components/EditAdInlineForm.jsx'
 
 function getUserAds(keycloak, userInfo, pageNumber, pageSize, setAds) {
     console.log("GETTING USER ADS");
@@ -115,6 +116,9 @@ const UserAdsListPage = () => {
 
           <TableBody>
             {ads?.content?.map(ad => (
+              
+              <>
+              
               <TableRow key={ad.id}>
                 <TableCell>{ad.title}</TableCell>
 
@@ -149,6 +153,10 @@ const UserAdsListPage = () => {
                   </Button>
                 </TableCell>
               </TableRow>
+
+              <EditAdInlineForm ad={ad} reloadAds={reloadAds} />
+              
+              </>
             ))}
           </TableBody>
 
