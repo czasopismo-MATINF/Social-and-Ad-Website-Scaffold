@@ -1,7 +1,12 @@
 import React from "react";
-import { Box, Typography, Paper, TextField } from "@mui/material";
+import { Box, Typography, Paper, TextField, Button } from "@mui/material";
 
 import MessageInput from "../components/MessageInput";
+
+import keycloak from "../keycloak.js";
+
+import { useSelector, useDispatch } from 'react-redux';
+import * as Reducers from '../store/slice.js'
 
 const messagesMock = [
   { id: 1, text: "Cześć! Jak mogę pomóc?", side: "left" },
@@ -18,8 +23,63 @@ const messagesMock = [
   { id: 3, text: "Jasne, już wyświetlam!", side: "left" },
 ];
 
+function getConversations(keycloak, userInfo, number, before, callback) {
+    console.log("GETTING USER CONVERSATIONS");
+    if(!keycloak.authenticated) {
+      console.log("User not authenticated, skipping conversations fetch");
+      return;
+    }
+    const url = `http://localhost:3020/conversations?participants=${userInfo.user.id}&number=${number}${
+      before ? `&before=${before}` : ""
+    }`;
+
+    //console.log(url);
+    
+    fetch(url, {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + keycloak.token,
+        "Content-Type": "application/json"
+      }
+    }).then(res => res.json())
+    .then(data => {
+      console.log("USER CONVERSATIONS FETCHED", data);
+      if(callback) callback(data);
+    });
+}
+
+const getOldestConversation = (conversations) => {
+  if (!conversations.length) return null;
+  return conversations.reduce((oldest, conv) =>
+    new Date(conv.updatedAt) < new Date(oldest.updatedAt) ? conv : oldest
+  );
+};
+
+
 const ChatPage = () => {
+
+  const userInfo = useSelector(state => state.main.userInfo);
+  const conversations = useSelector(state => state.main.conversations);
+
   const [messages, setMessages] = React.useState(messagesMock);
+
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    if(userInfo && userInfo.user) {
+      getConversations(keycloak, userInfo, 2, null, (data) => {
+        dispatch(Reducers.resetConversations(data));
+      });
+    }
+  }, [userInfo]);
+
+  const moreConversations = () => {
+    const oldestConversation = getOldestConversation(conversations.conversations);
+    const before = oldestConversation.updatedAt;
+    getConversations(keycloak, userInfo, 2, before, (data) => {
+      dispatch(Reducers.addConversations(data));
+    });
+  }
 
   return (
     <Box
@@ -32,8 +92,7 @@ const ChatPage = () => {
       }}
     >
 
-
-            {/* Lewa kolumna */}
+      {/* Lewa kolumna */}
       <Box
         sx={{
           width: "30%",
@@ -47,9 +106,17 @@ const ChatPage = () => {
 
         <MessageInput onSend={(msg) => console.log("Wysyłam:", msg)} />
 
-        {[...Array(30)].map((_, i) => (
-          <Typography key={i}>Element {i + 1}</Typography>
+        {conversations?.conversations.map((_, i) => (
+          <Typography key={i}>{_.id}</Typography>
         ))}
+        <Button
+        variant='outlined'
+        color='primary'
+        sx={{ mr: 1 }}
+        onClick={moreConversations}
+        >
+          Więcej
+        </Button>
       </Box>
 
       {/* PRAWA KOLUMNA — CHAT */}

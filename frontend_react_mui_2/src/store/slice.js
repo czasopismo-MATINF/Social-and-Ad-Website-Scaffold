@@ -8,7 +8,7 @@ const slice = createSlice({
     keycloakLoggedIn: false,
     userInfo : null,
     categoriesInfo: null,
-    conversations: [],
+    conversations: null,
   },
 
   reducers: {
@@ -23,6 +23,12 @@ const slice = createSlice({
       state.categoriesInfo = {
         categories : action.payload,
     }},
+    resetConversations: (state, action) => {
+      state.conversations = action.payload;
+    },
+    addConversations: (state, action) => {
+      
+    },
     
   }
 })
@@ -32,7 +38,9 @@ export const {
   keycloakLoggedOut,
   userInfoCollected,
   categoriesInfoCollected,
-  
+  resetConversations,
+  addConversations,
+
 } = slice.actions
 
 export default slice.reducer
