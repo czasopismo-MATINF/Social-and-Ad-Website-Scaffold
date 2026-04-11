@@ -1,7 +1,7 @@
 import * as React from "react"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
-import TwoColumnPage from "./pages/TwoColumnPage";
+import ChatPage from "./pages/ChatPage";
 import UserAdsListPage from "./pages/UserAdsListPage";
 import AdsListPage from "./pages/AdsListPage";
 
@@ -96,7 +96,7 @@ const App = () => {
       <AppLayout>
         <Routes>
           <Route path="/" element={<div>Witaj na stronie głównej</div>} />
-          <Route path="/two-columns" element={<TwoColumnPage />} />
+          <Route path="/chat" element={<ChatPage />} />
           <Route path="/userads" element={<UserAdsListPage />} />
           <Route path="/ads" element={<AdsListPage />} />
         </Routes>

@@ -26,13 +26,13 @@ const TopMenu = () => {
           Strona główna
         </Button>
 
-        <Button color="inherit" component={RouterLink} to="/two-columns">
-          Dwie kolumny
-        </Button>
-
         <Button color="inherit" component={RouterLink} to="/ads">
           Ogłoszenia
         </Button>
+
+        {keycloakLoggedIn && <Button color="inherit" component={RouterLink} to="/chat">
+          Czat
+        </Button>}
 
         {keycloakLoggedIn && <Button color="inherit" component={RouterLink} to="/userads">
           Ogłoszenia Użytkownika
