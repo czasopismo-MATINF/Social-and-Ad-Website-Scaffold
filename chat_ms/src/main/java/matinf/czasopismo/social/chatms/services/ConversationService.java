@@ -86,7 +86,7 @@ public class ConversationService {
                 if(number == null || number <= 0) {
                     //
                 } else {
-                    messages.addAll(this.messageRepository.findTopNByConversationIdOrderByCreatedAtDesc(conversation.getId(), PageRequest.of(0, number)));
+                    messages.addAll(this.messageRepository.findByConversationIdOrderByCreatedAtDesc(conversation.getId(), PageRequest.of(0, number)));
                 }
             } else {
                 if(number == null || number <= 0) {
