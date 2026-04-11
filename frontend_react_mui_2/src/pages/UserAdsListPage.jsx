@@ -41,6 +41,26 @@ function getUserAds(keycloak, userInfo, pageNumber, pageSize, setAds) {
     });
 }
 
+async function deleteAd(keycloak, ad, reloadAds) {
+  try {
+    const response = await fetch(`http://localhost:3020/ads/${ad.id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": "Bearer " + keycloak.token
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Błąd podczas usuwania ogłoszenia");
+    }
+
+    if(reloadAds) reloadAds();
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const UserAdsListPage = () => {
   
   const userInfo = useSelector(state => state.main.userInfo);
@@ -123,7 +143,7 @@ const UserAdsListPage = () => {
                   <Button
                     variant="outlined"
                     color="error"
-                    onClick={() => console.log("DELETE", ad.id)}
+                    onClick={() => deleteAd(keycloak, ad, reloadAds)}
                   >
                     Usuń
                   </Button>
