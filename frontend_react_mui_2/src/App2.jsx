@@ -2,6 +2,7 @@ import * as React from "react"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
 import TwoColumnPage from "./pages/TwoColumnPage";
+import UserAdsListPage from "./pages/UserAdsListPage";
 
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -28,6 +29,25 @@ function getUserInfo(keycloak, dispatch) {
     });
 }
 
+function getCategoriesInfo(keycloak, dispatch) {
+    console.log("GETTING CATEGORIES INFO");
+    if(!keycloak.authenticated) {
+      console.log("User not authenticated, skipping user info fetch");
+      return;
+    }
+    fetch(`http://localhost:3020/categories`, {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + keycloak.token,
+        "Content-Type": "application/json"
+      }
+    }).then(res => res.json())
+    .then(data => {
+      console.log("CATEGORIES INFO FETCHED", data);
+      dispatch(Reducers.categoriesInfoCollected(data));
+    });
+}
+
 const App = () => {
 
   const dispatch = useDispatch();
@@ -38,6 +58,7 @@ const App = () => {
       console.log("Keycloak onAuthSuccess");
       dispatch(Reducers.keycloakLoggedIn());
       getUserInfo(keycloak, dispatch);
+      getCategoriesInfo(keycloak, dispatch);
     };
 
     keycloak.onAuthLogout = () => {
@@ -75,6 +96,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<div>Witaj na stronie głównej</div>} />
           <Route path="/two-columns" element={<TwoColumnPage />} />
+          <Route path="/userads" element={<UserAdsListPage />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>

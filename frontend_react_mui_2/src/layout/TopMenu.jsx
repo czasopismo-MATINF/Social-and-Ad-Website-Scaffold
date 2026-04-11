@@ -30,6 +30,10 @@ const TopMenu = () => {
           Dwie kolumny
         </Button>
 
+        {keycloakLoggedIn && <Button color="inherit" component={RouterLink} to="/userads">
+          Ogłoszenia Użytkownika
+        </Button>}
+
         {/* Dodawaj kolejne wpisy tutaj */}
         {/* <Button color="inherit" component={RouterLink} to="/inna">Inna</Button> */}
 
