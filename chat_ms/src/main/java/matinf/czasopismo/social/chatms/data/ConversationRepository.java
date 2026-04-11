@@ -60,7 +60,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, UUID
         GROUP BY cp.conversation_id
         HAVING COUNT(DISTINCT cp.user_id) = :participantsCount
     )
-    AND (:before IS NULL OR c.updated_at <= :before)
+    AND c.updated_at <= COALESCE(CAST(:before AS timestamptz), c.updated_at)
     ORDER BY c.updated_at DESC
     LIMIT :number
     """,
