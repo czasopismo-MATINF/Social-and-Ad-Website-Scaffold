@@ -8,7 +8,7 @@ const slice = createSlice({
     keycloakLoggedIn: false,
     userInfo : null,
     categoriesInfo: null,
-    conversations: null,
+    conversations: { conversations: [] },
   },
 
   reducers: {
@@ -27,7 +27,27 @@ const slice = createSlice({
       state.conversations = action.payload;
     },
     addConversations: (state, action) => {
+
+      let oldConversations = state.conversations.conversations;
+      let newConversations = action.payload.conversations;
+
+      const mergeConversations = (oldConversations, newConversations) => {
+        const map = new Map();
+        for (const conv of newConversations) {
+          map.set(conv.id, conv);
+        }
+        for (const conv of oldConversations) {
+          map.set(conv.id, conv);
+        }
+        return [...map.values()].sort(
+          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+        );
+      };
       
+      state.conversations = {
+        conversations: mergeConversations(oldConversations, newConversations)
+      };
+
     },
     
   }

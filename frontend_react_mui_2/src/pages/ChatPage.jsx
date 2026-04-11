@@ -55,7 +55,6 @@ const getOldestConversation = (conversations) => {
   );
 };
 
-
 const ChatPage = () => {
 
   const userInfo = useSelector(state => state.main.userInfo);
@@ -68,7 +67,7 @@ const ChatPage = () => {
   React.useEffect(() => {
     if(userInfo && userInfo.user) {
       getConversations(keycloak, userInfo, 2, null, (data) => {
-        dispatch(Reducers.resetConversations(data));
+        dispatch(Reducers.addConversations(data));
       });
     }
   }, [userInfo]);
@@ -76,7 +75,7 @@ const ChatPage = () => {
   const moreConversations = () => {
     const oldestConversation = getOldestConversation(conversations.conversations);
     const before = oldestConversation.updatedAt;
-    getConversations(keycloak, userInfo, 2, before, (data) => {
+    getConversations(keycloak, userInfo, 3, before, (data) => {
       dispatch(Reducers.addConversations(data));
     });
   }
@@ -106,7 +105,7 @@ const ChatPage = () => {
 
         <MessageInput onSend={(msg) => console.log("Wysyłam:", msg)} />
 
-        {conversations?.conversations.map((_, i) => (
+        {conversations?.conversations?.map((_, i) => (
           <Typography key={i}>{_.id}</Typography>
         ))}
         <Button
