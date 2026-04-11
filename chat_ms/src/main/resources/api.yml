@@ -72,6 +72,22 @@ paths:
           description: Should also conversation messages be returned.
           schema:
             type: boolean
+        - name: before
+          in: query
+          description: Filter messages earlier than ...
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: number
+          in: query
+          description: How many messages to return.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 100
       responses:
         '200':
           description: Conversation with its messages.

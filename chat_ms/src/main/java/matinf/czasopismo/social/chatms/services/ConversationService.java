@@ -7,9 +7,12 @@ import matinf.czasopismo.social.chatms.data.Message;
 import matinf.czasopismo.social.chatms.data.MessageRepository;
 import matinf.czasopismo.social.chatms.exceptions.UserNotAuthorizedException;
 import matinf.czasopismo.social.chatms.mappers.ConversationMapper;
+import matinf.czasopismo.social.chatms.model.ConversationPage;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,7 +56,7 @@ public class ConversationService {
             throw new UserNotAuthorizedException(String.format("User %s not authorized to view this conversation.", user));
         }
 
-        List<Message> messages = List.of();
+        List<Message> messages = new LinkedList<>();
 
         if (withMessages) {
             messages = messageRepository.findByConversationIdOrderByCreatedAtDesc(id);
@@ -63,4 +66,38 @@ public class ConversationService {
 
     }
 
+    @Transactional
+    public ConversationPage getConversation(UUID id, Boolean withMessages, UUID uuid, String user, OffsetDateTime before, Integer number) {
+
+        var conversation = conversationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Conversation not found."));
+
+        if(conversation.getParticipants().stream().filter(p -> p.getId().getUserId().equals(uuid)).findAny().isEmpty()) {
+            throw new UserNotAuthorizedException(String.format("User %s not authorized to view this conversation.", user));
+        }
+
+        List<Message> messages = new LinkedList<>();
+
+        if (withMessages) {
+
+            if(before == null) {
+                if(number == null || number <= 0) {
+                    //
+                } else {
+                    messages.addAll(this.messageRepository.findTopNByConversationIdOrderByCreatedAtDesc(conversation.getId(), PageRequest.of(0, number)));
+                }
+            } else {
+                if(number == null || number <= 0) {
+                    //
+                } else {
+                    messages.addAll(this.messageRepository.findByConversationIdAndCreatedAtLessThanEqualOrderByCreatedAtDesc(conversation.getId(), before, PageRequest.of(0, number)));
+                }
+            }
+
+            //messages = messageRepository.findByConversationIdOrderByCreatedAtDesc(id);
+        }
+
+        return conversationMapper.toConversationPage(conversation, messages);
+
+    }
 }

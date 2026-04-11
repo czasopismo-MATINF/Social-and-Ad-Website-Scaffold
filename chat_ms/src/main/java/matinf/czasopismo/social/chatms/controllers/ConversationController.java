@@ -45,6 +45,19 @@ public class ConversationController implements matinf.czasopismo.social.chatms.a
     }
 
     @Override
+    public ResponseEntity<ConversationPage> conversationsIdGet(UUID id, Boolean withMessages, OffsetDateTime before, Integer number) {
+        String user = request.getHeader("X-Username");
+        UserFeignDto userFeignDto;
+        try {
+            userFeignDto = this.userClient.getUser(user);
+        } catch (FeignException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+        //log.info("Number: {}", number);
+        return ResponseEntity.ok(this.conversationService.getConversation(id, withMessages, userFeignDto.uuid(), user, before, number));
+    }
+
+    /*
     public ResponseEntity<ConversationPage> conversationsIdGet(UUID id, Boolean withMessages) {
         String user = request.getHeader("X-Username");
         UserFeignDto userFeignDto;
@@ -55,5 +68,6 @@ public class ConversationController implements matinf.czasopismo.social.chatms.a
         }
         return ResponseEntity.ok(this.conversationService.getConversation(id, withMessages, userFeignDto.uuid(), user));
     }
+    */
 
 }
