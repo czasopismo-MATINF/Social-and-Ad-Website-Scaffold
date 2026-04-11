@@ -4,6 +4,7 @@ import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import matinf.czasopismo.social.chatms.api.ConversationsApi;
 import matinf.czasopismo.social.chatms.data.UserFeignDto;
 import matinf.czasopismo.social.chatms.exceptions.UserNotAuthorizedException;
 import matinf.czasopismo.social.chatms.feign.UserFeignClient;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import matinf.czasopismo.social.chatms.services.ConversationService;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,7 +28,7 @@ public class ConversationController implements matinf.czasopismo.social.chatms.a
     private final UserFeignClient userClient;
 
     @Override
-    public ResponseEntity<ConversationsListPage> conversationsGet(List<UUID> participants) {
+    public ResponseEntity<ConversationsListPage> conversationsGet(List<UUID> participants, Integer number, OffsetDateTime before) {
         String user = request.getHeader("X-Username");
         UserFeignDto userFeignDto;
         try {
@@ -38,7 +40,7 @@ public class ConversationController implements matinf.czasopismo.social.chatms.a
             throw new UserNotAuthorizedException(String.format("User %s not authorized to view this conversations.", user));
         }
         return ResponseEntity.ok(
-                conversationService.getConversations(participants)
+                conversationService.getConversations(participants, number, before)
         );
     }
 

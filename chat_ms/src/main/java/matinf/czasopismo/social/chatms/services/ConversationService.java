@@ -9,6 +9,7 @@ import matinf.czasopismo.social.chatms.exceptions.UserNotAuthorizedException;
 import matinf.czasopismo.social.chatms.mappers.ConversationMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,14 +22,25 @@ public class ConversationService {
     private final ConversationMapper conversationMapper;
 
     @Transactional
-    public matinf.czasopismo.social.chatms.model.ConversationsListPage getConversations(List<UUID> participants) {
+    public matinf.czasopismo.social.chatms.model.ConversationsListPage getConversations(List<UUID> participants, Integer number, OffsetDateTime before) {
 
-        var conversations = conversationRepository.findConversationsByParticipants(
-                participants,
-                participants.size()
-        );
+        if(before != null) {
+            var conversations = conversationRepository.findConversationsByParticipantsBefore(
+                    participants,
+                    participants.size(),
+                    number,
+                    before
+            );
+            return conversationMapper.toConversationsListPage(conversations);
+        } else {
+            var conversations = conversationRepository.findConversationsByParticipantsBefore(
+                    participants,
+                    participants.size(),
+                    number
+            );
+            return conversationMapper.toConversationsListPage(conversations);
+        }
 
-        return conversationMapper.toConversationsListPage(conversations);
     }
 
     @Transactional

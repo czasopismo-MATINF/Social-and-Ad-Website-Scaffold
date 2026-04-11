@@ -31,6 +31,22 @@ paths:
             items:
               type: string
               format: uuid
+        - name: before
+          in: query
+          description: Filter conversations earlier than ...
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: number
+          in: query
+          description: How many conversations to return.
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
       responses:
         '200':
           description: List of conversations.
