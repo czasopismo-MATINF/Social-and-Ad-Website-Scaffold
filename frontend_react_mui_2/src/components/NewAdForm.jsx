@@ -20,7 +20,7 @@ export default function NewAdForm({ reloadAds }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
-  const [hidden, setHidden] = useState(false);
+  const [hidden, setHidden] = useState(true);
 
   const categoriesInfo = useSelector(state => state.main.categoriesInfo);
 
@@ -118,7 +118,7 @@ export default function NewAdForm({ reloadAds }) {
           onClick={handleSubmit}
           sx={{ alignSelf: "flex-end" }}
         >
-          Zapisz
+          Dodaj
         </Button>
         }
 
@@ -128,7 +128,7 @@ export default function NewAdForm({ reloadAds }) {
           onClick={handleVisibility}
           sx={{ alignSelf: "flex-end" }}
         >
-          {hidden ? "Rozwiń" : "Ukryj"}
+          {hidden ? "Nowe ogłoszenie" : "Ukryj"}
         </Button>
         
         </Box>
