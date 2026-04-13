@@ -67,8 +67,8 @@ http://localhost:3000
 
 http://localhost:5173
 
-## w aplikacji frontend_react_mui uruchomić:
-## in the frontend_react_mui application run:
+## w aplikacji frontend_react_mui_2 uruchomić:
+## in the frontend_react_mui_2 application run:
 
 npm install
 
@@ -95,4 +95,4 @@ http://localhost:5173
 
 (Passwords and users for pgAdmin (pgadmin@example.com, pgadminpassword), Adminer (pguser, pgpassword), Grafana (admin, admin), Kafka UI, Keycloak (admin, admin) should be read from the docker-compose.yml file and checked there.)
 
-Szkielet aplikacji był rozwijany na Windows 11 z Docker Desktop i Node. (The application skeleton was developed on Windows 11 with Docker Desktop and Node.)
+Szkielet aplikacji był rozwijany na Windows 11 z Docker Desktop i Node (20.20.0). (The application skeleton was developed on Windows 11 with Docker Desktop and Node (20.20.0).)
