@@ -68,7 +68,32 @@ function getConversationsWithMessages(conversations, keycloak, userInfo, callbac
   })
 }
 
-const getOldestConversation = (keycloak, userInfo, conversations) => {
+function getConversationWithOlderMessages(keycloak, userInfo, conversationId, number, before, callback) {
+    console.log("GETTING OLDER MESSAGES");
+    if(!keycloak.authenticated) {
+      console.log("User not authenticated, skipping conversations fetch");
+      return;
+    }
+    const url = `http://localhost:3020/conversations/${conversationId}?withMessages=true&number=${number}${
+      before ? `&before=${before}` : ""
+    }`;
+    
+    console.log(url);
+
+    fetch(url, {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + keycloak.token,
+        "Content-Type": "application/json"
+      }
+    }).then(res => res.json())
+    .then(data => {
+      console.log("OLDER MESSAGES FETCHED", data);
+      if(callback) callback(data);
+    });
+}
+
+const getOldestConversation = (conversations) => {
   if (!conversations.length) return null;
   return conversations.reduce((oldest, conv) =>
     new Date(conv.updatedAt) < new Date(oldest.updatedAt) ? conv : oldest
@@ -115,7 +140,7 @@ const ChatPage = () => {
 
   React.useEffect(() => {
     if(userInfo && userInfo.user) {
-      getConversations(keycloak, userInfo, 2, null, (data) => {
+      getConversations(keycloak, userInfo, 1, null, (data) => {
         dispatch(Reducers.addConversations(data));
         if(data.conversations.length >= 1) {
           setActiveConversation(data.conversations[0].id);
@@ -130,7 +155,7 @@ const ChatPage = () => {
   const moreConversations = () => {
     const oldestConversation = getOldestConversation(conversations.conversations);
     const before = oldestConversation.updatedAt;
-    getConversations(keycloak, userInfo, 3, before, (data) => {
+    getConversations(keycloak, userInfo, 2, before, (data) => {
       dispatch(Reducers.addConversations(data));
       getConversationsWithMessages(data.conversations, keycloak, userInfo, (data) => {
         dispatch(Reducers.addConversationWithMessages(data));
@@ -142,6 +167,16 @@ const ChatPage = () => {
     if(activeConversation) {
       sendMsg(activeConversation, userInfo, msg, null);
     }
+  }
+
+  const moreMessages = (conversationId) => {
+    const conv = conversations.conversations.find(c => c.id === conversationId);
+    const oldest = new Date(
+      Math.min(...conv.messages.map(o => new Date(o.createdAt)))
+    );
+    getConversationWithOlderMessages(keycloak, userInfo, conversationId, 3, oldest.toISOString(), (c) => {
+      dispatch(Reducers.olderMessagesArrived(c));
+    });
   }
 
   const messages=conversations.conversations.filter(c => c.id == activeConversation)[0]
@@ -217,7 +252,7 @@ const ChatPage = () => {
         </Typography>
 
         { (activeConversation !== null && messages !== undefined) &&
-         <ChatMessages messages={messages.messages} userInfo={userInfo} />
+         <ChatMessages messages={messages.messages} userInfo={userInfo} moreMessages={moreMessages} conversationId={activeConversation}/>
         }
       </Box>
     </Box>

@@ -8,9 +8,6 @@ import * as Reducers from '../store/slice.js'
 
 export default function ChatMessages(props) {
 
-    const conversations = useSelector(state => state.main.conversations);
-    const dispatch = useDispatch();
-
     return (
         <>
         {props.messages.map(msg => (
@@ -34,6 +31,15 @@ export default function ChatMessages(props) {
               {msg.content}
             </Paper>
           </Box>
-        ))}</>
+        ))}
+        <Button
+        variant="outlined"
+        color="primary"
+        onClick={() => props.moreMessages(props.conversationId)}
+        sx={{ alignSelf: "flex-end" }}
+        >
+          więcej ...
+        </Button>
+        </>
     )
 }

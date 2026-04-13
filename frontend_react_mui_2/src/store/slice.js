@@ -97,7 +97,7 @@ const slice = createSlice({
     addFreshMessage: (state, action) => {
       const sMsg = action.payload;
       sMsg.senderId = action.payload.from;
-      
+
       const conversations = copyConversations(state.conversations.conversations);
       let conversation = conversations.filter(c => c.id === sMsg.conversationId)[0];
       if(conversation === undefined) {
@@ -109,6 +109,7 @@ const slice = createSlice({
         conversations.push(conver);
         conversation = conver;
       } else {
+        conversation.updatedAt = sMsg.createdAt;
         conversation.messages.push(sMsg);
       }
       conversation.messages.sort(
@@ -116,6 +117,18 @@ const slice = createSlice({
       );
       conversations.sort(
         (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      );
+      state.conversations = {
+        conversations : conversations
+      }
+    },
+    olderMessagesArrived: (state, action) => {
+      const sMsgs = action.payload.messages;
+      const conversations = copyConversations(state.conversations.conversations);
+      let conversation = conversations.filter(c => c.id === action.payload.id)[0];
+      conversation.messages.push(...sMsgs);
+      conversation.messages.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
       state.conversations = {
         conversations : conversations
@@ -134,6 +147,7 @@ export const {
   addConversations,
   addConversationWithMessages,
   addFreshMessage,
+  olderMessagesArrived,
 
 } = slice.actions
 
