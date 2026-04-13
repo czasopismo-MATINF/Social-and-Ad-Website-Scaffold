@@ -21,6 +21,8 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import * as Reducers from '../store/slice.js'
 
+import ContactAdInlineForm from '../components/ContactAdInlineForm.jsx'
+
 function getAds(queryString, callback) {
     console.log("GETTING ADS");
     console.log(`http://localhost:3020/ads?${queryString}`);
@@ -75,6 +77,7 @@ const AdsListPage = () => {
     backendParams.set("page", Number(params.get("page") ?? 1) - 1);
     backendParams.set("size", Number(params.get("pageSize") ?? 4));
     getAds(backendParams.toString(), (ads) => {
+      ads = updateVisibilityAds(ads);
       setAds(ads);
     });
   }, [])
@@ -85,6 +88,7 @@ const AdsListPage = () => {
     backendParams.set("page", Number(params.get("page") ?? 1) - 1);
     backendParams.set("size", Number(params.get("pageSize") ?? 4));
     getAds(backendParams.toString(), (ads) => {
+      ads = updateVisibilityAds(ads);
       setAds(ads);
     });
   }, [location.search]);
@@ -93,6 +97,43 @@ const AdsListPage = () => {
     setPage(value - 1);
     setSearchParams({ page: value, size: pageSize });
   };
+
+  const hideAdEditForm = (ad) => {
+    let a = ads.content.filter(a => a.id === ad.id)[0];
+    if(a) a.editFormHidden = true;
+    setAds({...ads});
+  }
+
+  const showAdContactForm = (ad) => {
+    let a = ads.content.filter(a => a.id === ad.id)[0];
+    if(a) a.editFormHidden = false;
+    setAds({...ads});
+  }
+
+  const updateVisibilityAds = (newAds) => {
+    newAds.content.forEach(ad => {
+      ad.editFormHidden = true;
+    })
+    if(!ads) return newAds;
+    ads.content.forEach(sa => {
+      let na = newAds.content.filter(na => na.id === sa.id)[0];
+      if(na) {
+        na.editFormHidden = sa.editFormHidden;
+      }
+    })
+    return newAds;
+  }
+
+  const reloadAds = () => {
+    const params = new URLSearchParams(location.search);
+    const backendParams = new URLSearchParams(params);
+    backendParams.set("page", Number(params.get("page") ?? 1) - 1);
+    backendParams.set("size", Number(params.get("pageSize") ?? 4));
+    getAds(backendParams.toString(), (ads) => {
+      ads = updateVisibilityAds(ads);
+      setAds(ads);
+    });
+  }
 
   return (
     <Box sx={{ padding: 3, fontFamily: "Courier New, monospace" }}>
@@ -148,14 +189,22 @@ const AdsListPage = () => {
                     Pokaż
                   </Button>
 
-                  <Button
+                  { (userInfo && userInfo.user && userInfo.user.id != ad.user) && <Button
                     variant="outlined"
                     color="error"
+                    onClick={() => {showAdContactForm(ad);}}
                   >
                     Kontakt
                   </Button>
+                  }
+
                 </TableCell>
               </TableRow>
+
+              {!ad.editFormHidden && <ContactAdInlineForm userInfo={userInfo} ad={ad} reloadAds={() => {
+                hideAdEditForm(ad);
+                reloadAds();
+              }}/>}
 
              </>
             ))}

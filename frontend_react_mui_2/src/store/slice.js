@@ -28,7 +28,7 @@ const slice = createSlice({
   reducers: {
     
     keycloakLoggedIn: (state) => { state.keycloakLoggedIn = true; },
-    keycloakLoggedOut: (state) => { state.keycloakLoggedIn = false; state.userInfo = null; },
+    keycloakLoggedOut: (state) => { state.keycloakLoggedIn = false; state.userInfo = {}; },
     userInfoCollected: (state, action) => {
       state.userInfo = {
         user: action.payload,
