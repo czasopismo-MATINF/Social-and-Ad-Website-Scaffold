@@ -144,7 +144,12 @@ const slice = createSlice({
       }
     },
     anotherUserInfoCollected: (state, action) => {
-      console.log(action.payload);
+      const usrs = new Map();
+      for(const u of state.usersInfo) {
+        usrs.set(u.id, u);
+      }
+      usrs.set(action.payload.id, action.payload);
+      state.usersInfo = [...usrs.values()];
     },
     
   }

@@ -13,6 +13,8 @@ import matinf.czasopismo.social.mainpagems.services.UserPageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -46,4 +48,12 @@ public class UsersAPIController implements UsersApi {
         }
         return ResponseEntity.ok(UserMapper.toReturnType(this.userPageService.updateUser(username, userPage)));
     }
+
+    @Override
+    public ResponseEntity<UserPage> usersIdByidGet(UUID id) {
+        String user = request.getHeader("X-Username");
+        log.info("Zapytanie {} bez filtrowania pól szuka użytkownika {}.", user, id.toString());
+        return ResponseEntity.ok(UserMapper.toReturnType((this.userPageService.getUserWithAttributes(id))));
+    }
+
 }

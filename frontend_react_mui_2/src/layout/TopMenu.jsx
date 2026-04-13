@@ -11,7 +11,7 @@ const TopMenu = () => {
   const userInfo = useSelector(state => state.main.userInfo);
 
   function getDisplayName(userInfo) {
-    if(!userInfo) return ``;
+    if(!userInfo || !userInfo.user) return ``;
     let name = userInfo.user.attributes.filter(a => a.attributeName === "name")[0].attributeValue;
     let lastName = userInfo.user.attributes.filter(a => a.attributeName === "last name")[0].attributeValue;
     return `${name} ${lastName}`
