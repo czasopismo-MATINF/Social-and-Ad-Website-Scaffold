@@ -31,6 +31,22 @@ paths:
             items:
               type: string
               format: uuid
+        - name: before
+          in: query
+          description: Filter conversations earlier than ...
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: number
+          in: query
+          description: How many conversations to return.
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
       responses:
         '200':
           description: List of conversations.
@@ -38,6 +54,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConversationsListPage'
+
+  /conversations/{id}/postmessage:
+    post:
+      summary: Post new message to this conversation.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Conversation id (uuid).
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: New message body.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequestWithoutTo'
+      responses:
+        '200':
+          description: Delivery confirmation.
 
   /conversations/{id}:
     get:
@@ -56,6 +93,22 @@ paths:
           description: Should also conversation messages be returned.
           schema:
             type: boolean
+        - name: before
+          in: query
+          description: Filter messages earlier than ...
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: number
+          in: query
+          description: How many messages to return.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 100
       responses:
         '200':
           description: Conversation with its messages.
@@ -66,6 +119,22 @@ paths:
 
 components:
   schemas:
+
+    SendMessageRequestWithoutTo:
+      type: object
+      description: New message request with from user, to user, message content.
+      required:
+        - from
+        - content
+      properties:
+        from:
+          description: From user UUID.
+          type: string
+          format: uuid
+        content:
+          description: Message content.
+          type: string
+          minLength: 1
 
     SendMessageRequest:
       type: object
