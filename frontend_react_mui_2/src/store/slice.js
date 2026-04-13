@@ -47,10 +47,10 @@ const slice = createSlice({
 
       const mergeConversations = (oldConversations, newConversations) => {
         const map = new Map();
-        for (const conv of oldConversations) {
+        for (const conv of newConversations) {
           map.set(conv.id, conv);
         }
-        for (const conv of newConversations) {
+        for (const conv of oldConversations) {
           map.set(conv.id, conv);
         }
         return [...map.values()].sort(
