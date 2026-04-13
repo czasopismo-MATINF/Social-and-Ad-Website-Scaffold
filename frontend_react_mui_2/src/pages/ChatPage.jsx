@@ -84,9 +84,9 @@ const sendMsg = (conversationId, userInfo, msg, callback) => {
     const url = `http://localhost:3020/conversations/${conversationId}/postmessage`;
 
     const msgForm = {
-      from : userInfo.id,
+      from : userInfo.user.id,
       conversationId : conversationId,
-      content: msg.content,
+      content: msg
     };
 
     fetch(url, {
@@ -96,11 +96,12 @@ const sendMsg = (conversationId, userInfo, msg, callback) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(msgForm)
-    }).then(res => res.json())
+    })
+    /*.then(res => res.json())
     .then(data => {
       console.log("MSG SENT", data);
       if(callback) callback(data);
-    });
+    });*/
 
 }
 
