@@ -23,12 +23,21 @@ const slice = createSlice({
     userInfo : null,
     categoriesInfo: null,
     conversations: { conversations: [] },
+    usersInfo: [],
   },
 
   reducers: {
     
     keycloakLoggedIn: (state) => { state.keycloakLoggedIn = true; },
-    keycloakLoggedOut: (state) => { state.keycloakLoggedIn = false; state.userInfo = {}; },
+    keycloakLoggedOut: (state) => { state.keycloakLoggedIn = false; state.userInfo = {}; usersInfo = []; },
+    usersInfoCollected: (state, action) => {
+        const map = new Map();
+        for (const u of state.usersInfo) {
+          map.set(u.id, {...u});
+        }
+        map.set(action.payload.id, action.payload);
+        state.usersInfo = [...map.values()];
+    },
     userInfoCollected: (state, action) => {
       state.userInfo = {
         user: action.payload,
@@ -133,7 +142,10 @@ const slice = createSlice({
       state.conversations = {
         conversations : conversations
       }
-    }
+    },
+    anotherUserInfoCollected: (state, action) => {
+      console.log(action.payload);
+    },
     
   }
 })
@@ -148,6 +160,7 @@ export const {
   addConversationWithMessages,
   addFreshMessage,
   olderMessagesArrived,
+  anotherUserInfoCollected,
 
 } = slice.actions
 

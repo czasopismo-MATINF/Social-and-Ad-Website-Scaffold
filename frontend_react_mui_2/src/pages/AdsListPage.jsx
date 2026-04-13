@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 import keycloak from "../keycloak.js";
+import usersInfoUtil from "../usersinfo.js"
 
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
@@ -52,10 +53,26 @@ function getCategoriesInfo(keycloak, dispatch) {
     });
 }
 
+function getUsersInfo(keycloak, ads, dispatch) {
+  console.log("GETTING USERS INFO", ads);
+  if(!ads || !ads.content) return;
+  const uitf = new Map();
+  for(const ad of ads.content) {
+    uitf.set(ad.user, ad);
+  }
+  for(const u of uitf.keys()) {
+    usersInfoUtil.getUserInfo(keycloak, u, (data) => {
+      dispatch(Reducers.anotherUserInfoCollected(data));
+    });
+  }
+}
+
 const AdsListPage = () => {
   
   const userInfo = useSelector(state => state.main.userInfo);
   const categoriesInfo = useSelector(state => state.main.categoriesInfo);
+  const keycloakLoggedIn = useSelector(state => state.main.keycloakLoggedIn);
+  const usersInfo = useSelector(state => state.main.usersInfo);
 
   function getCategoryName(categoryId) {
     return categoriesInfo?.categories?.categories?.filter(c => c.id == categoryId)[0].description;
@@ -79,8 +96,13 @@ const AdsListPage = () => {
     getAds(backendParams.toString(), (ads) => {
       ads = updateVisibilityAds(ads);
       setAds(ads);
+      getUsersInfo(keycloak, ads, dispatch);
     });
   }, [])
+
+  React.useEffect(() => {
+    getUsersInfo(keycloak, ads, dispatch);
+  }, [ads, keycloakLoggedIn]);
 
   React.useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -90,6 +112,7 @@ const AdsListPage = () => {
     getAds(backendParams.toString(), (ads) => {
       ads = updateVisibilityAds(ads);
       setAds(ads);
+      getUsersInfo(keycloak, ads, dispatch);
     });
   }, [location.search]);
 
@@ -132,6 +155,7 @@ const AdsListPage = () => {
     getAds(backendParams.toString(), (ads) => {
       ads = updateVisibilityAds(ads);
       setAds(ads);
+      getUsersInfo(keycloak, ads, dispatch);
     });
   }
 
@@ -177,7 +201,7 @@ const AdsListPage = () => {
                 </TableCell>
 
                 <TableCell>
-                  {ad.user}
+                  {usersInfoUtil.getUserName(usersInfo, ad.user)}
                 </TableCell>
 
                 <TableCell align="right">
