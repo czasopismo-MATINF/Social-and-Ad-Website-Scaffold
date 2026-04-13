@@ -42,15 +42,15 @@ const slice = createSlice({
     },
     addConversations: (state, action) => {
 
-      let oldConversations = state.conversations.conversations;
+      let oldConversations = copyConversations(state.conversations.conversations);
       let newConversations = action.payload.conversations;
 
       const mergeConversations = (oldConversations, newConversations) => {
         const map = new Map();
-        for (const conv of newConversations) {
+        for (const conv of oldConversations) {
           map.set(conv.id, conv);
         }
-        for (const conv of oldConversations) {
+        for (const conv of newConversations) {
           map.set(conv.id, conv);
         }
         return [...map.values()].sort(
@@ -64,7 +64,8 @@ const slice = createSlice({
 
     },
     addConversationWithMessages: (state, action) => {
-      let oldConversations = state.conversations.conversations;
+      
+      let oldConversations = copyConversations(state.conversations.conversations);
       let newConversation = action.payload;
       const map = new Map();
       for (const conv of oldConversations) {
@@ -83,7 +84,7 @@ const slice = createSlice({
         map.get(newConversation.id).messages = mmsgs;
       }
       map.get(newConversation.id).messages.sort(
-        (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
       const newConversations = [...map.values()].sort(
         (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
@@ -91,8 +92,10 @@ const slice = createSlice({
       state.conversations = {
         conversations: newConversations
       };
+
     },
     addFreshMessage: (state, action) => {
+      
       const sMsg = action.payload;
       const conversations = copyConversations(state.conversations.conversations);
       let conversation = conversations.filter(c => c.id === sMsg.conversationId)[0];
@@ -107,7 +110,6 @@ const slice = createSlice({
       } else {
         conversation.messages.push(sMsg);
       }
-      console.log(conversation);
       conversation.messages.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
