@@ -95,8 +95,9 @@ const slice = createSlice({
 
     },
     addFreshMessage: (state, action) => {
-      
       const sMsg = action.payload;
+      sMsg.senderId = action.payload.from;
+      
       const conversations = copyConversations(state.conversations.conversations);
       let conversation = conversations.filter(c => c.id === sMsg.conversationId)[0];
       if(conversation === undefined) {

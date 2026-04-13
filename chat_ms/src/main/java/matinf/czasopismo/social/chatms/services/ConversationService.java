@@ -2,15 +2,19 @@ package matinf.czasopismo.social.chatms.services;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import matinf.czasopismo.social.chatms.data.ConversationRepository;
 import matinf.czasopismo.social.chatms.data.Message;
 import matinf.czasopismo.social.chatms.data.MessageRepository;
 import matinf.czasopismo.social.chatms.data.UserFeignDto;
 import matinf.czasopismo.social.chatms.exceptions.UserNotAuthorizedException;
+import matinf.czasopismo.social.chatms.kafka.ChatKafkaProducer;
+import matinf.czasopismo.social.chatms.kafka.ChatMessage;
 import matinf.czasopismo.social.chatms.mappers.ConversationMapper;
 import matinf.czasopismo.social.chatms.model.ConversationPage;
 import matinf.czasopismo.social.chatms.model.SendMessageRequest;
 import matinf.czasopismo.social.chatms.model.SendMessageRequestWithoutTo;
+import org.apache.kafka.common.KafkaException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +25,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ConversationService {
 
     private final ConversationRepository conversationRepository;
     private final MessageRepository messageRepository;
     private final ConversationMapper conversationMapper;
+
+    private final ChatKafkaProducer producer;
 
     @Transactional
     public matinf.czasopismo.social.chatms.model.ConversationsListPage getConversations(List<UUID> participants, Integer number, OffsetDateTime before) {
@@ -118,6 +125,12 @@ public class ConversationService {
             throw new UserNotAuthorizedException(String.format("User %s not authorized to view this conversation.", user));
         }
 
+        UUID top = null;
+        var cp = conversation.getParticipants().stream().filter(p -> !p.getId().getUserId().equals(userFeignDto.uuid())).findAny();
+        if(cp.isPresent()) {
+            top = cp.get().getId().getUserId();
+        }
+
         Message message = Message.builder()
                 .conversation(conversation)
                 .senderId(userFeignDto.uuid())
@@ -126,6 +139,18 @@ public class ConversationService {
                 .build();
 
         messageRepository.save(message);
+
+        try {
+            this.producer.send(
+                    ChatMessage.builder()
+                            .id(message.getId())
+                            .from(userFeignDto.uuid())
+                            .to(top != null ? top : userFeignDto.uuid())
+                            .conversationId(conversation.getId())
+                            .content(message.getContent())
+                            .createdAt(message.getCreatedAt()).build());
+        } catch(KafkaException ignored) {
+        }
 
     }
 }
