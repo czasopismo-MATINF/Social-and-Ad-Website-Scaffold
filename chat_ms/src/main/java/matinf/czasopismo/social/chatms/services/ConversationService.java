@@ -10,6 +10,7 @@ import matinf.czasopismo.social.chatms.exceptions.UserNotAuthorizedException;
 import matinf.czasopismo.social.chatms.mappers.ConversationMapper;
 import matinf.czasopismo.social.chatms.model.ConversationPage;
 import matinf.czasopismo.social.chatms.model.SendMessageRequest;
+import matinf.czasopismo.social.chatms.model.SendMessageRequestWithoutTo;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -104,7 +105,7 @@ public class ConversationService {
     }
 
     @Transactional
-    public void sendMessageToConversation(UUID id, SendMessageRequest sendMessageRequest, UserFeignDto userFeignDto, String user) {
+    public void sendMessageToConversation(UUID id, SendMessageRequestWithoutTo sendMessageRequest, UserFeignDto userFeignDto, String user) {
 
         if(!userFeignDto.uuid().equals(sendMessageRequest.getFrom())) {
             throw new UserNotAuthorizedException(String.format("User %s not authorized to send this message.", user));

@@ -11,6 +11,7 @@ import matinf.czasopismo.social.chatms.feign.UserFeignClient;
 import matinf.czasopismo.social.chatms.model.ConversationPage;
 import matinf.czasopismo.social.chatms.model.ConversationsListPage;
 import matinf.czasopismo.social.chatms.model.SendMessageRequest;
+import matinf.czasopismo.social.chatms.model.SendMessageRequestWithoutTo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import matinf.czasopismo.social.chatms.services.ConversationService;
@@ -59,6 +60,21 @@ public class ConversationController implements matinf.czasopismo.social.chatms.a
     }
 
     @Override
+    public ResponseEntity<Void> conversationsIdPostmessagePost(UUID id, SendMessageRequestWithoutTo sendMessageRequestWithoutTo) {
+        String user = request.getHeader("X-Username");
+        UserFeignDto userFeignDto;
+        try {
+            userFeignDto = this.userClient.getUser(user);
+        } catch (FeignException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+
+        this.conversationService.sendMessageToConversation(id, sendMessageRequestWithoutTo, userFeignDto, user);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /*
     public ResponseEntity<Void> conversationsIdPostmessagePost(UUID id, SendMessageRequest sendMessageRequest) {
 
         String user = request.getHeader("X-Username");
@@ -73,6 +89,7 @@ public class ConversationController implements matinf.czasopismo.social.chatms.a
 
         return ResponseEntity.ok().build();
     }
+    */
 
     /*
     public ResponseEntity<ConversationPage> conversationsIdGet(UUID id, Boolean withMessages) {

@@ -71,7 +71,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SendMessageRequest'
+              $ref: '#/components/schemas/SendMessageRequestWithoutTo'
       responses:
         '200':
           description: Delivery confirmation.
@@ -119,6 +119,22 @@ paths:
 
 components:
   schemas:
+
+    SendMessageRequestWithoutTo:
+      type: object
+      description: New message request with from user, to user, message content.
+      required:
+        - from
+        - content
+      properties:
+        from:
+          description: From user UUID.
+          type: string
+          format: uuid
+        content:
+          description: Message content.
+          type: string
+          minLength: 1
 
     SendMessageRequest:
       type: object
