@@ -68,12 +68,41 @@ function getConversationsWithMessages(conversations, keycloak, userInfo, callbac
   })
 }
 
-const getOldestConversation = (conversations) => {
+const getOldestConversation = (keycloak, userInfo, conversations) => {
   if (!conversations.length) return null;
   return conversations.reduce((oldest, conv) =>
     new Date(conv.updatedAt) < new Date(oldest.updatedAt) ? conv : oldest
   );
 };
+
+const sendMsg = (conversationId, userInfo, msg, callback) => {
+    console.log("SENDING MSG TO CONVERSATION");
+    if(!keycloak.authenticated) {
+      console.log("User not authenticated, skipping conversations fetch");
+      return;
+    }
+    const url = `http://localhost:3020/conversations/${conversationId}/postmessage`;
+
+    const msgForm = {
+      from : userInfo.id,
+      conversationId : conversationId,
+      content: msg.content,
+    };
+
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + keycloak.token,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(msgForm)
+    }).then(res => res.json())
+    .then(data => {
+      console.log("MSG SENT", data);
+      if(callback) callback(data);
+    });
+
+}
 
 const ChatPage = () => {
 
@@ -108,6 +137,12 @@ const ChatPage = () => {
     });
   }
 
+  const sendMsgToActiveChannel = (msg) => {
+    if(activeConversation) {
+      sendMsg(activeConversation, userInfo, msg, null);
+    }
+  }
+
   const messages=conversations.conversations.filter(c => c.id == activeConversation)[0]
 
   return (
@@ -133,7 +168,7 @@ const ChatPage = () => {
       >
         <Typography variant="h6">Konwersacje</Typography>
 
-        <MessageInput onSend={(msg) => console.log("Wysyłam:", msg)} />
+        <MessageInput onSend={(msg) => sendMsgToActiveChannel(msg)} />
 
         {conversations?.conversations?.map((_, i) => (
             <Typography
