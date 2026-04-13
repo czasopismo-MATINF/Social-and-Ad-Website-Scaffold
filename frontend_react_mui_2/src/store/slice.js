@@ -49,6 +49,35 @@ const slice = createSlice({
       };
 
     },
+    addConversationWithMessages: (state, action) => {
+      let oldConversations = state.conversations.conversations;
+      let newConversation = action.payload;
+      const map = new Map();
+      for (const conv of oldConversations) {
+        map.set(conv.id, conv);
+      }
+      if(map.get(newConversation.id) === undefined) {
+        map.set(newConversation.id, newConversation);
+      } else {
+        map.get(newConversation.id).messages.push(...newConversation.messages);
+        let mmsgs = map.get(newConversation.id).messages;
+        const mmap = new Map();
+        for(const msg of mmsgs) {
+          mmap.set(msg.id, msg);
+        }
+        mmsgs = [...mmap.values()];
+        map.get(newConversation.id).messages = mmsgs;
+      }
+      map.get(newConversation.id).messages.sort(
+        (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      );
+      const newConversations = [...map.values()].sort(
+        (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      );
+      state.conversations = {
+        conversations: newConversations
+      };
+    },
     
   }
 })
@@ -60,7 +89,7 @@ export const {
   categoriesInfoCollected,
   resetConversations,
   addConversations,
-
+  addConversationWithMessages,
 } = slice.actions
 
 export default slice.reducer

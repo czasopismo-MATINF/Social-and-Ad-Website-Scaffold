@@ -8,6 +8,8 @@ import keycloak from "../keycloak.js";
 import { useSelector, useDispatch } from 'react-redux';
 import * as Reducers from '../store/slice.js'
 
+import ChatMessages from '../components/ChatMessages.jsx'
+
 const messagesMock = [
   { id: 1, text: "Cześć! Jak mogę pomóc?", side: "left" },
   { id: 2, text: "Potrzebuję informacji o ogłoszeniach.", side: "right" },
@@ -48,6 +50,39 @@ function getConversations(keycloak, userInfo, number, before, callback) {
     });
 }
 
+function getConversation(keycloak, userInfo, conversationId, number, before, callback) {
+    console.log("GETTING USER CONVERSATION");
+    if(!keycloak.authenticated) {
+      console.log("User not authenticated, skipping conversations fetch");
+      return;
+    }
+    const url = `http://localhost:3020/conversations/${conversationId}?withMessages=true&number=${number}${
+      before ? `&before=${before}` : ""
+    }`;
+
+    //console.log(url);
+    
+    fetch(url, {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + keycloak.token,
+        "Content-Type": "application/json"
+      }
+    }).then(res => res.json())
+    .then(data => {
+      console.log("USER CONVERSATION FETCHED", data);
+      if(callback) callback(data);
+    });
+}
+
+function getConversationsWithMessages(conversations, keycloak, userInfo, callback) {
+  conversations.forEach(conv => {
+    getConversation(keycloak, userInfo, conv.id, 5, null, (data) => {
+      if(callback) callback(data);
+    })
+  })
+}
+
 const getOldestConversation = (conversations) => {
   if (!conversations.length) return null;
   return conversations.reduce((oldest, conv) =>
@@ -60,14 +95,20 @@ const ChatPage = () => {
   const userInfo = useSelector(state => state.main.userInfo);
   const conversations = useSelector(state => state.main.conversations);
 
+  const [activeConversation, setActiveConversation] = React.useState(null);
   const [messages, setMessages] = React.useState(messagesMock);
-
   const dispatch = useDispatch();
 
   React.useEffect(() => {
     if(userInfo && userInfo.user) {
       getConversations(keycloak, userInfo, 2, null, (data) => {
         dispatch(Reducers.addConversations(data));
+        if(data.conversations.length >= 1) {
+          setActiveConversation(data.conversations[0].id);
+        }
+        getConversationsWithMessages(data.conversations, keycloak, userInfo, (data) => {
+          dispatch(Reducers.addConversationWithMessages(data));
+        });
       });
     }
   }, [userInfo]);
@@ -77,6 +118,9 @@ const ChatPage = () => {
     const before = oldestConversation.updatedAt;
     getConversations(keycloak, userInfo, 3, before, (data) => {
       dispatch(Reducers.addConversations(data));
+      getConversationsWithMessages(data.conversations, keycloak, userInfo, (data) => {
+        dispatch(Reducers.addConversationWithMessages(data));
+      });
     });
   }
 
@@ -106,7 +150,7 @@ const ChatPage = () => {
         <MessageInput onSend={(msg) => console.log("Wysyłam:", msg)} />
 
         {conversations?.conversations?.map((_, i) => (
-          <Typography key={i}>{_.id}</Typography>
+          <Typography key={i} onClick={() => setActiveConversation(_.id)}>{_.id}</Typography>
         ))}
         <Button
         variant='outlined'
@@ -135,28 +179,9 @@ const ChatPage = () => {
           Wiadomości
         </Typography>
 
-        {messages.map(msg => (
-          <Box
-            key={msg.id}
-            sx={{
-              display: "flex",
-              justifyContent: msg.side === "right" ? "flex-end" : "flex-start"
-            }}
-          >
-            <Paper
-              elevation={2}
-              sx={{
-                padding: "8px 12px",
-                maxWidth: "70%",
-                backgroundColor: msg.side === "right" ? "#d1e7ff" : "#ffffff",
-                borderRadius: 2,
-                whiteSpace: "pre-wrap"
-              }}
-            >
-              {msg.text}
-            </Paper>
-          </Box>
-        ))}
+        { (activeConversation !== null) &&
+         <ChatMessages messages={conversations.conversations.filter(c => c.id == activeConversation)[0].messages} userInfo={userInfo} />
+        }
       </Box>
     </Box>
   );
