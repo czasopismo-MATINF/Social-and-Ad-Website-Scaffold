@@ -150,7 +150,22 @@ const ChatPage = () => {
         <MessageInput onSend={(msg) => console.log("Wysyłam:", msg)} />
 
         {conversations?.conversations?.map((_, i) => (
-          <Typography key={i} onClick={() => setActiveConversation(_.id)}>{_.id}</Typography>
+            <Typography
+              key={i}
+              onClick={() => setActiveConversation(_.id)}
+              sx={{
+                cursor: "pointer",
+                padding: "8px",
+                borderRadius: "6px",
+                backgroundColor: _.id === activeConversation ? "#e3f2fd" : "transparent",
+                fontWeight: _.id === activeConversation ? "bold" : "normal",
+                "&:hover": {
+                  backgroundColor: "#f0f0f0"
+                }
+              }}
+            >
+              {_.id}
+            </Typography>
         ))}
         <Button
         variant='outlined'
