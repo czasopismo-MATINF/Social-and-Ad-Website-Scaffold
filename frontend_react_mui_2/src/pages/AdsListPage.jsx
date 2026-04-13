@@ -23,6 +23,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as Reducers from '../store/slice.js'
 
 import ContactAdInlineForm from '../components/ContactAdInlineForm.jsx'
+import AdsFilterForm from '../components/AdsFilterForm.jsx'
 
 function getAds(queryString, callback) {
     console.log("GETTING ADS");
@@ -159,8 +160,22 @@ const AdsListPage = () => {
     });
   }
 
+  const searchForAds = (filterParams) => {
+    const params = new URLSearchParams(location.search);
+    const backendParams = new URLSearchParams(filterParams);
+    backendParams.set("page", Number(params.get("page") ?? 1) - 1);
+    backendParams.set("size", Number(params.get("pageSize") ?? 4));
+    getAds(backendParams.toString(), (ads) => {
+      ads = updateVisibilityAds(ads);
+      setAds(ads);
+      getUsersInfo(keycloak, ads, dispatch);
+    });
+  }
+
   return (
     <Box sx={{ padding: 3, fontFamily: "Courier New, monospace" }}>
+
+      <AdsFilterForm categories={(categoriesInfo === null) ? [] : categoriesInfo.categories.categories} onFilterChange={(data) => {searchForAds(data)}} />
 
       <Typography variant="h4" sx={{ mb: 3 }}>
         Lista ogłoszeń
