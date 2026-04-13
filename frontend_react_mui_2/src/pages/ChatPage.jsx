@@ -10,21 +10,6 @@ import * as Reducers from '../store/slice.js'
 
 import ChatMessages from '../components/ChatMessages.jsx'
 
-const messagesMock = [
-  { id: 1, text: "Cześć! Jak mogę pomóc?", side: "left" },
-  { id: 2, text: "Potrzebuję informacji o ogłoszeniach.", side: "right" },
-  { id: 3, text: "Jasne, już wyświetlam!", side: "left" },
-  { id: 1, text: "Cześć! Jak mogę pomóc?", side: "left" },
-  { id: 2, text: "Potrzebuję informacji o ogłoszeniach.", side: "right" },
-  { id: 3, text: "Jasne, już wyświetlam!", side: "left" },
-  { id: 1, text: "Cześć! Jak mogę pomóc?", side: "left" },
-  { id: 2, text: "Potrzebuję informacji o ogłoszeniach.", side: "right" },
-  { id: 3, text: "Jasne, już wyświetlam!", side: "left" },
-  { id: 1, text: "Cześć! Jak mogę pomóc?", side: "left" },
-  { id: 2, text: "Potrzebuję informacji o ogłoszeniach.", side: "right" },
-  { id: 3, text: "Jasne, już wyświetlam!", side: "left" },
-];
-
 function getConversations(keycloak, userInfo, number, before, callback) {
     console.log("GETTING USER CONVERSATIONS");
     if(!keycloak.authenticated) {
@@ -96,7 +81,6 @@ const ChatPage = () => {
   const conversations = useSelector(state => state.main.conversations);
 
   const [activeConversation, setActiveConversation] = React.useState(null);
-  const [messages, setMessages] = React.useState(messagesMock);
   const dispatch = useDispatch();
 
   React.useEffect(() => {
@@ -123,6 +107,8 @@ const ChatPage = () => {
       });
     });
   }
+
+  const messages=conversations.conversations.filter(c => c.id == activeConversation)[0]
 
   return (
     <Box
@@ -194,8 +180,8 @@ const ChatPage = () => {
           Wiadomości
         </Typography>
 
-        { (activeConversation !== null) &&
-         <ChatMessages messages={conversations.conversations.filter(c => c.id == activeConversation)[0].messages} userInfo={userInfo} />
+        { (activeConversation !== null && messages !== undefined) &&
+         <ChatMessages messages={messages.messages} userInfo={userInfo} />
         }
       </Box>
     </Box>

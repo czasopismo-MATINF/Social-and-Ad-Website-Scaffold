@@ -11,7 +11,7 @@ const client = new Client({
 });
 
 
-function connectToWebSocket(keycloak, dispatch) {
+function connectToWebSocket(keycloak, msgCallback) {
 
   if(!client.connected) {
 
@@ -31,8 +31,9 @@ function connectToWebSocket(keycloak, dispatch) {
 
       client.subscribe(`/user/queue/private`, msg => {
         const body = JSON.parse(msg.body);
-        console.log(body);
-        //dispatch(processMessage(body));
+        if(msgCallback) {
+            msgCallback(body);
+        }
       });
 
       for(let i = 0; i < 3; ++i) {

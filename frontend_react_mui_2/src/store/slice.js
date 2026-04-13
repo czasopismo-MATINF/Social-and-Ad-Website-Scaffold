@@ -1,5 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+function copyConversations(conversations) {
+  let newConversations = [...conversations];
+  for(let i = 0; i < newConversations.length; ++i) {
+    newConversations[i] = {
+      ...conversations[i]
+    }
+    newConversations[i].messages = [...conversations[i].messages];
+    for(let j = 0; j < conversations[i].messages.length; ++j) {
+      newConversations[i].messages[j] = {...conversations[i].messages[j]}
+    }
+  }
+  return newConversations;
+}
+
 const slice = createSlice({
 
   name: 'main',
@@ -78,6 +92,32 @@ const slice = createSlice({
         conversations: newConversations
       };
     },
+    addFreshMessage: (state, action) => {
+      const sMsg = action.payload;
+      const conversations = copyConversations(state.conversations.conversations);
+      let conversation = conversations.filter(c => c.id === sMsg.conversationId)[0];
+      if(conversation === undefined) {
+        const conver = {
+          id : sMsg.conversationId,
+          updatedAt : sMsg.createdAt,
+          messages : [{...sMsg, updatedAt: sMsg.createdAt}]
+        }
+        conversations.push(conver);
+        conversation = conver;
+      } else {
+        conversation.messages.push(sMsg);
+      }
+      console.log(conversation);
+      conversation.messages.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      conversations.sort(
+        (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      );
+      state.conversations = {
+        conversations : conversations
+      }
+    }
     
   }
 })
@@ -90,6 +130,8 @@ export const {
   resetConversations,
   addConversations,
   addConversationWithMessages,
+  addFreshMessage,
+
 } = slice.actions
 
 export default slice.reducer

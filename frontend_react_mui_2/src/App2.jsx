@@ -61,7 +61,9 @@ const App = () => {
       dispatch(Reducers.keycloakLoggedIn());
       getUserInfo(keycloak, dispatch);
       getCategoriesInfo(keycloak, dispatch);
-      WebSocket.connectToWebSocket(keycloak, dispatch);
+      WebSocket.connectToWebSocket(keycloak, (msg) => {
+        dispatch(Reducers.addFreshMessage(msg));
+      });
     };
 
     keycloak.onAuthLogout = () => {
