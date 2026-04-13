@@ -12,6 +12,8 @@ import matinf.czasopismo.social.mainpagems.model.UserPage;
 import org.springframework.stereotype.Service;
 import matinf.czasopismo.social.mainpagems.data.User;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -23,6 +25,12 @@ public class UserPageService {
     @Transactional
     public User getUserWithAttributes(String username) {
         return userRepository.findByIdWithAttributes(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
+    }
+
+    @Transactional
+    public User getUserWithAttributes(UUID userId) {
+        return userRepository.findByIdWithAttributes(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 

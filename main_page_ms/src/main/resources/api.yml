@@ -20,6 +20,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PageFieldsConfig'
+  /users/{id}/byid:
+    get:
+      summary: Get user page by user uuid.
+      description: Returns the user page for a given username.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique uuid of the user in database.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User page data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPage'
   /users/{username}:
     get:
       summary: Get user page by username.
