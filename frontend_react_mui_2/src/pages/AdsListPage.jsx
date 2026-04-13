@@ -68,6 +68,15 @@ function getUsersInfo(keycloak, ads, dispatch) {
   }
 }
 
+function rewriteParams(backendParams, params) {
+  const it = ["keyword", "from", "to"]
+  for(let i = 0; i < it.length; ++i) {
+    if(params.get(it[i])) {
+      backendParams.set(it[i], params.get(it[i]));
+    }
+  }
+}
+
 const AdsListPage = () => {
   
   const userInfo = useSelector(state => state.main.userInfo);
@@ -93,7 +102,8 @@ const AdsListPage = () => {
     const params = new URLSearchParams(location.search);
     const backendParams = new URLSearchParams(params);
     backendParams.set("page", Number(params.get("page") ?? 1) - 1);
-    backendParams.set("size", Number(params.get("pageSize") ?? 4));
+    backendParams.set("size", Number(params.get("size") ?? 4));
+    rewriteParams(backendParams, params);
     getAds(backendParams.toString(), (ads) => {
       ads = updateVisibilityAds(ads);
       setAds(ads);
@@ -109,7 +119,8 @@ const AdsListPage = () => {
     const params = new URLSearchParams(location.search);
     const backendParams = new URLSearchParams(params);
     backendParams.set("page", Number(params.get("page") ?? 1) - 1);
-    backendParams.set("size", Number(params.get("pageSize") ?? 4));
+    backendParams.set("size", Number(params.get("size") ?? 4));
+    rewriteParams(backendParams, params);
     getAds(backendParams.toString(), (ads) => {
       ads = updateVisibilityAds(ads);
       setAds(ads);
@@ -122,7 +133,7 @@ const AdsListPage = () => {
     setSearchParams({ page: value, size: pageSize });
   };
 
-  const hideAdEditForm = (ad) => {
+  const hideAdContactForm = (ad) => {
     let a = ads.content.filter(a => a.id === ad.id)[0];
     if(a) a.editFormHidden = true;
     setAds({...ads});
@@ -130,7 +141,9 @@ const AdsListPage = () => {
 
   const showAdContactForm = (ad) => {
     let a = ads.content.filter(a => a.id === ad.id)[0];
-    if(a) a.editFormHidden = false;
+    if(a) {
+      a.editFormHidden = !a.editFormHidden;
+    }
     setAds({...ads});
   }
 
@@ -147,7 +160,7 @@ const AdsListPage = () => {
     })
     return newAds;
   }
-
+/*
   const reloadAds = () => {
     const params = new URLSearchParams(location.search);
     const backendParams = new URLSearchParams(params);
@@ -159,12 +172,12 @@ const AdsListPage = () => {
       getUsersInfo(keycloak, ads, dispatch);
     });
   }
-
+*/
   const searchForAds = (filterParams) => {
     const params = new URLSearchParams(location.search);
     const backendParams = new URLSearchParams(filterParams);
     backendParams.set("page", Number(params.get("page") ?? 1) - 1);
-    backendParams.set("size", Number(params.get("pageSize") ?? 4));
+    backendParams.set("size", Number(params.get("size") ?? 4));
     getAds(backendParams.toString(), (ads) => {
       ads = updateVisibilityAds(ads);
       setAds(ads);
@@ -233,7 +246,7 @@ const AdsListPage = () => {
                     color="error"
                     onClick={() => {showAdContactForm(ad);}}
                   >
-                    Kontakt
+                    {ad.editFormHidden ? "Kontakt" : "Ukryj kontakt"}
                   </Button>
                   }
 
@@ -241,8 +254,8 @@ const AdsListPage = () => {
               </TableRow>
 
               {!ad.editFormHidden && <ContactAdInlineForm userInfo={userInfo} ad={ad} reloadAds={() => {
-                hideAdEditForm(ad);
-                reloadAds();
+                hideAdContactForm(ad);
+                //reloadAds();
               }}/>}
 
              </>
