@@ -8,6 +8,7 @@ import AdsListPage from "./pages/AdsListPage";
 import { useSelector, useDispatch } from 'react-redux'
 
 import keycloak from "./keycloak.js";
+import WebSocket from "./websocket.js";
 
 import * as Reducers from './store/slice.js'
 
@@ -60,6 +61,7 @@ const App = () => {
       dispatch(Reducers.keycloakLoggedIn());
       getUserInfo(keycloak, dispatch);
       getCategoriesInfo(keycloak, dispatch);
+      WebSocket.connectToWebSocket(keycloak, dispatch);
     };
 
     keycloak.onAuthLogout = () => {
