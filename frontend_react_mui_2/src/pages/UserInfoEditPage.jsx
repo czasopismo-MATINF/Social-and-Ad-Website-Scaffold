@@ -26,15 +26,54 @@ function toAttributesObject(obj, userInfoPageConfig) {
   return {
     attributes: Object.entries(obj).map(([key, value]) => {
       const config = userInfoPageConfig.attributes.find(a => a.attributeName === key);
-
       return {
         attributeName: key,
-        attributeValue: config?.multichoice
+        attributeValue: (config?.multichoice || config?.array)
           ? JSON.stringify(value)
           : value
       };
     })
   };
+}
+
+function WordsInput({ value, onChange, placeholder = "Dodaj słowo..." }) {
+  const [input, setInput] = useState("");
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const trimmed = input.trim();
+      if (trimmed.length > 0 && !value.includes(trimmed)) {
+        onChange([...value, trimmed]);
+      }
+      setInput("");
+    }
+  };
+
+  const handleDelete = (word) => {
+    onChange(value.filter(w => w !== word));
+  };
+
+  return (
+    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+      {value.map((word, index) => (
+        <Chip
+          key={index}
+          label={word}
+          onDelete={() => handleDelete(word)}
+        />
+      ))}
+
+      <TextField
+        variant="standard"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        sx={{ minWidth: 120 }}
+      />
+    </Box>
+  );
 }
 
 export default function UserInfoEditPage(props) {
@@ -47,7 +86,7 @@ export default function UserInfoEditPage(props) {
   const initialForm = {};
   userInfoPageConfig.attributes.forEach(row => {
     const attr = userInfo?.user?.attributes.find(a => a.attributeName === row.attributeName);
-    if(row.multichoice) {
+    if(row.multichoice || row.array) {
       initialForm[row.attributeName] = [];
       try {
         for(let o of JSON.parse(attr?.attributeValue)) {
@@ -76,11 +115,7 @@ export default function UserInfoEditPage(props) {
   const [form, setForm] = useState(initialForm);
 
   const handleChange = (name, value) => {
-    if(userInfoPageConfig.attributes.find(ui => ui.attributeName === name).multichoice) {
-      setForm(prev => ({ ...prev, [name]: value }))
-    } else {
-      setForm(prev => ({ ...prev, [name]: value }));
-    }
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (event) => {
@@ -165,7 +200,7 @@ export default function UserInfoEditPage(props) {
                       borderBottom: "1px solid #e0e0e0"
                     }}
                   >
-                    {!row.multiline && !row.multichoice && <TextField
+                    {!row.multiline && !row.multichoice && !row.array && <TextField
                       size="small"
                       fullWidth
                       value={form[row.attributeName]}
@@ -180,8 +215,10 @@ export default function UserInfoEditPage(props) {
                       value={form[row.attributeName]}
                       onChange={(e) => handleChange(row.attributeName, e.target.value)}
                     />}
+
+                    {row.array && <WordsInput value={form[row.attributeName]} onChange={(v) => handleChange(row.attributeName, v)}/> }
                     
-                    {row.multichoice && 
+                    {row.multichoice &&
                       <Select
                         displayEmpty
                         multiple
