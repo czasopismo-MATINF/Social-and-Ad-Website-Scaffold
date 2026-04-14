@@ -189,6 +189,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MessagePage'
+        participants:
+          type: array
+          items:
+            type: string
+            format: uuid
 
     MessagePage:
       type: object

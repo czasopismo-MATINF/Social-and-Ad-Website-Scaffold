@@ -10,6 +10,8 @@ import * as Reducers from '../store/slice.js'
 
 import ChatMessages from '../components/ChatMessages.jsx'
 
+import usersInfoUtil from "../usersinfo.js"
+
 function getConversations(keycloak, userInfo, number, before, callback) {
     console.log("GETTING USER CONVERSATIONS");
     if(!keycloak.authenticated) {
@@ -130,13 +132,36 @@ const sendMsg = (conversationId, userInfo, msg, callback) => {
 
 }
 
+function getConversationWithParticipants(conversationId, keycloak, userInfo, callback) {
+  getConversation(keycloak, userInfo, conversationId, 2, null, (data) => {
+    if(callback) callback(data)
+  })
+}
+
 const ChatPage = () => {
 
   const userInfo = useSelector(state => state.main.userInfo);
   const conversations = useSelector(state => state.main.conversations);
+  const usersInfo = useSelector(state => state.main.usersInfo);
 
   const [activeConversation, setActiveConversation] = React.useState(null);
   const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    for(let conv of conversations.conversations) {
+      if(!Array.isArray(conv.participants)) {
+        getConversationWithParticipants(conv.id, keycloak, userInfo, (data) => {
+            dispatch(Reducers.updateConversationParticipants(data));
+        })
+      } else {
+        conv.participants.forEach(p => {
+          usersInfoUtil.getUserInfo(keycloak, p, (data) => {
+            dispatch(Reducers.anotherUserInfoCollected(data));
+          })
+      });
+      }
+    }
+  }, [conversations]);
 
   React.useEffect(() => {
     if(userInfo && userInfo.user) {
@@ -177,6 +202,16 @@ const ChatPage = () => {
     getConversationWithOlderMessages(keycloak, userInfo, conversationId, 3, oldest.toISOString(), (c) => {
       dispatch(Reducers.olderMessagesArrived(c));
     });
+  }
+
+  const getOtherParticipantName = (conversationId) => {
+    const participants = conversations.conversations.filter(c => c.id === conversationId)[0]?.participants;
+    const otherFirstUser = participants.filter(p => p !== userInfo.user.id)[0];
+    if(otherFirstUser === undefined) {
+      return "SELF";
+    } else {
+      return usersInfoUtil.getUserName(usersInfo, otherFirstUser);
+    }
   }
 
   const messages=conversations.conversations.filter(c => c.id == activeConversation)[0]
@@ -221,7 +256,7 @@ const ChatPage = () => {
                 }
               }}
             >
-              {_.id}
+              {getOtherParticipantName(_.id)}
             </Typography>
         ))}
         <Button

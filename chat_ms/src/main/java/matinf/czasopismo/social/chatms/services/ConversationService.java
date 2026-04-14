@@ -2,11 +2,7 @@ package matinf.czasopismo.social.chatms.services;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import matinf.czasopismo.social.chatms.data.ConversationRepository;
-import matinf.czasopismo.social.chatms.data.Message;
-import matinf.czasopismo.social.chatms.data.MessageRepository;
-import matinf.czasopismo.social.chatms.data.UserFeignDto;
+import matinf.czasopismo.social.chatms.data.*;
 import matinf.czasopismo.social.chatms.exceptions.UserNotAuthorizedException;
 import matinf.czasopismo.social.chatms.kafka.ChatKafkaProducer;
 import matinf.czasopismo.social.chatms.kafka.ChatMessage;
@@ -25,7 +21,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ConversationService {
 
     private final ConversationRepository conversationRepository;
@@ -44,6 +39,7 @@ public class ConversationService {
                     number,
                     before
             );
+            conversations.forEach(Conversation::getParticipants);
             return conversationMapper.toConversationsListPage(conversations);
         } else {
             var conversations = conversationRepository.findConversationsByParticipantsBefore(
@@ -51,11 +47,13 @@ public class ConversationService {
                     participants.size(),
                     number
             );
+            conversations.forEach(Conversation::getParticipants);
             return conversationMapper.toConversationsListPage(conversations);
         }
 
     }
 
+    /*
     @Transactional
     public matinf.czasopismo.social.chatms.model.ConversationPage getConversation(UUID id, boolean withMessages, UUID uuid, String user) {
 
@@ -75,6 +73,7 @@ public class ConversationService {
         return conversationMapper.toConversationPage(conversation, messages);
 
     }
+    */
 
     @Transactional
     public ConversationPage getConversation(UUID id, Boolean withMessages, UUID uuid, String user, OffsetDateTime before, Integer number) {
@@ -106,7 +105,7 @@ public class ConversationService {
 
             //messages = messageRepository.findByConversationIdOrderByCreatedAtDesc(id);
         }
-
+        conversation.getParticipants();
         return conversationMapper.toConversationPage(conversation, messages);
 
     }

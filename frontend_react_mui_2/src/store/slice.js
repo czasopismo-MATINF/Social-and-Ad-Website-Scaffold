@@ -103,6 +103,28 @@ const slice = createSlice({
       };
 
     },
+    updateConversationParticipants: (state, action) => {
+      let oldConversations = copyConversations(state.conversations.conversations);
+      let newConversation = action.payload;
+      const map = new Map();
+      for (const conv of oldConversations) {
+        map.set(conv.id, conv);
+      }
+      if(map.get(newConversation.id) === undefined) {
+        map.set(newConversation.id, newConversation);
+      }
+      const conv = map.get(newConversation.id);
+      if(!Array.isArray(conv.participants)) {
+        conv.participants = [];
+      }
+      conv.push(...newConversation.participants);
+      const newConversations = [...map.values()].sort(
+        (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      );
+      state.conversations = {
+        conversations: newConversations
+      };
+    },
     addFreshMessage: (state, action) => {
       const sMsg = action.payload;
       sMsg.senderId = action.payload.from;
@@ -166,6 +188,7 @@ export const {
   addFreshMessage,
   olderMessagesArrived,
   anotherUserInfoCollected,
+  updateConversationParticipants,
 
 } = slice.actions
 
