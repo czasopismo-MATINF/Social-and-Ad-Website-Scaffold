@@ -53,6 +53,19 @@ export default function UserInfoEditRawPage(props) {
 
   const [form, setForm] = useState(initialForm);
 
+    React.useEffect(() => {
+      if (!userInfo) return;
+  
+      const initial = {};
+  
+      userInfoPageConfig.attributes.forEach(row => {
+        const attr = userInfo.user.attributes.find(a => a.attributeName === row.attributeName);
+        initial[row.attributeName] = attr ? attr.attributeValue : "";
+      });
+  
+      setForm(initial);
+    }, [userInfo]);
+    
   const handleChange = (name, value) => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
@@ -62,7 +75,7 @@ export default function UserInfoEditRawPage(props) {
     if (!userInfo) {
       return;
     }
-    console.log(form);
+
     try {
       const response = await fetch(`http://localhost:3020/users/${keycloak.tokenParsed?.preferred_username}`, {
         method: 'PUT',

@@ -114,6 +114,29 @@ export default function UserInfoEditPage(props) {
 
   const [form, setForm] = useState(initialForm);
 
+  React.useEffect(() => {
+    if (!userInfo) return;
+
+    const initial = {};
+
+    userInfoPageConfig.attributes.forEach(row => {
+      const attr = userInfo.user.attributes.find(a => a.attributeName === row.attributeName);
+
+      if (row.multichoice || row.array) {
+        try {
+          initial[row.attributeName] = JSON.parse(attr?.attributeValue || "[]");
+        } catch {
+          initial[row.attributeName] = [];
+        }
+      } else {
+        initial[row.attributeName] = attr ? attr.attributeValue : "";
+      }
+    });
+
+    setForm(initial);
+  }, [userInfo]);
+
+
   const handleChange = (name, value) => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
