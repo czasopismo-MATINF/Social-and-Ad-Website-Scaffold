@@ -24,6 +24,7 @@ public class ConversationMapper {
         dto.setId(c.getId());
         dto.setCreatedAt(c.getCreatedAt());
         dto.setUpdatedAt(c.getUpdatedAt());
+        dto.setParticipants(c.getParticipants().stream().map(sp -> sp.getId().getUserId()).toList());
         // messages nie są zwracane w tym endpointzie
         return dto;
     }
@@ -33,7 +34,7 @@ public class ConversationMapper {
         dto.setId(c.getId());
         dto.setCreatedAt(c.getCreatedAt());
         dto.setUpdatedAt(c.getUpdatedAt());
-
+        dto.setParticipants(c.getParticipants().stream().map(sp -> sp.getId().getUserId()).toList());
         if (messages != null && !messages.isEmpty()) {
             dto.setMessages(
                     messages.stream()

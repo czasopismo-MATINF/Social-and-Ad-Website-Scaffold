@@ -11,7 +11,8 @@ import {
   Pagination,
   Box,
   Typography,
-  TextField
+  TextField,
+  Modal
 } from "@mui/material";
 
 import keycloak from "../keycloak.js";
@@ -24,6 +25,8 @@ import * as Reducers from '../store/slice.js'
 
 import ContactAdInlineForm from '../components/ContactAdInlineForm.jsx'
 import AdsFilterForm from '../components/AdsFilterForm.jsx'
+
+import userInfoPageConfig from '../userInfoPageConfig'
 
 function getAds(queryString, callback) {
     console.log("GETTING ADS");
@@ -185,6 +188,29 @@ const AdsListPage = () => {
     });
   }
 
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedAd, setSelectedAd] = useState(null);
+  const showAdModal = (ad) => {
+    setSelectedAd(ad);
+    setOpenModal(true);
+  };
+  const closeAdModal = () => {
+    setOpenModal(false);
+    setSelectedAd(null);
+  };
+
+  const [openUserModal, setOpenUserModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const showUserModal = (u) => {
+    setSelectedUser(usersInfoUtil.getCompleteUserInfo(usersInfo, u));
+    setOpenUserModal(true);
+  };
+  const closeUserModal = (u) => {
+    setOpenUserModal(false);
+    setSelectedUser(null);
+  };
+
+
   return (
     <Box sx={{ padding: 3, fontFamily: "Courier New, monospace" }}>
 
@@ -237,9 +263,19 @@ const AdsListPage = () => {
                     variant="outlined"
                     color="primary"
                     sx={{ mr: 1 }}
+                    onClick={() => showAdModal(ad)}
                   >
                     Pokaż
                   </Button>
+
+                  { (userInfo && userInfo.user && userInfo.user.id != ad.user) && <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => {showUserModal(ad.user);}}
+                  >
+                    Info
+                  </Button>
+                  }
 
                   { (userInfo && userInfo.user && userInfo.user.id != ad.user) && <Button
                     variant="outlined"
@@ -265,6 +301,85 @@ const AdsListPage = () => {
 
         </Table>
       </TableContainer>
+
+
+    <Modal
+      open={openModal}
+      onClose={closeAdModal}
+    >
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 500,
+          bgcolor: "background.paper",
+          borderRadius: 2,
+          boxShadow: 24,
+          p: 3
+        }}
+      >
+        {selectedAd && (
+          <>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              {selectedAd.title}
+            </Typography>
+
+            <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
+              {selectedAd.content}
+            </Typography>
+
+            <Button
+              variant="outlined"
+              sx={{ mt: 3, float: "right" }}
+              onClick={closeAdModal}
+            >
+              Zamknij
+            </Button>
+          </>
+        )}
+      </Box>
+    </Modal>
+
+
+    <Modal
+      open={openUserModal}
+      onClose={closeUserModal}
+    >
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 500,
+          bgcolor: "background.paper",
+          borderRadius: 2,
+          boxShadow: 24,
+          p: 3
+        }}
+      >
+        {selectedUser && (
+          <>
+            {userInfoPageConfig.attributes.map((attr) => {
+              return <Typography variant="h6" sx={{ mb: 2 }}>
+                {attr.attributeDisplayName} : {selectedUser.attributes.find(a => a.attributeName === attr.attributeName).attributeValue}
+              </Typography>
+            })} 
+            
+            <Button
+              variant="outlined"
+              sx={{ mt: 3, float: "right" }}
+              onClick={closeUserModal}
+            >
+              Zamknij
+            </Button>
+          </>
+        )}
+      </Box>
+    </Modal>
+
 
       <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
         <Pagination

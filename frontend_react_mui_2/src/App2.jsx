@@ -6,6 +6,8 @@ import UserAdsListPage from "./pages/UserAdsListPage";
 import AdsListPage from "./pages/AdsListPage";
 import UserInfoPage from "./pages/UserInfoPage";
 import UserInfoEditRawPage from "./pages/UserInfoEditRawPage.jsx";
+import UserInfoEditPage from "./pages/UserInfoEditPage.jsx";
+import MainPage from "./pages/MainPage.jsx";
 
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -101,11 +103,12 @@ const App = () => {
     <BrowserRouter>
       <AppLayout>
         <Routes>
-          <Route path="/" element={<div>Witaj na stronie głównej</div>} />
+          <Route path="/" element={<MainPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/userads" element={<UserAdsListPage />} />
           <Route path="/ads" element={<AdsListPage />} />
           <Route path="/userinfo" element={<UserInfoPage />} />
+          <Route path="/userinfoedit" element={<UserInfoEditPage />} />
           <Route path="/userinfoeditraw" element={<UserInfoEditRawPage />} />
         </Routes>
       </AppLayout>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Box, Grid, Paper, Typography, TableRow, TableCell, TableContainer, Table, TableBody } from "@mui/material";
+import { Chip, Button, Box, Grid, Paper, Typography, TableRow, TableCell, TableContainer, Table, TableBody } from "@mui/material";
 
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -51,6 +51,7 @@ export default function UserInfoPage(props) {
                 </TableCell>
 
                 {/* Wartość — wyrównana do prawej */}
+                {!row.multichoice && !row.array &&
                 <TableCell
                   sx={{
                     width: "60%",
@@ -61,6 +62,26 @@ export default function UserInfoPage(props) {
                 >
                   {getAttributeValue(row)}
                 </TableCell>
+                }
+
+                {(row.multichoice || row.array) &&
+                      <TableCell
+                        sx={{
+                          width: "60%",
+                          textAlign: "right",
+                          color: "#333",
+                          borderBottom: "1px solid #e0e0e0"
+                        }}
+                      >
+                      {JSON.parse(getAttributeValue(row)).map((word, index) => (
+                        <Chip
+                          key={index}
+                          label={word}
+                        />
+                      ))}
+                    </TableCell>
+                }
+
               </TableRow>
             ))}
               <TableRow key={`edit`}>
@@ -85,7 +106,7 @@ export default function UserInfoPage(props) {
                     borderBottom: "1px solid #e0e0e0"
                   }}
                 >
-                  <Button>Edytuj</Button>
+                  <Link to="/userinfoedit"><Button>Edytuj</Button></Link>
                   <Link to="/userinfoeditraw"><Button>Edytuj surowe</Button></Link>
                 </TableCell>
               </TableRow>
