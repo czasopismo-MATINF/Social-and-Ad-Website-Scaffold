@@ -26,5 +26,8 @@ export default {
             const lastName = user.attributes.filter(a => a.attributeName === 'last name')[0].attributeValue;
             return `${name} ${lastName}`;
         }
+    },
+    getCompleteUserInfo : (usersInfo, userId) => {
+        return usersInfo.filter(u => u.id === userId)[0];
     }
 }
