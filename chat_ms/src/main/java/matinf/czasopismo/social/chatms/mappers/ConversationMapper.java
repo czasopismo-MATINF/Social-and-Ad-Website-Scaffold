@@ -25,7 +25,7 @@ public class ConversationMapper {
         dto.setCreatedAt(c.getCreatedAt());
         dto.setUpdatedAt(c.getUpdatedAt());
         dto.setParticipants(c.getParticipants().stream().map(sp -> sp.getId().getUserId()).toList());
-        // messages nie są zwracane w tym endpointzie
+        // messages nie są zwracane endpointcie /conversations/get
         return dto;
     }
 
@@ -38,7 +38,7 @@ public class ConversationMapper {
         if (messages != null && !messages.isEmpty()) {
             dto.setMessages(
                     messages.stream()
-                            .map(this::toMessagePage)
+                            .map(m -> this.toMessagePage(m, c))
                             .toList()
             );
         }
@@ -46,9 +46,10 @@ public class ConversationMapper {
         return dto;
     }
 
-    public matinf.czasopismo.social.chatms.model.MessagePage toMessagePage(Message m) {
+    public matinf.czasopismo.social.chatms.model.MessagePage toMessagePage(Message m, Conversation c) {
         var dto = new matinf.czasopismo.social.chatms.model.MessagePage();
         dto.setId(m.getId());
+        dto.setConversationId(c.getId());
         dto.setSenderId(m.getSenderId());
         dto.setContent(m.getContent());
         dto.setCreatedAt(m.getCreatedAt());

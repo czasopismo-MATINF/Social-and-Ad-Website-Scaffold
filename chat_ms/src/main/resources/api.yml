@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Ad API
+  title: Chat API
   version: 1.0.0
 
 paths:
@@ -15,8 +15,12 @@ paths:
             schema:
               $ref: '#/components/schemas/SendMessageRequest'
       responses:
-        '200':
+        '201':
           description: Delivery confirmation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessagePage'
 
   /conversations:
     get:
@@ -55,7 +59,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConversationsListPage'
 
-  /conversations/{id}/postmessage:
+  /conversations/{id}/messages:
     post:
       summary: Post new message to this conversation.
       parameters:
@@ -73,8 +77,12 @@ paths:
             schema:
               $ref: '#/components/schemas/SendMessageRequestWithoutTo'
       responses:
-        '200':
+        '201':
           description: Delivery confirmation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessagePage'
 
   /conversations/{id}:
     get:
@@ -122,7 +130,7 @@ components:
 
     SendMessageRequestWithoutTo:
       type: object
-      description: New message request with from user, to user, message content.
+      description: New message request from user to conversation (in url params), message content.
       required:
         - from
         - content
@@ -138,7 +146,7 @@ components:
 
     SendMessageRequest:
       type: object
-      description: New message request with from user, to user, message content.
+      description: New message request from user to user, message content.
       required:
         - from
         - to
@@ -180,11 +188,11 @@ components:
         createdAt:
           type: string
           format: date-time
-          description: Timestamp when the entity was created.
+          description: Timestamp when the conversation was created.
         updatedAt:
           type: string
           format: date-time
-          description: Timestamp when the entity was last updated.
+          description: Timestamp when the conversation was last updated.
         messages:
           type: array
           items:
@@ -200,11 +208,15 @@ components:
       description: Object representing a single message.
       required:
         - id
+        - conversationId
         - senderId
         - content
         - createdAt
       properties:
         id:
+          type: string
+          format: uuid
+        conversationId:
           type: string
           format: uuid
         senderId:

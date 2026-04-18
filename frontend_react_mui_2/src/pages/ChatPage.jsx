@@ -21,8 +21,6 @@ function getConversations(keycloak, userInfo, number, before, callback) {
     const url = `http://localhost:3020/conversations?participants=${userInfo.user.id}&number=${number}${
       before ? `&before=${before}` : ""
     }`;
-
-    //console.log(url);
     
     fetch(url, {
       method: "GET",
@@ -108,7 +106,7 @@ const sendMsg = (conversationId, userInfo, msg, callback) => {
       console.log("User not authenticated, skipping conversations fetch");
       return;
     }
-    const url = `http://localhost:3020/conversations/${conversationId}/postmessage`;
+    const url = `http://localhost:3020/conversations/${conversationId}/messages`;
 
     const msgForm = {
       from : userInfo.user.id,
