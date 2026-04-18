@@ -11,31 +11,18 @@ import {
   Pagination,
   Box,
   Typography,
-  TextField,
   Modal
 } from "@mui/material";
 
 import usersInfoUtil from "../usersInfoUtil.js"
 import connectUtil from "../connectUtil.js"
 
-import { useSearchParams, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 
 import ContactAdInlineForm from '../components/ContactAdInlineForm.jsx'
 import AdsFilterForm from '../components/AdsFilterForm.jsx'
 
 import userInfoPageConfig from '../userInfoPageConfig'
-
-/*
-function rewriteParams(backendParams, params) {
-  const it = ["keyword", "from", "to"]
-  for(let i = 0; i < it.length; ++i) {
-    if(params.get(it[i])) {
-      backendParams.set(it[i], params.get(it[i]));
-    }
-  }
-}
-*/
 
 const AdsListPage = () => {
   
@@ -48,11 +35,6 @@ const AdsListPage = () => {
     return categoriesInfo?.categories?.categories?.filter(c => c.id == categoryId)[0].description;
   }
 
-//  const location = useLocation();
-//  const [searchParams, setSearchParams] = useSearchParams();
-//  const initialPage = Number(searchParams.get("page") ?? 1);
-//  const pageSize = Number(searchParams.get("size") ?? 4);
-//  const [page, setPage] = React.useState(initialPage - 1);
   const [ads, setAds] = React.useState(null);
   
   const dispatch = useDispatch();
@@ -73,23 +55,6 @@ const AdsListPage = () => {
   React.useEffect(() => {
     connectUtil.getUsersInfo(ads, usersInfo, dispatch);
   }, [ads, keycloakLoggedIn]);
-
-  /*
-  React.useEffect(() => {
-    console.log("SEARCH PARAMS location.search");
-    const params = new URLSearchParams(location.search);
-    const backendParams = new URLSearchParams(params);
-    backendParams.set("page", Number(params.get("page") ?? 1) - 1);
-    backendParams.set("size", Number(params.get("size") ?? 4));
-    rewriteParams(backendParams, params);
-    console.log("GETTING ADS location.search");
-    connectUtil.getAds(backendParams.toString(), (ads) => {
-      ads = updateVisibilityAds(ads);
-      setAds(ads);
-      connectUtil.getUsersInfo(ads, usersInfo, dispatch);
-    });
-  }, [location.search]);
-  */
 
   const handlePageChange = (_, value) => {
     const params = new URLSearchParams(window.location.search);
@@ -133,56 +98,6 @@ const AdsListPage = () => {
     })
     return newAds;
   }
-
-  /*
-  const searchForAds2 = (filterParams) => {
-    const params = new URLSearchParams(location.search);
-    const backendParams = new URLSearchParams(filterParams);
-    backendParams.set("page", Number(params.get("page") ?? 1) - 1);
-    backendParams.set("size", Number(params.get("size") ?? 4));
-    console.log("GETTING ADS search for");
-    connectUtil.getAds(backendParams.toString(), (ads) => {
-      ads = updateVisibilityAds(ads);
-      setAds(ads);
-      connectUtil.getUsersInfo(ads, usersInfo, dispatch);
-    });
-  }
-  */
-
-  /*
-  const searchForAds3 = (filterParams) => {
-    const params = new URLSearchParams(location.search);
-
-    // 1. Usuń wszystkie klucze, które będą nadpisane
-    for (const key of filterParams.keys()) {
-      params.delete(key);
-    }
-
-    // 2. Dodaj WSZYSTKIE wartości z filterParams (łącznie z duplikatami)
-    for (const [key, value] of filterParams.entries()) {
-      params.append(key, value);
-    }
-
-    // 3. Ustaw page/size
-    params.set("page", Number(params.get("page") ?? 1));
-    params.set("size", Number(params.get("size") ?? 4));
-
-    // 4. Aktualizacja URL
-    window.history.pushState({}, "", `${location.pathname}?${params.toString()}`);
-
-    // 4.5. Przygotowanie parametrów do wywoładnia backendu.
-    const backendParams = new URLSearchParams(params);
-    backendParams.set("page", Number(params.get("page")) -1);
-
-    // 5. Wywołanie backendu
-    console.log("GETTING ADS search for");
-    connectUtil.getAds(backendParams.toString(), (ads) => {
-      ads = updateVisibilityAds(ads);
-      setAds(ads);
-      connectUtil.getUsersInfo(ads, usersInfo, dispatch);
-    });
-  };
-  */
 
 const searchForAds = (filterParams) => {
   const original = new URLSearchParams(window.location.search);
