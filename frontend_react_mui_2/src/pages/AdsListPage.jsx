@@ -16,7 +16,8 @@ import {
 } from "@mui/material";
 
 import keycloak from "../keycloak.js";
-import usersInfoUtil from "../usersinfo.js"
+import usersInfoUtil from "../usersInfoUtil.js"
+import connectUtil from "../connectUtil.js"
 
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
@@ -65,7 +66,7 @@ function getUsersInfo(keycloak, ads, dispatch) {
     uitf.set(ad.user, ad);
   }
   for(const u of uitf.keys()) {
-    usersInfoUtil.getUserInfo(keycloak, u, (data) => {
+    connectUtil.getUserInfo(keycloak, u, (data) => {
       dispatch(Reducers.anotherUserInfoCollected(data));
     });
   }

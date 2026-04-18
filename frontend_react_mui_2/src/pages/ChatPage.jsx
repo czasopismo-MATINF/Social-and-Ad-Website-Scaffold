@@ -10,7 +10,8 @@ import * as Reducers from '../store/slice.js'
 
 import ChatMessages from '../components/ChatMessages.jsx'
 
-import usersInfoUtil from "../usersinfo.js"
+import usersInfoUtil from "../usersInfoUtil.js"
+import connectUtil from "../connectUtil.js"
 
 function getConversations(keycloak, userInfo, number, before, callback) {
     console.log("GETTING USER CONVERSATIONS");
@@ -153,7 +154,7 @@ const ChatPage = () => {
         })
       } else {
         conv.participants.forEach(p => {
-          usersInfoUtil.getUserInfo(keycloak, p, (data) => {
+          connectUtil.getUserInfo(keycloak, p, (data) => {
             dispatch(Reducers.anotherUserInfoCollected(data));
           })
       });
