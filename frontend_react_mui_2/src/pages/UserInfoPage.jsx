@@ -17,6 +17,16 @@ export default function UserInfoPage(props) {
      return userInfo.user.attributes.find(a => a.attributeName === row.attributeName).attributeValue;
    }
 
+  const safeParseArray = (value) => {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+
   return (
     <Paper
       elevation={0}
@@ -73,7 +83,7 @@ export default function UserInfoPage(props) {
                           borderBottom: "1px solid #e0e0e0"
                         }}
                       >
-                      {JSON.parse(getAttributeValue(row)).map((word, index) => (
+                      {safeParseArray(getAttributeValue(row)).map((word, index) => (
                         <Chip
                           key={index}
                           label={word}

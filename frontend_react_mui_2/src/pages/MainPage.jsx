@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-
-import { useSearchParams, useLocation } from "react-router-dom";
+import { useSearchParams, useLocation, Link } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-
-import { Link } from "react-router-dom";
-
 
 function MainPage(props) {
 

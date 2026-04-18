@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 
 import { useSelector, useDispatch } from 'react-redux';
+
 import userInfoPageConfig from '../userInfoPageConfig.jsx';
 
 import keycloak from "../keycloak.js";
@@ -35,8 +36,8 @@ export default function UserInfoEditRawPage(props) {
 
   // --- 1. Inicjalizacja lokalnego stanu formularza ---
   const initialForm = {};
-  userInfoPageConfig.attributes.forEach(row => {
-    const attr = userInfo?.user?.attributes.find(a => a.attributeName === row.attributeName);
+  userInfoPageConfig?.attributes?.forEach(row => {
+    const attr = userInfo?.user?.attributes?.find(a => a.attributeName === row.attributeName);
     initialForm[row.attributeName] = attr ? attr.attributeValue : "";
   });
 
@@ -53,18 +54,18 @@ export default function UserInfoEditRawPage(props) {
 
   const [form, setForm] = useState(initialForm);
 
-    React.useEffect(() => {
-      if (!userInfo) return;
-  
-      const initial = {};
-  
-      userInfoPageConfig.attributes.forEach(row => {
-        const attr = userInfo.user.attributes.find(a => a.attributeName === row.attributeName);
-        initial[row.attributeName] = attr ? attr.attributeValue : "";
-      });
-  
-      setForm(initial);
-    }, [userInfo]);
+  React.useEffect(() => {
+    if (!userInfo) return;
+
+    const initial = {};
+
+    userInfoPageConfig?.attributes?.forEach(row => {
+      const attr = userInfo?.user?.attributes?.find(a => a.attributeName === row.attributeName);
+      initial[row.attributeName] = attr ? attr.attributeValue : "";
+    });
+
+    setForm(initial);
+  }, [userInfo]);
     
   const handleChange = (name, value) => {
     setForm(prev => ({ ...prev, [name]: value }));

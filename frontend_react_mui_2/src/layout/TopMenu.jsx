@@ -12,6 +12,14 @@ const TopMenu = () => {
   const keycloakLoggedIn = useSelector(state => state.main.keycloakLoggedIn);
   const userInfo = useSelector(state => state.main.userInfo);
 
+  const getEditButtonText = (name) => {
+    if(name === null || name === undefined || name.length <= 1) {
+      return "EDYTUJ DANE";
+    } else {
+      return name;
+    }
+  }
+
   return (
     <AppBar position="static" color="primary">
       <Toolbar sx={{ gap: 2, fontFamily: "Courier New, monospace" }}>
@@ -47,7 +55,7 @@ const TopMenu = () => {
         {/* Jeśli zalogowany → pokaż userInfo */}
         {keycloakLoggedIn && (
           <Button color="inherit" component={RouterLink} to="/userinfo">
-            {usersInfoUtil.getDisplayName(userInfo)}
+            {getEditButtonText(usersInfoUtil.getDisplayName(userInfo))}
           </Button>
         )}
 

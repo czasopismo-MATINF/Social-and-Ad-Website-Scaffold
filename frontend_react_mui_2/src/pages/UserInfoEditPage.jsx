@@ -84,8 +84,8 @@ export default function UserInfoEditPage(props) {
 
   // --- 1. Inicjalizacja lokalnego stanu formularza ---
   const initialForm = {};
-  userInfoPageConfig.attributes.forEach(row => {
-    const attr = userInfo?.user?.attributes.find(a => a.attributeName === row.attributeName);
+  userInfoPageConfig?.attributes?.forEach(row => {
+    const attr = userInfo?.user?.attributes?.find(a => a.attributeName === row.attributeName);
     if(row.multichoice || row.array) {
       initialForm[row.attributeName] = [];
       try {
@@ -119,7 +119,7 @@ export default function UserInfoEditPage(props) {
 
     const initial = {};
 
-    userInfoPageConfig.attributes.forEach(row => {
+    userInfoPageConfig?.attributes?.forEach(row => {
       const attr = userInfo.user.attributes.find(a => a.attributeName === row.attributeName);
 
       if (row.multichoice || row.array) {
@@ -136,7 +136,6 @@ export default function UserInfoEditPage(props) {
     setForm(initial);
   }, [userInfo]);
 
-
   const handleChange = (name, value) => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
@@ -146,7 +145,7 @@ export default function UserInfoEditPage(props) {
     if (!userInfo) {
       return;
     }
-    console.log(toAttributesObject(form, userInfoPageConfig));
+
     try {
       const response = await fetch(`http://localhost:3020/users/username/${keycloak.tokenParsed?.preferred_username}`, {
         method: 'PUT',
