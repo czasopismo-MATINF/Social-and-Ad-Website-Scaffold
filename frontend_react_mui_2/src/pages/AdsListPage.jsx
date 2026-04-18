@@ -15,63 +15,18 @@ import {
   Modal
 } from "@mui/material";
 
-import keycloak from "../keycloak.js";
 import usersInfoUtil from "../usersInfoUtil.js"
 import connectUtil from "../connectUtil.js"
 
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 
-import * as Reducers from '../store/slice.js'
-
 import ContactAdInlineForm from '../components/ContactAdInlineForm.jsx'
 import AdsFilterForm from '../components/AdsFilterForm.jsx'
 
 import userInfoPageConfig from '../userInfoPageConfig'
 
-function getAds(queryString, callback) {
-    console.log("GETTING ADS");
-    console.log(`http://localhost:3020/ads?${queryString}`);
-    fetch(`http://localhost:3020/ads?${queryString}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).then(res => res.json())
-    .then(data => {
-      console.log("ADS FETCHED", data);
-      if(callback) callback(data);
-    });
-}
-
-function getCategoriesInfo(keycloak, dispatch) {
-    console.log("GETTING CATEGORIES INFO");
-    fetch(`http://localhost:3020/categories`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).then(res => res.json())
-    .then(data => {
-      console.log("CATEGORIES INFO FETCHED", data);
-      dispatch(Reducers.categoriesInfoCollected(data));
-    });
-}
-
-function getUsersInfo(keycloak, ads, dispatch) {
-  console.log("GETTING USERS INFO", ads);
-  if(!ads || !ads.content) return;
-  const uitf = new Map();
-  for(const ad of ads.content) {
-    uitf.set(ad.user, ad);
-  }
-  for(const u of uitf.keys()) {
-    connectUtil.getUserInfo(keycloak, u, (data) => {
-      dispatch(Reducers.anotherUserInfoCollected(data));
-    });
-  }
-}
-
+/*
 function rewriteParams(backendParams, params) {
   const it = ["keyword", "from", "to"]
   for(let i = 0; i < it.length; ++i) {
@@ -80,6 +35,7 @@ function rewriteParams(backendParams, params) {
     }
   }
 }
+*/
 
 const AdsListPage = () => {
   
@@ -92,49 +48,62 @@ const AdsListPage = () => {
     return categoriesInfo?.categories?.categories?.filter(c => c.id == categoryId)[0].description;
   }
 
-  const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialPage = Number(searchParams.get("page") ?? 1);
-  const pageSize = Number(searchParams.get("size") ?? 4);
-  const [page, setPage] = React.useState(initialPage - 1);
+//  const location = useLocation();
+//  const [searchParams, setSearchParams] = useSearchParams();
+//  const initialPage = Number(searchParams.get("page") ?? 1);
+//  const pageSize = Number(searchParams.get("size") ?? 4);
+//  const [page, setPage] = React.useState(initialPage - 1);
   const [ads, setAds] = React.useState(null);
   
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    getCategoriesInfo(keycloak, dispatch);
-    const params = new URLSearchParams(location.search);
+    connectUtil.getCategoriesInfo(dispatch);
+    const params = new URLSearchParams(window.location.search);
     const backendParams = new URLSearchParams(params);
     backendParams.set("page", Number(params.get("page") ?? 1) - 1);
     backendParams.set("size", Number(params.get("size") ?? 4));
-    rewriteParams(backendParams, params);
-    getAds(backendParams.toString(), (ads) => {
+    connectUtil.getAds(backendParams.toString(), (ads) => {
       ads = updateVisibilityAds(ads);
       setAds(ads);
-      getUsersInfo(keycloak, ads, dispatch);
+      connectUtil.getUsersInfo(ads, usersInfo, dispatch);
     });
   }, [])
 
   React.useEffect(() => {
-    getUsersInfo(keycloak, ads, dispatch);
+    connectUtil.getUsersInfo(ads, usersInfo, dispatch);
   }, [ads, keycloakLoggedIn]);
 
+  /*
   React.useEffect(() => {
+    console.log("SEARCH PARAMS location.search");
     const params = new URLSearchParams(location.search);
     const backendParams = new URLSearchParams(params);
     backendParams.set("page", Number(params.get("page") ?? 1) - 1);
     backendParams.set("size", Number(params.get("size") ?? 4));
     rewriteParams(backendParams, params);
-    getAds(backendParams.toString(), (ads) => {
+    console.log("GETTING ADS location.search");
+    connectUtil.getAds(backendParams.toString(), (ads) => {
       ads = updateVisibilityAds(ads);
       setAds(ads);
-      getUsersInfo(keycloak, ads, dispatch);
+      connectUtil.getUsersInfo(ads, usersInfo, dispatch);
     });
   }, [location.search]);
+  */
 
   const handlePageChange = (_, value) => {
-    setPage(value - 1);
-    setSearchParams({ page: value, size: pageSize });
+    const params = new URLSearchParams(window.location.search);
+    params.set("page", value);
+    params.set("size", Number(params.get("size") ?? 4));
+    window.history.pushState({}, "", `${location.pathname}?${params.toString()}`);
+    const backendParams = new URLSearchParams(params);
+    backendParams.set("page", Number(params.get("page")) - 1);
+    backendParams.set("size", Number(params.get("size") ?? 4));
+    connectUtil.getAds(backendParams.toString(), (ads) => {
+      ads = updateVisibilityAds(ads);
+      setAds(ads);
+      connectUtil.getUsersInfo(ads, usersInfo, dispatch);
+    });
   };
 
   const hideAdContactForm = (ad) => {
@@ -164,30 +133,110 @@ const AdsListPage = () => {
     })
     return newAds;
   }
-/*
-  const reloadAds = () => {
-    const params = new URLSearchParams(location.search);
-    const backendParams = new URLSearchParams(params);
-    backendParams.set("page", Number(params.get("page") ?? 1) - 1);
-    backendParams.set("size", Number(params.get("pageSize") ?? 4));
-    getAds(backendParams.toString(), (ads) => {
-      ads = updateVisibilityAds(ads);
-      setAds(ads);
-      getUsersInfo(keycloak, ads, dispatch);
-    });
-  }
-*/
-  const searchForAds = (filterParams) => {
+
+  /*
+  const searchForAds2 = (filterParams) => {
     const params = new URLSearchParams(location.search);
     const backendParams = new URLSearchParams(filterParams);
     backendParams.set("page", Number(params.get("page") ?? 1) - 1);
     backendParams.set("size", Number(params.get("size") ?? 4));
-    getAds(backendParams.toString(), (ads) => {
+    console.log("GETTING ADS search for");
+    connectUtil.getAds(backendParams.toString(), (ads) => {
       ads = updateVisibilityAds(ads);
       setAds(ads);
-      getUsersInfo(keycloak, ads, dispatch);
+      connectUtil.getUsersInfo(ads, usersInfo, dispatch);
     });
   }
+  */
+
+  /*
+  const searchForAds3 = (filterParams) => {
+    const params = new URLSearchParams(location.search);
+
+    // 1. Usuń wszystkie klucze, które będą nadpisane
+    for (const key of filterParams.keys()) {
+      params.delete(key);
+    }
+
+    // 2. Dodaj WSZYSTKIE wartości z filterParams (łącznie z duplikatami)
+    for (const [key, value] of filterParams.entries()) {
+      params.append(key, value);
+    }
+
+    // 3. Ustaw page/size
+    params.set("page", Number(params.get("page") ?? 1));
+    params.set("size", Number(params.get("size") ?? 4));
+
+    // 4. Aktualizacja URL
+    window.history.pushState({}, "", `${location.pathname}?${params.toString()}`);
+
+    // 4.5. Przygotowanie parametrów do wywoładnia backendu.
+    const backendParams = new URLSearchParams(params);
+    backendParams.set("page", Number(params.get("page")) -1);
+
+    // 5. Wywołanie backendu
+    console.log("GETTING ADS search for");
+    connectUtil.getAds(backendParams.toString(), (ads) => {
+      ads = updateVisibilityAds(ads);
+      setAds(ads);
+      connectUtil.getUsersInfo(ads, usersInfo, dispatch);
+    });
+  };
+  */
+
+const searchForAds = (filterParams) => {
+  const original = new URLSearchParams(window.location.search);
+  const result = new URLSearchParams();
+
+  const filterKeys = [...new Set(filterParams.keys())];
+
+  for (const key of new Set(filterParams.keys())) {
+    original.delete(key);
+  }
+
+  // 1. Przejdź po kluczach z URL w oryginalnej kolejności
+  for (const key of original.keys()) {
+    if (filterParams.has(key)) {
+      // wstaw wszystkie wartości z filterParams
+      for (const value of filterParams.getAll(key)) {
+        result.append(key, value);
+      }
+      filterKeys.splice(filterKeys.indexOf(key), 1); // usuń z listy do dodania
+    } else {
+      // zachowaj oryginalne wartości
+      /*
+      for (const value of original.getAll(key)) {
+        result.append(key, value);
+      }
+      */
+    }
+  }
+
+  // 2. Dodaj klucze, które są tylko w filterParams
+  for (const key of filterKeys) {
+    for (const value of filterParams.getAll(key)) {
+      result.append(key, value);
+    }
+  }
+
+  // 3. Ustaw page/size
+  result.set("page", Number(original.get("page") ?? 1));
+  result.set("size", Number(original.get("size") ?? 4));
+
+  // 4. Aktualizacja URL
+  window.history.pushState({}, "", `${location.pathname}?${result.toString()}`);
+
+  // 4.5. Przygotowanie parametrów do wywoładnia backendu.
+  const backendParams = new URLSearchParams(result);
+  backendParams.set("page", Number(result.get("page")) - 1);
+
+  // 5. Wywołanie backendu
+  connectUtil.getAds(backendParams.toString(), (ads) => {
+    ads = updateVisibilityAds(ads);
+    setAds(ads);
+    connectUtil.getUsersInfo(ads, usersInfo, dispatch);
+  });
+};
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedAd, setSelectedAd] = useState(null);
@@ -210,7 +259,6 @@ const AdsListPage = () => {
     setOpenUserModal(false);
     setSelectedUser(null);
   };
-
 
   return (
     <Box sx={{ padding: 3, fontFamily: "Courier New, monospace" }}>

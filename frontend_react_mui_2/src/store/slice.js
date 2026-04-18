@@ -27,9 +27,19 @@ const slice = createSlice({
   },
 
   reducers: {
-    
+
+
     keycloakLoggedIn: (state) => { state.keycloakLoggedIn = true; },
     keycloakLoggedOut: (state) => { state.keycloakLoggedIn = false; state.userInfo = {}; usersInfo = []; },
+
+
+    categoriesInfoCollected: (state, action) => {
+      state.categoriesInfo = {
+        categories : action.payload,
+    }},
+
+
+/*
     usersInfoCollected: (state, action) => {
         const map = new Map();
         for (const u of state.usersInfo) {
@@ -38,14 +48,21 @@ const slice = createSlice({
         map.set(action.payload.id, action.payload);
         state.usersInfo = [...map.values()];
     },
+*/
     userInfoCollected: (state, action) => {
       state.userInfo = {
         user: action.payload,
     }},
-    categoriesInfoCollected: (state, action) => {
-      state.categoriesInfo = {
-        categories : action.payload,
-    }},
+    anotherUserInfoCollected: (state, action) => {
+      const usrs = new Map();
+      for(const u of state.usersInfo) {
+        usrs.set(u.id, u);
+      }
+      usrs.set(action.payload.id, action.payload);
+      state.usersInfo = [...usrs.values()];
+    },
+
+
     resetConversations: (state, action) => {
       state.conversations = action.payload;
     },
@@ -165,15 +182,8 @@ const slice = createSlice({
         conversations : conversations
       }
     },
-    anotherUserInfoCollected: (state, action) => {
-      const usrs = new Map();
-      for(const u of state.usersInfo) {
-        usrs.set(u.id, u);
-      }
-      usrs.set(action.payload.id, action.payload);
-      state.usersInfo = [...usrs.values()];
-    },
     
+
   }
 })
 

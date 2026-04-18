@@ -1,25 +1,29 @@
 import keycloak from "./keycloak.js";
 import * as Reducers from './store/slice.js'
 
+function getUserInfo(userId, callback) {
+    console.log("GETTING OTHER USER INFO");
+    if(!keycloak.authenticated) {
+        console.log("User not authenticated, skipping user info fetch");
+        return;
+    }
+    fetch(`http://localhost:3020/users/id/${userId}`, {
+    method: "GET",
+    headers: {
+        "Authorization": "Bearer " + keycloak.token,
+        "Content-Type": "application/json"
+    }
+    }).then(res => res.json())
+      .then(data => {
+        console.log("OTHER USER INFO FETCHED", data);
+        if(callback) callback(data);
+    });
+}
+
 export default {
 
     getUserInfo : (keycloak, userId, callback) => {
-        console.log("GETTING OTHER USER INFO");
-        if(!keycloak.authenticated) {
-            console.log("User not authenticated, skipping user info fetch");
-            return;
-        }
-        fetch(`http://localhost:3020/users/id/${userId}`, {
-        method: "GET",
-        headers: {
-            "Authorization": "Bearer " + keycloak.token,
-            "Content-Type": "application/json"
-        }
-        }).then(res => res.json())
-        .then(data => {
-            console.log("OTHER USER INFO FETCHED", data);
-            if(callback) callback(data);
-        });
+        getUserInfo(userId, callback);
     },
 
     getSelfInfo : (dispatch) => {
@@ -49,7 +53,7 @@ export default {
             "Content-Type": "application/json"
         }
         }).then(res => res.json())
-        .then(data => {
+          .then(data => {
             console.log("CATEGORIES INFO FETCHED", data);
             dispatch(Reducers.categoriesInfoCollected(data));
         });
@@ -91,6 +95,38 @@ export default {
 
         } catch (error) {
             console.error(error);
+        }
+    },
+
+    getAds : (queryString, callback) => {
+        console.log("GETTING ADS");
+        console.log(`http://localhost:3020/ads?${queryString}`);
+        fetch(`http://localhost:3020/ads?${queryString}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(res => res.json())
+          .then(data => {
+            console.log("ADS FETCHED", data);
+            if(callback) callback(data);
+        });
+    },
+
+    getUsersInfo : (ads, usersInfo, dispatch) => {
+        console.log("GETTING USERS INFO", ads);
+        if(!ads || !ads.content) return;
+        const uitf = new Map();
+        for(const ad of ads.content) {
+            uitf.set(ad.user, ad);
+        }
+        for(const ui of usersInfo) {
+            uitf.delete(ui.id);
+        }
+        for(const u of uitf.keys()) {
+            getUserInfo(u, (data) => {
+                dispatch(Reducers.anotherUserInfoCollected(data));
+            });
         }
     },
     
