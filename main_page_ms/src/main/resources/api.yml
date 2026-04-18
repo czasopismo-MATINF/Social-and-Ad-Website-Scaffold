@@ -4,12 +4,14 @@ info:
   version: 1.0.0
 
 paths:
+
   /test_response:
     get:
       summary: Get test response.
       responses:
         '200':
           description: OK
+
   /page_fields_config:
     get:
       summary: Get page fields config.
@@ -20,7 +22,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PageFieldsConfig'
-  /users/{id}/byid:
+
+  /users/id/{id}:
     get:
       summary: Get user page by user uuid.
       description: Returns the user page for a given username.
@@ -39,7 +42,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserPage'
-  /users/{username}:
+
+  /users/username/{username}:
+
     get:
       summary: Get user page by username.
       description: Returns the user page for a given username.
@@ -77,6 +82,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
     put:
       summary: Update user page.
       description: Updates the user page attributes.
@@ -120,6 +126,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
   /internal/users/{username}:
     get:
       summary: Get user info page by username.
@@ -138,6 +145,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserInfoPage'
+
 components:
   schemas:
     UserPage:

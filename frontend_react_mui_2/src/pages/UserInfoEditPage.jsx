@@ -148,7 +148,7 @@ export default function UserInfoEditPage(props) {
     }
     console.log(toAttributesObject(form, userInfoPageConfig));
     try {
-      const response = await fetch(`http://localhost:3020/users/${keycloak.tokenParsed?.preferred_username}`, {
+      const response = await fetch(`http://localhost:3020/users/username/${keycloak.tokenParsed?.preferred_username}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${keycloak.token}`,

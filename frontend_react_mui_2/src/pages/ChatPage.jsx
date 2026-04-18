@@ -204,7 +204,7 @@ const ChatPage = () => {
 
   const getOtherParticipantName = (conversationId) => {
     const participants = conversations.conversations.filter(c => c.id === conversationId)[0]?.participants;
-    const otherFirstUser = participants.filter(p => p !== userInfo.user.id)[0];
+    const otherFirstUser = participants?.filter(p => p !== userInfo.user.id)[0];
     if(otherFirstUser === undefined) {
       return "SELF";
     } else {

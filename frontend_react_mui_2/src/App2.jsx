@@ -22,7 +22,7 @@ function getUserInfo(keycloak, dispatch) {
       console.log("User not authenticated, skipping user info fetch");
       return;
     }
-    fetch(`http://localhost:3020/users/${keycloak.tokenParsed?.preferred_username}`, {
+    fetch(`http://localhost:3020/users/username/${keycloak.tokenParsed?.preferred_username}`, {
       method: "GET",
       headers: {
         "Authorization": "Bearer " + keycloak.token,

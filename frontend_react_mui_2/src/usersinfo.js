@@ -5,7 +5,7 @@ export default {
             console.log("User not authenticated, skipping user info fetch");
             return;
         }
-        fetch(`http://localhost:3020/users/${userId}/byid`, {
+        fetch(`http://localhost:3020/users/id/${userId}`, {
         method: "GET",
         headers: {
             "Authorization": "Bearer " + keycloak.token,

@@ -77,7 +77,7 @@ export default function UserInfoEditRawPage(props) {
     }
 
     try {
-      const response = await fetch(`http://localhost:3020/users/${keycloak.tokenParsed?.preferred_username}`, {
+      const response = await fetch(`http://localhost:3020/users/username/${keycloak.tokenParsed?.preferred_username}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${keycloak.token}`,
