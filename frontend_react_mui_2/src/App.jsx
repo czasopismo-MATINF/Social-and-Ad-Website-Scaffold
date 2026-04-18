@@ -29,8 +29,8 @@ const App = () => {
       console.log("Keycloak onAuthSuccess");
       dispatch(Reducers.keycloakLoggedIn());
 
-      connectUtil.getSelfInfo(keycloak, dispatch);
-      connectUtil.getCategoriesInfo(keycloak, dispatch);
+      connectUtil.getSelfInfo(dispatch);
+      connectUtil.getCategoriesInfo(dispatch);
 
       WebSocket.connectToWebSocket((msg) => {
         dispatch(Reducers.addFreshMessage(msg));
