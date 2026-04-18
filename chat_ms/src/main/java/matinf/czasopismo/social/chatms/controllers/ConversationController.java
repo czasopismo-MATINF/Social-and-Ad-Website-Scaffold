@@ -4,14 +4,15 @@ import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import matinf.czasopismo.social.chatms.api.ConversationsApi;
+import matinf.czasopismo.social.chatms.data.Conversation;
+import matinf.czasopismo.social.chatms.data.Message;
 import matinf.czasopismo.social.chatms.data.UserFeignDto;
 import matinf.czasopismo.social.chatms.exceptions.UserNotAuthorizedException;
 import matinf.czasopismo.social.chatms.feign.UserFeignClient;
-import matinf.czasopismo.social.chatms.model.ConversationPage;
-import matinf.czasopismo.social.chatms.model.ConversationsListPage;
-import matinf.czasopismo.social.chatms.model.SendMessageRequest;
-import matinf.czasopismo.social.chatms.model.SendMessageRequestWithoutTo;
+import matinf.czasopismo.social.chatms.mappers.ConversationMapper;
+import matinf.czasopismo.social.chatms.mappers.MessageMapper;
+import matinf.czasopismo.social.chatms.model.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import matinf.czasopismo.social.chatms.services.ConversationService;
@@ -28,6 +29,7 @@ public class ConversationController implements matinf.czasopismo.social.chatms.a
     private final ConversationService conversationService;
     private final HttpServletRequest request;
     private final UserFeignClient userClient;
+    private final ConversationMapper conversationMapper;
 
     @Override
     public ResponseEntity<ConversationsListPage> conversationsGet(List<UUID> participants, Integer number, OffsetDateTime before) {
@@ -41,9 +43,9 @@ public class ConversationController implements matinf.czasopismo.social.chatms.a
         if(participants.stream().filter(u -> u.equals(userFeignDto.uuid())).findAny().isEmpty()) {
             throw new UserNotAuthorizedException(String.format("User %s not authorized to view this conversations.", user));
         }
-        return ResponseEntity.ok(
-                conversationService.getConversations(participants, number, before)
-        );
+        List<Conversation> conversations = conversationService.getConversations(participants, number, before);
+        ConversationsListPage conversationListPage = conversationMapper.toConversationsListPage(conversations);
+        return ResponseEntity.ok(conversationListPage);
     }
 
     @Override
@@ -55,12 +57,11 @@ public class ConversationController implements matinf.czasopismo.social.chatms.a
         } catch (FeignException ex) {
             throw new RuntimeException(ex.getMessage());
         }
-        //log.info("Number: {}", number);
         return ResponseEntity.ok(this.conversationService.getConversation(id, withMessages, userFeignDto.uuid(), user, before, number));
     }
 
     @Override
-    public ResponseEntity<Void> conversationsIdPostmessagePost(UUID id, SendMessageRequestWithoutTo sendMessageRequestWithoutTo) {
+    public ResponseEntity<MessagePage> conversationsIdMessagesPost(UUID id, SendMessageRequestWithoutTo sendMessageRequestWithoutTo) {
         String user = request.getHeader("X-Username");
         UserFeignDto userFeignDto;
         try {
@@ -68,40 +69,8 @@ public class ConversationController implements matinf.czasopismo.social.chatms.a
         } catch (FeignException ex) {
             throw new RuntimeException(ex.getMessage());
         }
-
-        this.conversationService.sendMessageToConversation(id, sendMessageRequestWithoutTo, userFeignDto, user);
-
-        return ResponseEntity.ok().build();
+        Message message = this.conversationService.sendMessageToConversation(id, sendMessageRequestWithoutTo, userFeignDto, user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(MessageMapper.toMessagePage(message));
     }
-
-    /*
-    public ResponseEntity<Void> conversationsIdPostmessagePost(UUID id, SendMessageRequest sendMessageRequest) {
-
-        String user = request.getHeader("X-Username");
-        UserFeignDto userFeignDto;
-        try {
-            userFeignDto = this.userClient.getUser(user);
-        } catch (FeignException ex) {
-            throw new RuntimeException(ex.getMessage());
-        }
-
-        this.conversationService.sendMessageToConversation(id, sendMessageRequest, userFeignDto, user);
-
-        return ResponseEntity.ok().build();
-    }
-    */
-
-    /*
-    public ResponseEntity<ConversationPage> conversationsIdGet(UUID id, Boolean withMessages) {
-        String user = request.getHeader("X-Username");
-        UserFeignDto userFeignDto;
-        try {
-            userFeignDto = this.userClient.getUser(user);
-        } catch (FeignException ex) {
-            throw new RuntimeException(ex.getMessage());
-        }
-        return ResponseEntity.ok(this.conversationService.getConversation(id, withMessages, userFeignDto.uuid(), user));
-    }
-    */
 
 }

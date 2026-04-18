@@ -79,15 +79,6 @@ public class AdService {
         return this.categoryRepository.findAll();
     }
 
-    /*
-    @Transactional
-    public Page<Ad> getAds(Pageable pageable, Integer page, Integer size, List<String> sort, UUID user) {
-
-        return this.adRepository.findByUserId(user, pageable);
-
-    }
-    */
-
     @Transactional
     public Page<Ad> getAds(Pageable pageable, AdsFilter filter) {
 
