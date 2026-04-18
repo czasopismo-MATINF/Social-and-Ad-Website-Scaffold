@@ -118,7 +118,6 @@ export default function AdsFilterForm({ categories, onFilterChange }) {
   };
 
   const getCategoryName = (id) => {
-    console.log(id);
     return categories.filter(c => c.id === id)[0].description;
   };
 

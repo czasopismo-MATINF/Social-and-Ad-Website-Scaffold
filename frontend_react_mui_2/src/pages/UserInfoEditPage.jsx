@@ -93,7 +93,6 @@ export default function UserInfoEditPage(props) {
           initialForm[row.attributeName].push(o);
         }
       } catch(e) {
-        console.log(e);
         initialForm[row.attributeName] = [];
       }
     } else {

@@ -36,8 +36,6 @@ export default function EditAdInlineForm(props) {
         category: props.ad.category
     };
 
-    console.log(adForm);
-
     try {
       const response = await fetch(`http://localhost:3020/ads/${adForm.id}`, {
       method: "PUT",
