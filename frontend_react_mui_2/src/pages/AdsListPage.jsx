@@ -135,7 +135,7 @@ const searchForAds = (filterParams) => {
   }
 
   // 3. Ustaw page/size
-  result.set("page", Number(original.get("page") ?? 1));
+  result.set("page", 1);
   result.set("size", Number(original.get("size") ?? 4));
 
   // 4. Aktualizacja URL
