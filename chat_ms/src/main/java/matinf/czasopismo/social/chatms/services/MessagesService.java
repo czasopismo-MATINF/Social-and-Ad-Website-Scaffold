@@ -27,7 +27,7 @@ public class MessagesService {
     private final ChatKafkaProducer producer;
 
     @Transactional
-    public void sendNewMessage(
+    public Message sendNewMessage(
             @NotNull @Valid UUID from,
             @NotNull @Valid UUID to,
             @NotNull @Size(min = 1) String content
@@ -95,7 +95,8 @@ public class MessagesService {
 
         }
 
-    }
+        return message;
 
+    }
 
 }

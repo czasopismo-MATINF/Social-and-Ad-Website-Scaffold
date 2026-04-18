@@ -27,33 +27,33 @@ const slice = createSlice({
   },
 
   reducers: {
-    
+
+
     keycloakLoggedIn: (state) => { state.keycloakLoggedIn = true; },
     keycloakLoggedOut: (state) => { state.keycloakLoggedIn = false; state.userInfo = {}; usersInfo = []; },
-    usersInfoCollected: (state, action) => {
-        const map = new Map();
-        for (const u of state.usersInfo) {
-          map.set(u.id, {...u});
-        }
-        map.set(action.payload.id, action.payload);
-        state.usersInfo = [...map.values()];
-    },
-    userInfoCollected: (state, action) => {
-      state.userInfo = {
-        user: action.payload,
-    }},
+
+
     categoriesInfoCollected: (state, action) => {
       state.categoriesInfo = {
         categories : action.payload,
     }},
-    resetConversations: (state, action) => {
-      state.conversations = action.payload;
+    userInfoCollected: (state, action) => {
+      state.userInfo = {
+        user: action.payload,
+    }},
+    anotherUserInfoCollected: (state, action) => {
+      const usrs = new Map();
+      for(const u of state.usersInfo) {
+        usrs.set(u.id, u);
+      }
+      usrs.set(action.payload.id, action.payload);
+      state.usersInfo = [...usrs.values()];
     },
-    addConversations: (state, action) => {
 
+
+    addConversations: (state, action) => {
       let oldConversations = copyConversations(state.conversations.conversations);
       let newConversations = action.payload.conversations;
-
       const mergeConversations = (oldConversations, newConversations) => {
         const map = new Map();
         for (const conv of newConversations) {
@@ -66,14 +66,12 @@ const slice = createSlice({
           (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
         );
       };
-      
       state.conversations = {
         conversations: mergeConversations(oldConversations, newConversations)
       };
-
     },
+
     addConversationWithMessages: (state, action) => {
-      
       let oldConversations = copyConversations(state.conversations.conversations);
       let newConversation = action.payload;
       const map = new Map();
@@ -101,8 +99,8 @@ const slice = createSlice({
       state.conversations = {
         conversations: newConversations
       };
-
     },
+
     updateConversationParticipants: (state, action) => {
       let oldConversations = copyConversations(state.conversations.conversations);
       let newConversation = action.payload;
@@ -112,12 +110,14 @@ const slice = createSlice({
       }
       if(map.get(newConversation.id) === undefined) {
         map.set(newConversation.id, newConversation);
+      } else {
+        const conv = map.get(newConversation.id);
+        if(!Array.isArray(conv.participants)) {
+          conv.participants = [];
+        }
+        conv.participants.push(...newConversation.participants);
+        conv.participants = [...new Set(conv.participants)];
       }
-      const conv = map.get(newConversation.id);
-      if(!Array.isArray(conv.participants)) {
-        conv.participants = [];
-      }
-      conv.push(...newConversation.participants);
       const newConversations = [...map.values()].sort(
         (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
       );
@@ -125,17 +125,17 @@ const slice = createSlice({
         conversations: newConversations
       };
     },
+
     addFreshMessage: (state, action) => {
       const sMsg = action.payload;
       sMsg.senderId = action.payload.from;
-
       const conversations = copyConversations(state.conversations.conversations);
       let conversation = conversations.filter(c => c.id === sMsg.conversationId)[0];
       if(conversation === undefined) {
         const conver = {
           id : sMsg.conversationId,
           updatedAt : sMsg.createdAt,
-          messages : [{...sMsg, updatedAt: sMsg.createdAt}]
+          messages : [{...sMsg}]
         }
         conversations.push(conver);
         conversation = conver;
@@ -153,6 +153,7 @@ const slice = createSlice({
         conversations : conversations
       }
     },
+
     olderMessagesArrived: (state, action) => {
       const sMsgs = action.payload.messages;
       const conversations = copyConversations(state.conversations.conversations);
@@ -165,14 +166,6 @@ const slice = createSlice({
         conversations : conversations
       }
     },
-    anotherUserInfoCollected: (state, action) => {
-      const usrs = new Map();
-      for(const u of state.usersInfo) {
-        usrs.set(u.id, u);
-      }
-      usrs.set(action.payload.id, action.payload);
-      state.usersInfo = [...usrs.values()];
-    },
     
   }
 })
@@ -182,7 +175,6 @@ export const {
   keycloakLoggedOut,
   userInfoCollected,
   categoriesInfoCollected,
-  resetConversations,
   addConversations,
   addConversationWithMessages,
   addFreshMessage,

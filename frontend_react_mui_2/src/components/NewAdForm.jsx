@@ -54,12 +54,10 @@ export default function NewAdForm({ reloadAds }) {
 
       if (!response.ok) {
         handleErrorBlink();
-        console.log(response);
         throw new Error("Nie udało się dodać ogłoszenia");
       }
 
       const saved = await response.json();
-      console.log(saved);
       handleSuccessBlink();
 
       if (reloadAds) reloadAds();

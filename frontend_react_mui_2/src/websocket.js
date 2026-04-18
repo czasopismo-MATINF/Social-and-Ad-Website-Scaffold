@@ -1,4 +1,5 @@
 import keycloak from "./keycloak.js";
+
 import { Client } from '@stomp/stompjs';
 
 const client = new Client({
@@ -10,8 +11,7 @@ const client = new Client({
   }
 });
 
-
-function connectToWebSocket(keycloak, msgCallback) {
+function connectToWebSocket(msgCallback) {
 
   if(!client.connected) {
 

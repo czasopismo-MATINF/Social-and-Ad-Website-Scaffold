@@ -3,6 +3,8 @@ import { Link as RouterLink } from "react-router-dom";
 
 import keycloak from "../keycloak.js";
 
+import usersInfoUtil from "../usersInfoUtil.js"
+
 import { useSelector, useDispatch } from 'react-redux'
 
 const TopMenu = () => {
@@ -10,11 +12,12 @@ const TopMenu = () => {
   const keycloakLoggedIn = useSelector(state => state.main.keycloakLoggedIn);
   const userInfo = useSelector(state => state.main.userInfo);
 
-  function getDisplayName(userInfo) {
-    if(!userInfo || !userInfo.user) return ``;
-    let name = userInfo.user.attributes.filter(a => a.attributeName === "name")[0].attributeValue;
-    let lastName = userInfo.user.attributes.filter(a => a.attributeName === "last name")[0].attributeValue;
-    return `${name} ${lastName}`
+  const getEditButtonText = (name) => {
+    if(name === null || name === undefined || name.length <= 1) {
+      return "EDYTUJ DANE";
+    } else {
+      return name;
+    }
   }
 
   return (
@@ -38,9 +41,6 @@ const TopMenu = () => {
           Ogłoszenia Użytkownika
         </Button>}
 
-        {/* Dodawaj kolejne wpisy tutaj */}
-        {/* <Button color="inherit" component={RouterLink} to="/inna">Inna</Button> */}
-
         {/* Elastyczna przestrzeń wypychająca prawą część */}
         <Box sx={{ flexGrow: 1 }} />
 
@@ -55,7 +55,7 @@ const TopMenu = () => {
         {/* Jeśli zalogowany → pokaż userInfo */}
         {keycloakLoggedIn && (
           <Button color="inherit" component={RouterLink} to="/userinfo">
-            {getDisplayName(userInfo)}
+            {getEditButtonText(usersInfoUtil.getDisplayName(userInfo))}
           </Button>
         )}
 

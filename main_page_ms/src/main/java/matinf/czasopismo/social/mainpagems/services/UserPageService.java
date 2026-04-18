@@ -75,23 +75,6 @@ public class UserPageService {
         return user;
     }
 
-    /* modelAttribute ma być not null, userPageAttribute ma być poprawnym obiektem z name i value */
-    /*
-    private UserPageAttribute updateModelAttribute(UserPageAttribute modelAttribute, matinf.czasopismo.social.mainpagems.model.UserPageAttribute userPageAttribute) {
-        if(userPageAttribute == null) return modelAttribute;
-        if(modelAttribute == null) {
-            return UserPageAttribute.builder().attributeName(userPageAttribute.getAttributeName())
-                    .attributeValue(userPageAttribute.getAttributeValue()).build();
-        }
-        if(!modelAttribute.getAttributeName().equals(userPageAttribute.getAttributeName())) {
-            return modelAttribute;
-        }
-        modelAttribute.setAttributeValue(userPageAttribute.getAttributeValue());
-        return modelAttribute;
-
-    }
-    */
-
     /* user ma być not null */
     private void fixUserAttributes(User user) {
         this.pageFieldsConfigFilter.getPageFields().forEach( field -> {

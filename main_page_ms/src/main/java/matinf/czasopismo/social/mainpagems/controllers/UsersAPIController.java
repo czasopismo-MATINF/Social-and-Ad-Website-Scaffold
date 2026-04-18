@@ -25,32 +25,32 @@ public class UsersAPIController implements UsersApi {
     private final UserPagePutValidator userPagePutValidator;
 
     @Override
-    public ResponseEntity<UserPage> usersUsernameGet(String username) {
+    public ResponseEntity<UserPage> usersUsernameUsernameGet(String username) {
         String user = request.getHeader("X-Username");
         if(user != null && user.equals(username)) {
-            log.info("Użytkownik {} z filtrowaniem pól szuka samego siebie.", user);
+            //log.info("Użytkownik {} z filtrowaniem pól szuka samego siebie.", user);
             return ResponseEntity.ok(UserMapper.toReturnType((this.userPageService.getUserWithAttributesWithFieldsFilter(username))));
         } else {
-            log.info("Zapytanie {} bez filtrowania pól szuka użytkownika {}.", user, username);
+            //log.info("Zapytanie {} bez filtrowania pól szuka użytkownika {}.", user, username);
             return ResponseEntity.ok(UserMapper.toReturnType((this.userPageService.getUserWithAttributes(username))));
         }
     }
 
     @Override
-    public ResponseEntity<UserPage> usersUsernamePut(String username, UserPage userPage) {
+    public ResponseEntity<UserPage> usersUsernameUsernamePut(String username, UserPage userPage) {
         String user = request.getHeader("X-Username");
         if(!this.userPagePutValidator.isValid(userPage)) {
             throw new UserPagePutValidatorFailureException(String.format("Request body has not been validated."));
         }
         if(user == null || !user.equals(username)) {
-            log.info("Użytkownik {} nie jest autoryzowany do zmieniania danych użytkownika {}.", user, username);
+            //log.info("Użytkownik {} nie jest autoryzowany do zmieniania danych użytkownika {}.", user, username);
             throw new UserNotAuthorizedException(String.format("User %s not authorized to change data for user %s.", user, username));
         }
         return ResponseEntity.ok(UserMapper.toReturnType(this.userPageService.updateUser(username, userPage)));
     }
 
     @Override
-    public ResponseEntity<UserPage> usersIdByidGet(UUID id) {
+    public ResponseEntity<UserPage> usersIdIdGet(UUID id) {
         String user = request.getHeader("X-Username");
         log.info("Zapytanie {} bez filtrowania pól szuka użytkownika {}.", user, id.toString());
         return ResponseEntity.ok(UserMapper.toReturnType((this.userPageService.getUserWithAttributes(id))));

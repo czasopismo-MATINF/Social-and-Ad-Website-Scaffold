@@ -14,53 +14,13 @@ import {
   TextField
 } from "@mui/material";
 
-import keycloak from "../keycloak.js";
-
 import { useSearchParams } from "react-router-dom";
 import { useSelector } from 'react-redux';
 
+import connectUtil from "../connectUtil.js"
+
 import NewAdForm from '../components/NewAdForm.jsx'
 import EditAdInlineForm from '../components/EditAdInlineForm.jsx'
-
-function getUserAds(keycloak, userInfo, pageNumber, pageSize, callback) {
-    console.log("GETTING USER ADS");
-    if(!keycloak.authenticated) {
-      console.log("User not authenticated, skipping user info fetch");
-      return;
-    }
-    fetch(`http://localhost:3020/ads?user=${userInfo.user.id}&page=${pageNumber}&size=${pageSize}&sort=updatedAt,desc&sort=title,asc`, {
-      method: "GET",
-      headers: {
-        "Authorization": "Bearer " + keycloak.token,
-        "Content-Type": "application/json"
-      }
-    }).then(res => res.json())
-
-    .then(data => {
-      console.log("USER ADS FETCHED", data);
-      if(callback) callback(data);
-    });
-}
-
-async function deleteAd(keycloak, ad, reloadAds) {
-  try {
-    const response = await fetch(`http://localhost:3020/ads/${ad.id}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": "Bearer " + keycloak.token
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error("Błąd podczas usuwania ogłoszenia");
-    }
-
-    if(reloadAds) reloadAds();
-
-  } catch (error) {
-    console.error(error);
-  }
-};
 
 const UserAdsListPage = () => {
   
@@ -68,7 +28,7 @@ const UserAdsListPage = () => {
   const categoriesInfo = useSelector(state => state.main.categoriesInfo);
 
   function getCategoryName(categoryId) {
-    return categoriesInfo?.categories?.categories?.filter(c => c.id == categoryId)[0].description;
+    return categoriesInfo?.categories?.categories?.filter(c => c.id == categoryId)[0]?.description;
   }
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -77,7 +37,6 @@ const UserAdsListPage = () => {
 
   const [page, setPage] = React.useState(initialPage - 1);
   const [ads, setAds] = React.useState(null);
-  const [visibilityAds, setVisibilityAds] = useState(null);
   
   const updateVisibilityAds = (newAds) => {
     newAds.content.forEach(ad => {
@@ -107,7 +66,7 @@ const UserAdsListPage = () => {
 
   React.useEffect(() => {
     if (userInfo && userInfo.user) {
-        getUserAds(keycloak, userInfo, page, pageSize, (ads) => {
+        connectUtil.getUserAds(userInfo, page, pageSize, (ads) => {
           ads = updateVisibilityAds(ads);
           setAds(ads);
         });
@@ -120,7 +79,7 @@ const UserAdsListPage = () => {
   };
 
   const reloadAds = () => {
-     getUserAds(keycloak, userInfo, page, pageSize, (ads) => {
+     connectUtil.getUserAds(userInfo, page, pageSize, (ads) => {
       ads = updateVisibilityAds(ads);
       setAds(ads);
      });
@@ -181,7 +140,7 @@ const UserAdsListPage = () => {
                   <Button
                     variant="outlined"
                     color="error"
-                    onClick={() => deleteAd(keycloak, ad, reloadAds)}
+                    onClick={() => connectUtil.deleteAd(ad, reloadAds)}
                   >
                     Usuń
                   </Button>

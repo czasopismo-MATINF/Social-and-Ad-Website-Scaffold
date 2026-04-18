@@ -30,56 +30,30 @@ public class ConversationService {
     private final ChatKafkaProducer producer;
 
     @Transactional
-    public matinf.czasopismo.social.chatms.model.ConversationsListPage getConversations(List<UUID> participants, Integer number, OffsetDateTime before) {
+    public List<Conversation> getConversations(List<UUID> participants, Integer number, OffsetDateTime before) {
 
         if(before != null) {
-            var conversations = conversationRepository.findConversationsByParticipantsBefore(
+            return conversationRepository.findConversationsByParticipantsBefore(
                     participants,
                     participants.size(),
                     number,
                     before
             );
-            conversations.forEach(Conversation::getParticipants);
-            return conversationMapper.toConversationsListPage(conversations);
         } else {
-            var conversations = conversationRepository.findConversationsByParticipantsBefore(
+            return conversationRepository.findConversationsByParticipantsBefore(
                     participants,
                     participants.size(),
                     number
             );
-            conversations.forEach(Conversation::getParticipants);
-            return conversationMapper.toConversationsListPage(conversations);
         }
 
     }
-
-    /*
-    @Transactional
-    public matinf.czasopismo.social.chatms.model.ConversationPage getConversation(UUID id, boolean withMessages, UUID uuid, String user) {
-
-        var conversation = conversationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Conversation not found."));
-
-        if(conversation.getParticipants().stream().filter(p -> p.getId().getUserId().equals(uuid)).findAny().isEmpty()) {
-            throw new UserNotAuthorizedException(String.format("User %s not authorized to view this conversation.", user));
-        }
-
-        List<Message> messages = new LinkedList<>();
-
-        if (withMessages) {
-            messages = messageRepository.findByConversationIdOrderByCreatedAtDesc(id);
-        }
-
-        return conversationMapper.toConversationPage(conversation, messages);
-
-    }
-    */
 
     @Transactional
     public ConversationPage getConversation(UUID id, Boolean withMessages, UUID uuid, String user, OffsetDateTime before, Integer number) {
 
         var conversation = conversationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Conversation not found."));
+                .orElseThrow(() -> new RuntimeException(String.format("Conversation %s not found.", id)));
 
         if(conversation.getParticipants().stream().filter(p -> p.getId().getUserId().equals(uuid)).findAny().isEmpty()) {
             throw new UserNotAuthorizedException(String.format("User %s not authorized to view this conversation.", user));
@@ -103,31 +77,29 @@ public class ConversationService {
                 }
             }
 
-            //messages = messageRepository.findByConversationIdOrderByCreatedAtDesc(id);
         }
-        conversation.getParticipants();
         return conversationMapper.toConversationPage(conversation, messages);
 
     }
 
     @Transactional
-    public void sendMessageToConversation(UUID id, SendMessageRequestWithoutTo sendMessageRequest, UserFeignDto userFeignDto, String user) {
+    public Message sendMessageToConversation(UUID id, SendMessageRequestWithoutTo sendMessageRequest, UserFeignDto userFeignDto, String user) {
 
         if(!userFeignDto.uuid().equals(sendMessageRequest.getFrom())) {
             throw new UserNotAuthorizedException(String.format("User %s not authorized to send this message.", user));
         }
 
         var conversation = conversationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Conversation not found."));
+                .orElseThrow(() -> new RuntimeException(String.format("Conversation %s not found.", id)));
 
         if(conversation.getParticipants().stream().filter(p -> p.getId().getUserId().equals(userFeignDto.uuid())).findAny().isEmpty()) {
             throw new UserNotAuthorizedException(String.format("User %s not authorized to view this conversation.", user));
         }
 
-        UUID top = null;
+        UUID toParticipant = null;
         var cp = conversation.getParticipants().stream().filter(p -> !p.getId().getUserId().equals(userFeignDto.uuid())).findAny();
         if(cp.isPresent()) {
-            top = cp.get().getId().getUserId();
+            toParticipant = cp.get().getId().getUserId();
         }
 
         Message message = Message.builder()
@@ -144,12 +116,14 @@ public class ConversationService {
                     ChatMessage.builder()
                             .id(message.getId())
                             .from(userFeignDto.uuid())
-                            .to(top != null ? top : userFeignDto.uuid())
+                            .to(toParticipant != null ? toParticipant : userFeignDto.uuid())
                             .conversationId(conversation.getId())
                             .content(message.getContent())
                             .createdAt(message.getCreatedAt()).build());
         } catch(KafkaException ignored) {
         }
+
+        return message;
 
     }
 }
