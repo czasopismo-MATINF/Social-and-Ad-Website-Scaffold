@@ -22,9 +22,11 @@ export default function ContactAdInlineForm(props) {
     setErrorBlink(true);
     setTimeout(() => setErrorBlink(false), 500);
   };
+  /*
   const handleVisibility = () => {
     setHidden(!hidden);
   }
+  */
 
   const handleSubmit = async () => {
 
@@ -33,9 +35,6 @@ export default function ContactAdInlineForm(props) {
         to: props.ad.user,
         content: content,
     };
-
-    console.log(msgForm);
-    console.log(props.ad);
 
     try {
       const response = await fetch(`http://localhost:3020/messages`, {
