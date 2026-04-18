@@ -16,6 +16,7 @@ import matinf.czasopismo.social.adms.querysearch.AdsFilter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import matinf.czasopismo.social.adms.mappers.AdMapper;
@@ -57,22 +58,6 @@ public class AdsController implements AdsApi {
         return Sort.by(orders);
     }
 
-    /*
-    @Override
-    public ResponseEntity<Page> adsGet(Integer page, Integer size, List<String> sort, UUID user) {
-        Pageable pageable = PageRequest.of(
-                page != null ? page : 0,
-                size != null ? size : 20,
-                parseSort(sort)
-        );
-        Page<?> result = adService
-                .getAds(pageable, page, size, sort, user)
-                .map(AdMapper::toReturnType);
-
-        return ResponseEntity.ok(result);
-    }
-    */
-
     @Override
     public ResponseEntity<Page> adsGet(Integer page, Integer size, List<String> sort, UUID user, OffsetDateTime from, OffsetDateTime to, List<UUID> users, List<UUID> categories, String keyword) {
 
@@ -95,37 +80,6 @@ public class AdsController implements AdsApi {
         return ResponseEntity.ok(PageMapper.toApiPage(mappedContent, springPage));
 
     }
-/*
-    public ResponseEntity<Page> adsGet(Integer page, Integer size, List<String> sort, UUID user) {
-
-        Pageable pageable = PageRequest.of(
-                page != null ? page : 0,
-                size != null ? size : 20,
-                parseSort(sort)
-        );
-
-        org.springframework.data.domain.Page<Ad> springPage = adService.getAds(pageable, page, size, sort, user);
-
-        List<AdPage> mappedContent = springPage
-                .getContent()
-                .stream()
-                .map(AdMapper::toReturnType)
-                .toList();
-
-        Page apiPage = new Page();
-        apiPage.setContent(mappedContent);
-        apiPage.setTotalElements(springPage.getTotalElements());
-        apiPage.setTotalPages(springPage.getTotalPages());
-        apiPage.setSize(springPage.getSize());
-        apiPage.setNumber(springPage.getNumber());
-        apiPage.setFirst(springPage.isFirst());
-        apiPage.setLast(springPage.isLast());
-        apiPage.setNumberOfElements(springPage.getNumberOfElements());
-        apiPage.setEmpty(springPage.isEmpty());
-
-        return ResponseEntity.ok(apiPage);
-    }
-    */
 
     @Override
     public ResponseEntity<Void> adsIdDelete(UUID id) {
@@ -136,7 +90,7 @@ public class AdsController implements AdsApi {
         } catch (FeignException ex) {
             throw new RuntimeException(ex.getMessage());
         }
-        log.info("User {} chce usunąć ogłoszenie {}.", userFeignDto.uuid(), id);
+        //log.info("User {} chce usunąć ogłoszenie {}.", userFeignDto.uuid(), id);
         this.adService.deleteAd(id, userFeignDto.uuid());
         return ResponseEntity.noContent().build();
     }
@@ -145,7 +99,7 @@ public class AdsController implements AdsApi {
     public ResponseEntity<AdPage> adsIdGet(UUID id) {
         Optional<Ad> ad = this.adService.getAdById(id);
         if(ad.isEmpty()) {
-            throw new AdNotFoundException(String.format("Ad not found exception.", id));
+            throw new AdNotFoundException(String.format("Ad not found exception."));
         }
         return ResponseEntity.ok(AdMapper.toReturnType(ad.get()));
     }
@@ -162,7 +116,7 @@ public class AdsController implements AdsApi {
         } catch (FeignException ex) {
             throw new RuntimeException(ex.getMessage());
         }
-        log.info("User {} updatuje ogłoszenie {}.", userFeignDto.uuid(), id);
+        //log.info("User {} updatuje ogłoszenie {}.", userFeignDto.uuid(), id);
         return ResponseEntity.ok(AdMapper.toReturnType(this.adService.updateAd(id, userFeignDto.uuid(), adPageRequest)));
     }
 
@@ -178,7 +132,7 @@ public class AdsController implements AdsApi {
         } catch (FeignException ex) {
             throw new RuntimeException(ex.getMessage());
         }
-        log.info("User {} dodaje nowe ogłoszenie.", userFeignDto.uuid());
-        return ResponseEntity.ok(AdMapper.toReturnType(this.adService.createAd(userFeignDto.uuid(), adPageRequest)));
+        //log.info("User {} dodaje nowe ogłoszenie.", userFeignDto.uuid());
+        return ResponseEntity.status(HttpStatus.CREATED).body(AdMapper.toReturnType(this.adService.createAd(userFeignDto.uuid(), adPageRequest)));
     }
 }

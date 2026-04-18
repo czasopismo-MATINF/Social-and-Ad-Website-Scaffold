@@ -4,6 +4,7 @@ info:
   version: 1.0.0
 
 paths:
+
   /categories:
     get:
       summary: Get all ad categories with descriptions.
@@ -14,7 +15,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CategoriesPage'
-
 
   /ads:
     get:
@@ -46,16 +46,16 @@ paths:
             format: date-time
         - name: users
           in: query
-          description: Filter ads by users ids seperated by commas.
+          description: Filter ads by users ids.
           required: false
           schema:
-            type:
+            type: array
             items:
               type: string
-              format: UUID
+              format: uuid
         - name: categories
           in: query
-          description: Filter ads by list of categories ids seperated by commas.
+          description: Filter ads by list of categories ids.
           required: false
           schema:
             type: array
@@ -85,12 +85,13 @@ paths:
             schema:
               $ref: '#/components/schemas/AdPageRequest'
       responses:
-        200:
-          description: OK
+        201:
+          description: Created.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdPage'
+
   /ads/{id}:
     parameters:
       - name: id
@@ -109,6 +110,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdPage'
+
     put:
       summary: Update ad with {id}.
       requestBody:
@@ -124,13 +126,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdPage'
+        '401':
+          description: "Unauthorized attempt to update someone else's data."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
       summary: Delete ad with {id}.
       responses:
         204:
           description: No content
         '401':
-          description: "Unauthorized attempt to update someone else's data."
+          description: "Unauthorized attempt to delete someone else's data."
           content:
             application/json:
               schema:
@@ -138,14 +146,7 @@ paths:
 
 components:
   schemas:
-    AdPages:
-      type: object
-      description: Object with ads in field ads.
-      properties:
-        ads:
-          type: array
-          items:
-            $ref: '#/components/schemas/AdPage'
+
     AdPage:
       type: object
       description: Ad with ad id, title, content, category id, user id.
@@ -171,6 +172,7 @@ components:
           type: string
           format: date-time
           description: Timestamp when the entity was last updated
+
     AdPageRequest:
       type: object
       description: New ad with ad title, content, category.
@@ -193,6 +195,7 @@ components:
           type: string
           format: uuid
           description: Category id.
+
     CategoriesPage:
       type: object
       description: Object with all categories as field categories.
@@ -201,6 +204,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CategoryPage'
+
     CategoryPage:
       type: object
       description: Category with id, description.
@@ -210,6 +214,7 @@ components:
           format: uuid
         description:
           type: string
+
     ErrorResponse:
       type: object
       required:
@@ -238,7 +243,8 @@ components:
           items:
             $ref: '#/components/schemas/AdPage'
         totalElements:
-          type: long
+          type: integer
+          format: int64
         totalPages:
           type: integer
         size:
