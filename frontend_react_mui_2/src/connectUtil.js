@@ -44,10 +44,6 @@ function getConversation(conversationId, number, before, callback) {
 
 export default {
 
-    getUserInfo : (keycloak, userId, callback) => {
-        getUserInfo(userId, callback);
-    },
-
     getSelfInfo : (dispatch) => {
         console.log("GETTING USER INFO");
         if(!keycloak.authenticated) {
@@ -135,25 +131,9 @@ export default {
         });
     },
 
-    getUsersInfo : (ads, usersInfo, dispatch) => {
-        console.log("GETTING USERS INFO", ads);
-        if(!ads || !ads.content) return;
-        const uitf = new Map();
-        for(const ad of ads.content) {
-            uitf.set(ad.user, ad);
-        }
-        for(const ui of usersInfo) {
-            uitf.delete(ui.id);
-        }
-        for(const u of uitf.keys()) {
-            getUserInfo(u, (data) => {
-                dispatch(Reducers.anotherUserInfoCollected(data));
-            });
-        }
-    },
-
     getUsersInfoByIds : (userIds, usersInfo, dispatch) => {
         console.log("GETTING USERS INFO", userIds);
+        if(!Array.isArray(userIds)) return;
         const uitf = new Map();
         for(const u of userIds) {
             uitf.set(u, u);

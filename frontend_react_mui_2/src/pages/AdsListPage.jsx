@@ -48,12 +48,12 @@ const AdsListPage = () => {
     connectUtil.getAds(backendParams.toString(), (ads) => {
       ads = updateVisibilityAds(ads);
       setAds(ads);
-      connectUtil.getUsersInfo(ads, usersInfo, dispatch);
+      connectUtil.getUsersInfoByIds(ads?.content?.map(ad => ad.user), usersInfo, dispatch);
     });
   }, [])
 
   React.useEffect(() => {
-    connectUtil.getUsersInfo(ads, usersInfo, dispatch);
+      connectUtil.getUsersInfoByIds(ads?.content?.map(ad => ad.user), usersInfo, dispatch);
   }, [ads, keycloakLoggedIn]);
 
   const handlePageChange = (_, value) => {
@@ -149,7 +149,7 @@ const searchForAds = (filterParams) => {
   connectUtil.getAds(backendParams.toString(), (ads) => {
     ads = updateVisibilityAds(ads);
     setAds(ads);
-    connectUtil.getUsersInfo(ads, usersInfo, dispatch);
+      connectUtil.getUsersInfoByIds(ads?.content?.map(ad => ad.user), usersInfo, dispatch);
   });
 };
 
