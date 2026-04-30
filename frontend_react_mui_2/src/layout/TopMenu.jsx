@@ -34,7 +34,7 @@ const TopMenu = () => {
         </Button>
 
         {keycloakLoggedIn && <Button color="inherit" component={RouterLink} to="/chat">
-          Czat
+          Rozmowy
         </Button>}
 
         {keycloakLoggedIn && <Button color="inherit" component={RouterLink} to="/userads">
