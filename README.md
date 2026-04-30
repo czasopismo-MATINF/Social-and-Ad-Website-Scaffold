@@ -95,4 +95,4 @@ http://localhost:5173
 
 (Passwords and users for pgAdmin (pgadmin@example.com, pgadminpassword), Adminer (pguser, pgpassword), Grafana (admin, admin), Kafka UI, Keycloak (admin, admin) should be read from the docker-compose.yml file and checked there.)
 
-Szkielet aplikacji był rozwijany na Windows 11 z Docker Desktop i Node (20.20.0) we współpracy z Microsoft Copilot i GitHub Copilot. (The application skeleton was developed on Windows 11 with Docker Desktop and Node (20.20.0) with cooperation with Microsoft Copilot and GitHub Copilot.)
+Szkielet aplikacji był rozwijany na Windows 11 z Docker Desktop i Node (20.20.0) we współpracy z Microsoft Copilot i GitHub Copilot. (The application skeleton was developed on Windows 11 with Docker Desktop and Node (20.20.0) in cooperation with Microsoft Copilot and GitHub Copilot.)
