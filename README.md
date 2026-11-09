@@ -97,8 +97,8 @@ http://localhost:5173
 
 Szkielet aplikacji był rozwijany na Windows 11 z Docker Desktop i Node (20.20.0) we współpracy z Microsoft Copilot i GitHub Copilot. (The application skeleton was developed on Windows 11 with Docker Desktop and Node (20.20.0) in cooperation with Microsoft Copilot and GitHub Copilot.)
 
-# Zrzuty ekranów
-# Screenshots
+# Zrzuty ekranów:
+# Screenshots:
 
 ![chat.png](images/chat.png "Zrzut ekranu rozmów użytkowników.")
 ![ogloszenia.png](images/ogloszenia.png "Zrzut ekranu ogłoszeń użytkowników.")
